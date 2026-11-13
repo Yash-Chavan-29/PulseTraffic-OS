@@ -5,6 +5,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { spawn } from 'child_process';
 
 import routesRouter from './routes/routes.js';
 import incidentsRouter from './routes/incidents.js';
@@ -30,6 +31,42 @@ const io = new SocketIOServer(server, {
 app.set('io', io);
 
 const PORT = process.env.PORT || 5000;
+const PYTHON_PORT = process.env.TRAFFIC_API_PORT || 8000;
+
+// Reverse proxy helper to Python FastAPI engine
+const proxyToFastAPI = (req, res) => {
+  const fullPath = req.originalUrl || req.url;
+  const targetUrl = new URL(fullPath, `http://127.0.0.1:${PYTHON_PORT}`);
+  const options = {
+    hostname: '127.0.0.1',
+    port: PYTHON_PORT,
+    path: targetUrl.pathname + targetUrl.search,
+    method: req.method,
+    headers: {
+      ...req.headers,
+      host: `127.0.0.1:${PYTHON_PORT}`
+    }
+  };
+
+  const proxyReq = http.request(options, (proxyRes) => {
+    res.writeHead(proxyRes.statusCode, proxyRes.headers);
+    proxyRes.pipe(res, { end: true });
+  });
+
+  proxyReq.on('error', (err) => {
+    console.warn(`[Proxy Warning] FastAPI engine on :${PYTHON_PORT} unreachable (${err.message})`);
+    if (!res.headersSent) {
+      res.status(502).json({ error: 'Traffic Engine Proxy Error', message: err.message });
+    }
+  });
+
+  req.pipe(proxyReq, { end: true });
+};
+
+// Route FastAPI endpoints directly through port 5000
+app.use('/api/traffic', proxyToFastAPI);
+app.use('/docs', proxyToFastAPI);
+app.use('/openapi.json', proxyToFastAPI);
 
 // Middleware
 app.use(cors());
@@ -40,7 +77,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 // Request logging
 app.use((req, res, next) => {
-  if (!req.url.startsWith('/favicon') && !req.url.startsWith('/road_routes')) {
+  if (!req.url.startsWith('/favicon') && !req.url.startsWith('/road_routes') && !req.url.startsWith('/api/traffic/video_feed')) {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   }
   next();
