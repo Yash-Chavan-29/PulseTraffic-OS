@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PulseTraffic // City Traffic Management OS (PS 01)</title>
+  
+  <!-- Typography & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <style>
+    :root {
+      --bg: #090a0f;
+      --panel: #11141c;
+      --panel-elevated: #161a24;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(255, 255, 255, 0.2);
+      --text: #f8fafc;
+      --text-muted: #8b95a5;
+      --text-dim: #4b5565;
+      --accent-blue: #3b82f6;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Navigation Bar */
+    header {
+      height: 54px;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 1000;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-badge {
+      width: 28px;
+      height: 28px;
+      background: #ffffff;
+      color: #090a0f;
+      font-weight: 700;
+      font-size: 14px;
+      font-family: 'Geist Mono', monospace;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-title {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .simulated-pill {
+      font-family: 'Geist Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      background: rgba(245, 158, 11, 0.12);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      padding: 2px 8px;
+      border-radius: 9999px;
+    }
+
+    /* Navigation Tabs */
+    .nav-tabs {
+      display: flex;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 3px;
+      gap: 2px;
+    }
+
+    .tab-item {
+      padding: 6px 14px;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--text-muted);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: transparent;
+      border: none;
+    }
+
+    .tab-item.active {
+      background: var(--panel-elevated);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .top-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 12px;
+      font-family: 'Geist Mono', monospace;
+      color: var(--text-muted);
+    }
+
+    .system-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-emerald);
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+    }
+
+    /* Main Workspace Layout */
+    .app-main {
+      flex: 1;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Floating Left Control Panel (Flow A: Commuter) */
+    .control-drawer {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      bottom: 16px;
+      width: 380px;
+      background: rgba(17, 20, 28, 0.88);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      z-index: 1000;
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .drawer-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .drawer-header h2 {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .drawer-body {
+      padding: 18px 20px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Search Inputs */
+    .route-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .node-pin {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .pin-source { background: #3b82f6; border: 2px solid #ffffff; }
+    .pin-dest { background: #10b981; border: 2px solid #ffffff; }
+
+    .node-select {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+    }
+
+    .node-select option {
+      background: #11141c;
+      color: #fff;
+    }
+
+    .input-divider {
+      height: 1px;
+      background: var(--border);
+      margin-left: 20px;
+    }
+
+    /* Time offset selector */
+    .departure-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .pill-group {
+      display: flex;
+      gap: 4px;
+    }
+
+    .time-pill {
+      background: var(--panel-elevated);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .time-pill.selected {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: rgba(59, 130, 246, 0.5);
+      color: #60a5fa;
+    }
+
+    .action-btn-primary {
+      width: 100%;
+      padding: 10px 14px;
+      background: #ffffff;
+      color: #090a0f;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+    }
+
+    .action-btn-primary:hover {
+      background: #e2e8f0;
+    }
+
+    /* Route Comparison Cards (Module 2) */
+    .routes-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .route-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
+    .route-card:hover {
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+
+    .route-card.active-fastest {
+      border-color: rgba(59, 130, 246, 0.5);
+      background: rgba(59, 130, 246, 0.05);
+    }
+
+    .route-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .route-name-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .rec-badge {
+      font-family: 'Geist Mono', monospace;
+      font-size: 10px;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    .route-eta {
+      font-size: 16px;
+      font-weight: 700;
+      font-family: 'Geist Mono', monospace;
+    }
+
+    .route-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .stat-val {
+      font-family: 'Geist Mono', monospace;
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    /* Reroute Suggested Banner (Module 4) */
+    .reroute-banner {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.35);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .reroute-banner-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #fb7185;
+    }
+
+    .reroute-btn {
+      background: #f43f5e;
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    /* Map Viewport */
+    #city-map {
+      flex: 1;
+      height: 100%;
+      background: #06070a;
+      z-index: 10;
+    }
+
+    /* Native Dark CartoDB basemap - no invert filter needed */
+    .leaflet-tile-pane {
+      filter: none;
+    }
+
+    /* Floating Top-Right Layer HUD */
+    .map-hud {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: rgba(17, 20, 28, 0.9);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      z-index: 1000;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      font-size: 12px;
+    }
+
+    .hud-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      color: var(--text-muted);
+      user-select: none;
+    }
+
+    .hud-toggle input {
+      accent-color: #3b82f6;
+    }
+
+    /* Floating Report Incident Quick FAB */
+    .report-fab {
+      position: absolute;
+      bottom: 24px;
+      right: 24px;
+      z-index: 1000;
+      background: #f43f5e;
+      color: #ffffff;
+      border: none;
+      border-radius: 9999px;
+      padding: 12px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 10px 25px -4px rgba(244, 63, 94, 0.5);
+      transition: transform 0.15s ease;
+    }
+
+    .report-fab:hover {
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header>
+    <div class="brand-section">
+      <div class="brand-badge">PT</div>
+      <div class="brand-title">
+        <span>PulseTraffic</span>
+        <span class="simulated-pill">Simulated Data</span>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+      <button class="tab-item active" onclick="switchView('routes')">Route Search</button>
+      <button class="tab-item" onclick="switchView('emergency')">Emergency Corridor</button>
+      <button class="tab-item" onclick="switchView('signals')">Signal Lab</button>
+      <button class="tab-item" onclick="switchView('admin')">Admin Queue</button>
+    </div>
+
+    <div class="top-meta">
+      <div class="system-status">
+        <span class="status-dot"></span>
+        <span>Graph Engine Online (142 Nodes / 380 Edges)</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Split Layout -->
+  <div class="app-main">
+    
+    <!-- Left Commuter & Routing Panel -->
+    <div class="control-drawer" id="main-drawer">
+      <div class="drawer-header">
+        <h2>Commuter Routing</h2>
+        <span style="font-family: 'Geist Mono'; font-size: 11px; color: var(--text-dim);">Dijkstra + A*</span>
+      </div>
+
+      <div class="drawer-body">
+        
+        <!-- Source / Destination Pickers -->
+        <div class="route-input-group">
+          <div class="input-row">
+            <span class="node-pin pin-source"></span>
+            <select class="node-select" id="origin-select" onchange="runRouting()">
+              <option value="1">Central Station (Node 1)</option>
+              <option value="14">Tech Park Gateway (Node 14)</option>
+              <option value="28">Harbor Terminal (Node 28)</option>
+              <option value="56">North Ring Crossing (Node 56)</option>
+            </select>
+          </div>
+          <div class="input-divider"></div>
+          <div class="input-row">
+            <span class="node-pin pin-dest"></span>
+            <select class="node-select" id="dest-select" onchange="runRouting()">
+              <option value="98" selected>Airport Terminal 2 (Node 98)</option>
+              <option value="42">Civic Square (Node 42)</option>
+              <option value="73">South Logistics Hub (Node 73)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="departure-row">
+          <span>Departure Prediction:</span>
+          <div class="pill-group">
+            <button class="time-pill selected" onclick="setTime(this, 0)">Now</button>
+            <button class="time-pill" onclick="setTime(this, 15)">+15 min</button>
+            <button class="time-pill" onclick="setTime(this, 30)">+30 min</button>
+          </div>
+        </div>
+
+        <button class="action-btn-primary" onclick="runRouting()">
+          <span>Recalculate Optimal Routes</span>
+        </button>
+
+        <!-- Dynamic Reroute Alert (Simulated Incident Impact) -->
+        <div class="reroute-banner" id="reroute-alert" style="display: none;">
+          <div class="reroute-banner-top">
+            <span>⚠ Incident on Arterial 4</span>
+            <span>+9 min delay</span>
+          </div>
+          <p style="font-size: 11.5px; color: #fecdd3; line-height: 1.4;">Accident detected at Node 42. Alternate route saves 7.2 minutes.</p>
+          <button class="reroute-btn" onclick="applyReroute()">Switch to Ring Road Bypass</button>
+        </div>
+
+        <!-- Module 2: Route Comparison Table -->
+        <div class="routes-container" id="routes-list">
+          
+          <!-- Route 1: Fastest (A*) -->
+          <div class="route-card active-fastest" onclick="selectRoute(0)">
+            <div class="route-header">
+              <div class="route-name-badge">
+                <span style="color: #60a5fa;">● A* Fastest</span>
+                <span class="rec-badge">Recommended</span>
+              </div>
+              <span class="route-eta">18.4 min</span>
+            </div>
+            <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">Via West Expressway & Arterial 2 (Lowest congestion risk)</p>
+            <div class="route-stats-grid">
+              <div>Dist: <span class="stat-val">12.8 km</span></div>
+              <div>Congestion: <span class="stat-val" style="color: #34d399;">Low</span></div>
+              <div>Fuel: <span class="stat-val">0.9 L</span></div>
+            </div>
+          </div>
+
+          <!-- Route 2: Shortest (Dijkstra) -->
+          <div class="route-card" onclick="selectRoute(1)">
+            <div class="route-header">
+              <div class="route-name-badge">
+                <span style="color: #94a3b8;">● Dijkstra Shortest</span>
+              </div>
+              <span class="route-eta">24.1 min</span>
+            </div>
+            <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">Via Downtown Core (Heavy traffic bottlenecks)</p>
+            <div class="route-stats-grid">
+              <div>Dist: <span class="stat-val">10.4 km</span></div>
+              <div>Congestion: <span class="stat-val" style="color: #f87171;">High</span></div>
+              <div>Fuel: <span class="stat-val">1.2 L</span></div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Interactive Leaflet Map -->
+    <div id="city-map"></div>
+
+    <!-- Floating HUD Toggles -->
+    <div class="map-hud">
+      <label class="hud-toggle">
+        <input type="checkbox" id="layer-congestion" checked onchange="toggleLayers()">
+        <span>ML Congestion Overlay</span>
+      </label>
+      <label class="hud-toggle">
+        <input type="checkbox" id="layer-incidents" checked onchange="toggleLayers()">
+        <span>Active Incidents</span>
+      </label>
+      <label class="hud-toggle">
+        <input type="checkbox" id="layer-signals" onchange="toggleLayers()">
+        <span>Adaptive Signals</span>
+      </label>
+    </div>
+
+    <!-- Report Incident Trigger -->
+    <button class="report-fab" onclick="triggerIncidentModal()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+      <span>Report Incident</span>
+    </button>
+
+  </div>
+
+  <!-- Leaflet Map Script -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // 1. Initialize Map on Central Coordinates
+    const map = L.map('city-map', {
+      center: [12.9716, 77.5946], // Bangalore city coordinates as realistic base
+      zoom: 13,
+      zoomControl: false
+    });
+
+    L.control.zoom({ position: 'bottomleft' }).addTo(map);
+
+    // High-performance Dark Matter Basemap Tiles (No 403 blocks on localhost)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      maxZoom: 19,
+      subdomains: 'abcd',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+    }).addTo(map);
+
+    // 2. City Graph Simulation (Synthetic 12x12 grid + arterial corridors)
+    const nodes = [];
+    const baseLat = 12.94;
+    const baseLng = 77.56;
+
+    for (let r = 0; r < 8; r++) {
+      for (let c = 0; c < 8; c++) {
+        nodes.push({
+          id: r * 8 + c + 1,
+          lat: baseLat + r * 0.012 + (Math.random() - 0.5) * 0.002,
+          lng: baseLng + c * 0.012 + (Math.random() - 0.5) * 0.002,
+          isJunction: (r % 2 === 0 && c % 2 === 0)
+        });
+      }
+    }
+
+    // Render Arterial Road Corridors
+    const routeLines = [];
+
+    // Route A* Fastest (Blue Polyline)
+    const fastestCoords = [
+      [nodes[0].lat, nodes[0].lng],
+      [nodes[9].lat, nodes[9].lng],
+      [nodes[18].lat, nodes[18].lng],
+      [nodes[27].lat, nodes[27].lng],
+      [nodes[36].lat, nodes[36].lng],
+      [nodes[45].lat, nodes[45].lng],
+      [nodes[54].lat, nodes[54].lng],
+      [nodes[63].lat, nodes[63].lng]
+    ];
+
+    const fastestPoly = L.polyline(fastestCoords, {
+      color: '#3b82f6',
+      weight: 5,
+      opacity: 0.9,
+      lineCap: 'round'
+    }).addTo(map);
+
+    // Route Shortest (Grey/Amber Polyline)
+    const shortestCoords = [
+      [nodes[0].lat, nodes[0].lng],
+      [nodes[1].lat, nodes[1].lng],
+      [nodes[2].lat, nodes[2].lng],
+      [nodes[10].lat, nodes[10].lng],
+      [nodes[18].lat, nodes[18].lng],
+      [nodes[26].lat, nodes[26].lng],
+      [nodes[34].lat, nodes[34].lng],
+      [nodes[42].lat, nodes[42].lng],
+      [nodes[50].lat, nodes[50].lng],
+      [nodes[63].lat, nodes[63].lng]
+    ];
+
+    const shortestPoly = L.polyline(shortestCoords, {
+      color: '#94a3b8',
+      weight: 4,
+      dashArray: '8, 8',
+      opacity: 0.6
+    }).addTo(map);
+
+    // Add Source & Destination Markers
+    L.circleMarker([nodes[0].lat, nodes[0].lng], {
+      radius: 7,
+      color: '#ffffff',
+      fillColor: '#3b82f6',
+      fillOpacity: 1,
+      weight: 2
+    }).addTo(map).bindPopup("<b>Source:</b> Central Station");
+
+    L.circleMarker([nodes[63].lat, nodes[63].lng], {
+      radius: 7,
+      color: '#ffffff',
+      fillColor: '#10b981',
+      fillOpacity: 1,
+      weight: 2
+    }).addTo(map).bindPopup("<b>Destination:</b> Airport Terminal 2");
+
+    // Add Incident Marker (Simulated Accident)
+    const incidentMarker = L.circleMarker([nodes[26].lat, nodes[26].lng], {
+      radius: 9,
+      color: '#ffffff',
+      fillColor: '#f43f5e',
+      fillOpacity: 1,
+      weight: 2
+    }).addTo(map).bindPopup("<b>Incident:</b> Multi-vehicle accident (Severity 3)");
+
+    map.fitBounds(fastestPoly.getBounds(), { padding: [50, 50] });
+
+    // 3. UI Interactions & Simulated Sockets
+    function setTime(el, minutes) {
+      document.querySelectorAll('.time-pill').forEach(p => p.classList.remove('selected'));
+      el.classList.add('selected');
+      
+      // Simulate ML prediction shift
+      if (minutes > 0) {
+        document.getElementById('reroute-alert').style.display = 'flex';
+      } else {
+        document.getElementById('reroute-alert').style.display = 'none';
+      }
+    }
+
+    function applyReroute() {
+      document.getElementById('reroute-alert').style.display = 'none';
+      fastestPoly.setStyle({ color: '#10b981' });
+      alert("Route updated to Ring Road bypass. Time saved: 7.2 minutes.");
+    }
+
+    function triggerIncidentModal() {
+      const confirmed = confirm("Simulate reporter pin drop on map? This will broadcast to connected clients via Socket.IO.");
+      if (confirmed) {
+        document.getElementById('reroute-alert').style.display = 'flex';
+      }
+    }
+
+    function switchView(tab) {
+      document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+
+    function selectRoute(index) {
+      if (index === 0) {
+        fastestPoly.bringToFront();
+        fastestPoly.setStyle({ opacity: 1, weight: 6 });
+        shortestPoly.setStyle({ opacity: 0.4, weight: 3 });
+      } else {
+        shortestPoly.bringToFront();
+        shortestPoly.setStyle({ opacity: 1, weight: 6 });
+        fastestPoly.setStyle({ opacity: 0.4, weight: 3 });
+      }
+    }
+  </script>
+</body>
+</html>
