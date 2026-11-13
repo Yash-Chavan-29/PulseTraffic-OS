@@ -615,18 +615,7 @@
         </div>
       </div>
 
-      <!-- Alternative Shortest Route (Muted Gray) -->
-      <div class="route-card" id="card-route-1" onclick="highlightRouteOnMap(1)">
-        <div class="route-time-row">
-          <span class="route-eta-text" style="color: var(--gm-text);" id="r1-eta">2 hr 10 min</span>
-          <span class="route-dist-text" id="r1-dist">91 km</span>
-        </div>
-        <div class="route-tagline" id="r1-tag">
-          <span style="color: var(--gm-orange); font-weight: 500;">● Shortest distance</span>
-          <span style="color: var(--gm-text-secondary);">• via Downtown Spine</span>
-        </div>
-        <div class="route-subdesc" id="r1-desc">+22 min slower due to signal delay &amp; urban congestion</div>
-      </div>
+
 
     </div>
 
@@ -858,7 +847,6 @@
     let gpsMarker = null;
     let gpsRadiusCircle = null; // 500m blue accuracy circle
     let fastestRoutePoly = L.polyline([], { color: '#1a73e8', weight: 6, opacity: 0.95, lineCap: 'round', lineJoin: 'round' }).addTo(map);
-    let shortestRoutePoly = L.polyline([], { color: '#9aa0a6', weight: 5, opacity: 0.85, lineCap: 'round', lineJoin: 'round' }).addTo(map);
     let destinationMarker = null;
     let incidentMarkersLayer = L.layerGroup().addTo(map);
     let placesMarkersLayer = L.layerGroup().addTo(map);
@@ -944,13 +932,6 @@
             map.fitBounds(fastestRoutePoly.getBounds(), getMapPadding());
           }
 
-          const shortest = json.data.routes[1] || fastest;
-          if (shortest.waypoints && shortest.waypoints.length > 0 && shortest !== fastest) {
-            shortestRoutePoly.setLatLngs(shortest.waypoints);
-          } else {
-            shortestRoutePoly.setLatLngs([]);
-          }
-
           document.getElementById('routes-results-list').style.display = 'flex';
           renderModeRoutes();
         }
@@ -962,13 +943,11 @@
     function renderModeRoutes() {
       if (!currentRoutes || currentRoutes.length === 0) return;
       const fastest = currentRoutes[0];
-      const shortest = currentRoutes[1] || fastest;
       const baseCarMin = fastest.etaMinutes;
       const baseDistKm = fastest.distanceKm;
       const destName = document.getElementById('input-destination').value.trim() || 'Destination';
 
       let r0_eta, r0_dist, r0_tag, r0_sub, r0_color, r0_dash;
-      let r1_eta, r1_dist, r1_tag, r1_sub;
       let steps = [];
 
       if (currentTravelMode === 'drive') {
@@ -976,15 +955,9 @@
         r0_eta = baseCarMin;
         r0_dist = baseDistKm;
         r0_tag = "● Fastest driving route";
-        r0_sub = "Fastest route now, normal highway traffic • via NH-48 Express";
+        r0_sub = "Fastest route now, normal highway traffic • via NH-48 Express Corridor";
         r0_color = "#1a73e8";
         r0_dash = null;
-
-        r1_eta = shortest.etaMinutes;
-        r1_dist = shortest.distanceKm;
-        const diff = Math.max(1, Math.round(shortest.etaMinutes - baseCarMin));
-        r1_tag = "● Shortest distance route";
-        r1_sub = `+${diff} min slower due to signal delay & downtown choke points`;
 
         steps = [
           `Head out towards ${destName} via College Road`,
@@ -1006,11 +979,6 @@
         r0_color = "#0284c7";
         r0_dash = null;
 
-        r1_eta = Math.round(r0_eta * 1.15);
-        r1_dist = baseDistKm;
-        r1_tag = "● Alternative local corridor";
-        r1_sub = "Via inner residential roads with speed breakers";
-
         steps = [
           `Depart on two-wheeler lane past Chennamma Circle`,
           `Filter past Bogarves traffic bottleneck onto bypass`,
@@ -1025,11 +993,6 @@
         r0_sub = "Scheduled bus service • ₹45 fare • Every 15 min from CBT Terminal";
         r0_color = "#ea4335";
         r0_dash = null;
-
-        r1_eta = Math.round(r0_eta + 25);
-        r1_dist = baseDistKm;
-        r1_tag = "● Local Ordinary City Bus";
-        r1_sub = "+25 min extra delay • Stops at all local village junctions";
 
         steps = [
           `Walk 250m to Central Bus Terminal (CBT Belagavi)`,
@@ -1051,11 +1014,6 @@
         r0_color = "#10b981";
         r0_dash = '6, 8'; // Dotted walking footprints
 
-        r1_eta = Math.round(r0_eta * 1.15);
-        r1_dist = Number((baseDistKm * 0.96).toFixed(1));
-        r1_tag = "● Alternative pedestrian path";
-        r1_sub = "Via quiet residential streets & shaded avenues";
-
         steps = [
           `Head out on pedestrian sidewalk along College Road`,
           `Use signalized crosswalk at Bogarves Circle`,
@@ -1064,17 +1022,11 @@
         ];
       }
 
-      // Update card 0
+      // Update route card
       document.getElementById('r0-eta').innerText = formatDuration(r0_eta);
       document.getElementById('r0-dist').innerText = `${r0_dist} km`;
       document.getElementById('r0-tag').innerHTML = `<span style="color:${r0_color}; font-weight:700;">${r0_tag}</span>`;
       document.getElementById('r0-desc').innerText = r0_sub;
-
-      // Update card 1
-      document.getElementById('r1-eta').innerText = formatDuration(r1_eta);
-      document.getElementById('r1-dist').innerText = `${r1_dist} km`;
-      document.getElementById('r1-tag').innerHTML = `<span style="color:#5f6368; font-weight:500;">${r1_tag}</span>`;
-      document.getElementById('r1-desc').innerText = r1_sub;
 
       // Update turn-by-turn list
       const stepsBox = document.getElementById('turn-steps-list');
@@ -1087,7 +1039,7 @@
 
       // Update map polyline color & dash
       fastestRoutePoly.setStyle({ color: r0_color, weight: 6, opacity: 0.95, dashArray: r0_dash });
-      shortestRoutePoly.setStyle({ color: '#9aa0a6', weight: 4, opacity: 0.6, dashArray: r0_dash ? '4, 6' : null });
+      fastestRoutePoly.bringToFront();
     }
 
     function switchMode(mode) {
@@ -1113,24 +1065,8 @@
     }
 
     function highlightRouteOnMap(index) {
-      const c0 = document.getElementById('card-route-0');
-      const c1 = document.getElementById('card-route-1');
-
-      if (index === 0) {
-        c0.className = 'route-card active-fastest';
-        c1.className = 'route-card';
-        fastestRoutePoly.setStyle({ opacity: 0.95 });
-        shortestRoutePoly.setStyle({ opacity: 0.4 });
-        fastestRoutePoly.bringToFront();
-        showToast('Selected: Primary Route');
-      } else {
-        c0.className = 'route-card';
-        c1.className = 'route-card active-shortest';
-        fastestRoutePoly.setStyle({ opacity: 0.4 });
-        shortestRoutePoly.setStyle({ opacity: 0.95 });
-        shortestRoutePoly.bringToFront();
-        showToast('Selected: Alternative Route');
-      }
+      fastestRoutePoly.setStyle({ opacity: 0.95 });
+      fastestRoutePoly.bringToFront();
     }
 
     function toggleTurnByTurn() {
