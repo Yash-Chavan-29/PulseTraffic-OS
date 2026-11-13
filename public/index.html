@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PulseTraffic OS — Intelligent Urban Traffic Management</title>
+  <title>PulseTraffic OS — Global Real-Time Routing Engine</title>
   
   <!-- Typography & Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -283,7 +283,7 @@
     }
 
     .drawer-main-title {
-      font-size: 13.5px;
+      font-size: 14px;
       font-weight: 600;
       color: var(--text);
     }
@@ -312,39 +312,6 @@
       color: var(--text);
     }
 
-    /* Sub-Navigation Tabs */
-    .drawer-tab-bar {
-      display: flex;
-      background: var(--rail);
-      border-bottom: 1px solid var(--border);
-      padding: 6px 12px;
-      gap: 4px;
-      overflow-x: auto;
-    }
-    .drawer-tab-bar::-webkit-scrollbar { display: none; }
-
-    .drawer-tab {
-      padding: 5px 10px;
-      font-size: 11.5px;
-      font-weight: 500;
-      color: var(--text-muted);
-      background: transparent;
-      border: 1px solid transparent;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.15s;
-    }
-    .drawer-tab:hover {
-      color: var(--text);
-    }
-    .drawer-tab.active {
-      background: var(--card);
-      border-color: var(--border);
-      color: var(--text);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    }
-
     .drawer-body {
       flex: 1;
       overflow-y: auto;
@@ -357,15 +324,6 @@
     .drawer-body::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.1);
       border-radius: 4px;
-    }
-
-    .view-panel {
-      display: none;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .view-panel.active {
-      display: flex;
     }
 
     /* Unslop Card Surfaces */
@@ -390,6 +348,8 @@
       font-weight: 500;
       font-family: var(--font-mono);
       color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
 
     /* Search Inputs */
@@ -427,6 +387,30 @@
       padding: 2px 5px;
     }
 
+    /* Quick Destination Chips */
+    .destination-chips-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 2px;
+    }
+    .destination-chip {
+      background: var(--raised);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .destination-chip:hover {
+      background: #2a2a2e;
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+
     /* Buttons */
     .btn-primary {
       background: #ededed;
@@ -452,20 +436,21 @@
       border: 1px solid var(--border);
       font-size: 12px;
       font-weight: 500;
-      padding: 6px 12px;
+      padding: 7px 12px;
       border-radius: var(--radius-sm);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
-      transition: background 0.15s;
+      transition: background 0.15s, border-color 0.15s;
     }
     .btn-secondary:hover {
-      background: #2a2a2d;
+      background: #28282b;
+      border-color: rgba(255, 255, 255, 0.15);
     }
 
-    /* Route Comparison Cards */
+    /* Route Cards */
     .route-card {
       background: var(--card);
       border: 1px solid var(--border);
@@ -475,7 +460,7 @@
       transition: all 0.15s ease;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
     }
     .route-card:hover {
       background: var(--card-hover);
@@ -484,10 +469,12 @@
     .route-card.selected-fastest {
       border-color: #3b82f6;
       background: rgba(59, 130, 246, 0.05);
+      box-shadow: inset 0 0 0 1px #3b82f6;
     }
     .route-card.selected-shortest {
       border-color: #a855f7;
       background: rgba(168, 85, 247, 0.05);
+      box-shadow: inset 0 0 0 1px #a855f7;
     }
 
     .route-header {
@@ -503,7 +490,7 @@
       gap: 6px;
     }
     .route-eta {
-      font-size: 17px;
+      font-size: 15px;
       font-weight: 600;
       font-family: var(--font-mono);
       color: var(--text);
@@ -511,188 +498,25 @@
 
     .route-stats-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 6px;
-      padding-top: 6px;
-      border-top: 1px solid var(--border-subtle);
-      margin-top: 4px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      background: var(--raised);
+      padding: 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
     }
     .stat-label {
       font-size: 10px;
       color: var(--text-muted);
       font-family: var(--font-mono);
+      text-transform: uppercase;
     }
     .stat-val {
       font-size: 12.5px;
       font-weight: 500;
       font-family: var(--font-mono);
       color: var(--text);
-    }
-
-    /* Dashboard Metric Figures */
-    .metric-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-    .metric-box {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .metric-value {
-      font-size: 22px;
-      font-weight: 500;
-      color: var(--text);
-      letter-spacing: -0.02em;
-    }
-    .metric-change {
-      font-size: 11px;
-      font-weight: 500;
-      font-family: var(--font-mono);
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    /* 4-Way Signal Lab Simulator & Visualizer */
-    .junction-visualizer {
-      position: relative;
-      width: 100%;
-      height: 240px;
-      background: #111112;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      user-select: none;
-    }
-
-    /* Intersection Cross Roads */
-    .road-ns {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 80px;
-      background: #18181a;
-      border-left: 1px dashed rgba(255, 255, 255, 0.08);
-      border-right: 1px dashed rgba(255, 255, 255, 0.08);
-    }
-    .road-ew {
-      position: absolute;
-      left: 0;
-      right: 0;
-      height: 80px;
-      background: #18181a;
-      border-top: 1px dashed rgba(255, 255, 255, 0.08);
-      border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
-    }
-    .intersection-center {
-      position: absolute;
-      width: 80px;
-      height: 80px;
-      background: #1e1e21;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 5;
-    }
-
-    /* Signal Head Indicators */
-    .signal-head {
-      display: flex;
-      gap: 4px;
-      background: #09090a;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 3px 5px;
-      border-radius: 9999px;
-      z-index: 10;
-    }
-    .signal-lamp {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #2a2a2d;
-      transition: background 0.2s, box-shadow 0.2s;
-    }
-    .signal-lamp.red.lit {
-      background: #ef4444;
-      box-shadow: 0 0 8px #ef4444;
-    }
-    .signal-lamp.yellow.lit {
-      background: #f59e0b;
-      box-shadow: 0 0 8px #f59e0b;
-    }
-    .signal-lamp.green.lit {
-      background: #10b981;
-      box-shadow: 0 0 8px #10b981;
-    }
-
-    .arm-indicator {
-      position: absolute;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      z-index: 10;
-    }
-    .arm-north { top: 12px; flex-direction: column; }
-    .arm-south { bottom: 12px; flex-direction: column; }
-    .arm-east  { right: 12px; flex-direction: row; }
-    .arm-west  { left: 12px; flex-direction: row; }
-
-    .arm-badge {
-      font-size: 10px;
-      font-family: var(--font-mono);
-      background: #19191b;
-      border: 1px solid var(--border);
-      padding: 2px 6px;
-      border-radius: 4px;
-      color: var(--text-secondary);
-    }
-
-    /* Stepper Controls */
-    .stepper-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 0;
-    }
-    .stepper-row:not(:last-child) {
-      border-bottom: 1px solid var(--border-subtle);
-    }
-    .stepper-btns {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .step-btn {
-      width: 24px;
-      height: 24px;
-      border-radius: 4px;
-      background: var(--raised);
-      border: 1px solid var(--border);
-      color: var(--text);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      transition: background 0.15s;
-    }
-    .step-btn:hover { background: #2f2f33; }
-    .step-val {
-      font-size: 13px;
-      font-family: var(--font-mono);
-      font-weight: 500;
-      min-width: 26px;
-      text-align: center;
+      margin-top: 1px;
     }
 
     /* Toast Notification */
@@ -723,29 +547,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Modal */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(4px);
-      z-index: 3500;
-      display: none;
-      align-items: center;
-      justify-content: center;
-    }
-    .modal-card {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      width: 380px;
-      padding: 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8);
-    }
-
     /* Pulsing Blue GPS Marker */
     .gps-pulse-marker {
       width: 16px;
@@ -753,41 +554,31 @@
       background: #3b82f6;
       border: 2px solid #ffffff;
       border-radius: 50%;
-      box-shadow: 0 0 10px #3b82f6;
+      box-shadow: 0 0 12px #3b82f6;
+      animation: pulseAnim 2s infinite ease-in-out;
+    }
+    @keyframes pulseAnim {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+      70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
     }
   </style>
 </head>
 <body>
 
-  <!-- Left Navigation Rail (Unslop Aesthetic) -->
+  <!-- Left Navigation Rail (Focused Exclusively on Routes & Positioning) -->
   <nav class="left-rail">
     <!-- Geometric Logo (Matching unslop) -->
-    <div class="rail-brand" onclick="toggleRailTab('routes')" title="PulseTraffic OS">
+    <div class="rail-brand" onclick="toggleDrawer()" title="PulseTraffic OS — Route Engine">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
       </svg>
     </div>
     
     <div class="rail-btn-group">
-      <!-- 1. Routes -->
-      <button class="rail-btn active" id="rail-btn-routes" data-tooltip="Routes & Navigation" onclick="toggleRailTab('routes')">
+      <!-- Dedicated Route Navigator Action -->
+      <button class="rail-btn active" id="rail-btn-routes" data-tooltip="Route Navigator" onclick="toggleDrawer()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
-      </button>
-      <!-- 2. Dashboard -->
-      <button class="rail-btn" id="rail-btn-dashboard" data-tooltip="City Overview" onclick="toggleRailTab('dashboard')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
-      </button>
-      <!-- 3. Signal Lab -->
-      <button class="rail-btn" id="rail-btn-signals" data-tooltip="Signal Lab (Webster HCM)" onclick="toggleRailTab('signals')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="7" y="2" width="10" height="20" rx="3"/><circle cx="12" cy="6" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="18" r="1.5"/></svg>
-      </button>
-      <!-- 4. Emergency Green Wave -->
-      <button class="rail-btn" id="rail-btn-emergency" data-tooltip="Emergency Green Wave" onclick="toggleRailTab('emergency')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      </button>
-      <!-- 5. Incidents -->
-      <button class="rail-btn" id="rail-btn-incidents" data-tooltip="Active Incidents" onclick="toggleRailTab('incidents')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
       </button>
     </div>
 
@@ -796,13 +587,9 @@
       <button class="rail-btn" id="rail-btn-gps" data-tooltip="Locate My GPS" onclick="locateUserGPS()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="9"/></svg>
       </button>
-      <!-- Layers -->
-      <button class="rail-btn" id="rail-btn-layers" data-tooltip="Map Overlays" onclick="toggleRailTab('layers')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-      </button>
-      <!-- Reset -->
-      <button class="rail-btn" id="rail-btn-reset" data-tooltip="Reset Data" onclick="resetDemoData()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+      <!-- Clear Route -->
+      <button class="rail-btn" id="rail-btn-clear" data-tooltip="Clear Route" onclick="clearCurrentRoute()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
     </div>
   </nav>
@@ -819,435 +606,172 @@
       </button>
       <div class="floating-status-pill">
         <span class="status-dot"></span>
-        <span id="socket-status">Engine live</span>
+        <span id="socket-status">Routing engine live</span>
       </div>
     </div>
 
-    <!-- Control Drawer -->
-    <div class="control-drawer" id="main-drawer">
+    <!-- Dedicated Route Navigator Drawer -->
+    <div class="control-drawer open" id="main-drawer">
       
       <!-- Drawer Header Bar -->
       <div class="drawer-header-bar">
         <div class="drawer-title-group">
           <div>
-            <div class="drawer-main-title" id="drawer-main-title">Route Navigator</div>
-            <div class="drawer-sub-title">Global GPS &amp; City-to-City Routing</div>
+            <div class="drawer-main-title">Route Navigator</div>
+            <div class="drawer-sub-title">Global GPS &amp; Intercity Routing</div>
           </div>
         </div>
-        <button class="drawer-close-btn" onclick="closeDrawer()" title="Close panel">✕</button>
-      </div>
-
-      <!-- Clean Tab Bar (Sentence Case) -->
-      <div class="drawer-tab-bar">
-        <button class="drawer-tab active" id="tab-routes" onclick="toggleRailTab('routes')">Routes</button>
-        <button class="drawer-tab" id="tab-dashboard" onclick="toggleRailTab('dashboard')">Dashboard</button>
-        <button class="drawer-tab" id="tab-signals" onclick="toggleRailTab('signals')">Signal lab</button>
-        <button class="drawer-tab" id="tab-emergency" onclick="toggleRailTab('emergency')">Green wave</button>
-        <button class="drawer-tab" id="tab-incidents" onclick="toggleRailTab('incidents')">Incidents</button>
-        <button class="drawer-tab" id="tab-layers" onclick="toggleRailTab('layers')">Layers</button>
+        <button class="drawer-close-btn" onclick="toggleDrawer()" title="Toggle drawer">✕</button>
       </div>
 
       <div class="drawer-body">
 
-        <!-- VIEW 1: ROUTE NAVIGATOR -->
-        <div class="view-panel active" id="panel-routes">
-          
-          <div class="unslop-card">
-            <div class="card-label-row">
-              <span class="card-label">Navigation Query</span>
-              <button style="background: none; border: none; color: var(--text-muted); font-size: 11px; cursor: pointer;" onclick="clearCurrentRoute()">Clear route</button>
-            </div>
-
-            <!-- Origin Input -->
-            <div style="display: flex; flex-direction: column; gap: 4px;">
-              <span style="font-size: 11px; color: var(--text-secondary);">Origin (Default GPS)</span>
-              <div class="unslop-input-group">
-                <span style="color: #3b82f6; font-size: 12px;">●</span>
-                <input type="text" id="route-origin-input" class="unslop-input" 
-                       value="📍 Your Location (Live GPS)" list="common-places" placeholder="Origin city or street...">
-                <button onclick="locateUserGPS()" style="background: none; border: none; color: #3b82f6; cursor: pointer; font-size: 13px;">📍</button>
-              </div>
-            </div>
-
-            <!-- Swap Button -->
-            <div style="display: flex; justify-content: center; margin: -4px 0;">
-              <button onclick="swapOriginDest()" style="background: var(--raised); border: 1px solid var(--border); color: var(--text-muted); width: 26px; height: 26px; border-radius: 4px; cursor: pointer;">⇅</button>
-            </div>
-
-            <!-- Destination Input -->
-            <div style="display: flex; flex-direction: column; gap: 4px;">
-              <span style="font-size: 11px; color: var(--text-secondary);">Destination</span>
-              <div class="unslop-input-group">
-                <span style="color: #f43f5e; font-size: 12px;">■</span>
-                <input type="text" id="route-dest-input" class="unslop-input" 
-                       placeholder="Destination city or street (e.g. Dharwad, Bagalkot)..." list="common-places" onkeydown="if(event.key==='Enter') executeRouteSearch()">
-                <span class="input-keycap">↵</span>
-              </div>
-            </div>
-
-            <datalist id="common-places">
-              <option value="Dharwad">
-              <option value="Bagalkot">
-              <option value="Hubballi Central">
-              <option value="Belagavi Sambre Airport">
-              <option value="KLE Tech Campus (Vidya Nagar)">
-              <option value="Belagavi Central Railway Station">
-              <option value="Rani Chennamma Circle Hub">
-              <option value="BIMS Civil Hospital Gate">
-              <option value="Goa Panaji">
-              <option value="Bengaluru Majestic">
-            </datalist>
-
-            <button class="btn-primary" onclick="executeRouteSearch()" style="margin-top: 4px;">
-              <span>Calculate optimal path</span>
-            </button>
+        <!-- ROUTE QUERY CARD -->
+        <div class="unslop-card">
+          <div class="card-label-row">
+            <span class="card-label">Navigation Query</span>
+            <button style="background: none; border: none; color: var(--text-muted); font-size: 11px; cursor: pointer;" onclick="clearCurrentRoute()">Clear route</button>
           </div>
 
-          <!-- Route Comparison List -->
-          <div id="routes-comparison-container" style="display: none; flex-direction: column; gap: 8px;">
-            <!-- A* Card -->
-            <div class="route-card selected-fastest" id="card-route-0" onclick="selectRoute(0)">
-              <div class="route-header">
-                <div class="route-title">
-                  <span style="color: #3b82f6;">● A* Optimal</span>
-                  <span style="font-size: 9.5px; background: rgba(59, 130, 246, 0.15); color: #60a5fa; padding: 1px 5px; border-radius: 4px;">RECOMMENDED</span>
-                </div>
-                <span class="route-eta" id="fastest-eta">-- min</span>
-              </div>
-              <p style="font-size: 11.5px; color: var(--text-secondary);" id="fastest-desc">Optimal path via primary highway corridor.</p>
-              <div class="route-stats-grid">
-                <div>
-                  <div class="stat-label">Distance</div>
-                  <div class="stat-val" id="fastest-dist">-- km</div>
-                </div>
-                <div>
-                  <div class="stat-label">Fuel Est.</div>
-                  <div class="stat-val" id="fastest-fuel">-- L</div>
-                </div>
-                <div>
-                  <div class="stat-label">Reliability</div>
-                  <div class="stat-val" style="color: var(--positive);" id="fastest-rel">94%</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Dijkstra Card -->
-            <div class="route-card" id="card-route-1" onclick="selectRoute(1)">
-              <div class="route-header">
-                <div class="route-title">
-                  <span style="color: #a855f7;">● Dijkstra Shortest</span>
-                </div>
-                <span class="route-eta" id="shortest-eta">-- min</span>
-              </div>
-              <p style="font-size: 11.5px; color: var(--text-secondary);" id="shortest-desc">Direct geometric shortest physical distance.</p>
-              <div class="route-stats-grid">
-                <div>
-                  <div class="stat-label">Distance</div>
-                  <div class="stat-val" id="shortest-dist">-- km</div>
-                </div>
-                <div>
-                  <div class="stat-label">Fuel Est.</div>
-                  <div class="stat-val" id="shortest-fuel">-- L</div>
-                </div>
-                <div>
-                  <div class="stat-label">Reliability</div>
-                  <div class="stat-val" style="color: var(--text-secondary);" id="shortest-rel">88%</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Turn by Turn Navigation Box -->
-            <div class="unslop-card" id="nav-steps-box" style="display: none; padding: 10px 14px;">
-              <div class="card-label">Turn-by-turn guidance</div>
-              <div id="nav-steps-list" style="display: flex; flex-direction: column; gap: 6px; font-size: 11.5px; color: var(--text-secondary); max-height: 180px; overflow-y: auto;"></div>
+          <!-- Origin Input -->
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <span style="font-size: 11px; color: var(--text-secondary);">Origin (Default GPS)</span>
+            <div class="unslop-input-group">
+              <span style="color: #3b82f6; font-size: 12px;">●</span>
+              <input type="text" id="route-origin-input" class="unslop-input" 
+                     value="📍 Your Location (Live GPS)" list="common-places" placeholder="Origin city or street...">
+              <button onclick="locateUserGPS()" style="background: none; border: none; color: #3b82f6; cursor: pointer; font-size: 13px;" title="Fetch GPS">📍</button>
             </div>
           </div>
 
-          <!-- Clean Placeholder Notice -->
-          <div id="route-placeholder-notice" style="text-align: center; padding: 24px 14px; color: var(--text-muted); font-size: 12px; background: var(--card); border: 1px dashed var(--border); border-radius: var(--radius);">
-            <div style="font-weight: 500; color: var(--text); margin-bottom: 2px;">Ready for navigation</div>
-            <div>Enter any city or street above to compute multi-factor optimal routes.</div>
+          <!-- Swap Button -->
+          <div style="display: flex; justify-content: center; margin: -4px 0;">
+            <button onclick="swapOriginDest()" style="background: var(--raised); border: 1px solid var(--border); color: var(--text-muted); width: 26px; height: 26px; border-radius: 4px; cursor: pointer;" title="Swap origin and destination">⇅</button>
           </div>
-        </div>
 
-        <!-- VIEW 2: CITY COMMAND CENTER (DASHBOARD) -->
-        <div class="view-panel" id="panel-dashboard">
-          <div class="metric-grid">
-            <div class="metric-box">
-              <span class="stat-label">Simulated vehicles</span>
-              <div class="metric-value" id="dash-veh-count">14,290</div>
-              <div class="metric-change" style="color: var(--positive);">+12% vs last month</div>
-            </div>
-            <div class="metric-box">
-              <span class="stat-label">Network speed</span>
-              <div class="metric-value" id="dash-avg-speed">38.4 km/h</div>
-              <div class="metric-change" style="color: var(--positive);">+4.2% fluid flow</div>
-            </div>
-            <div class="metric-box">
-              <span class="stat-label">Active incidents</span>
-              <div class="metric-value" id="dash-incidents-count">2</div>
-              <div class="metric-change" style="color: var(--negative);">Tracked in SQLite</div>
-            </div>
-            <div class="metric-box">
-              <span class="stat-label">Adaptive signals</span>
-              <div class="metric-value" id="dash-signals-count">23</div>
-              <div class="metric-change" style="color: var(--warning);">Webster coordinated</div>
+          <!-- Destination Input -->
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <span style="font-size: 11px; color: var(--text-secondary);">Destination</span>
+            <div class="unslop-input-group">
+              <span style="color: #f43f5e; font-size: 12px;">■</span>
+              <input type="text" id="route-dest-input" class="unslop-input" 
+                     placeholder="Destination (e.g. Dharwad, Bagalkot, Hubballi)..." list="common-places" onkeydown="if(event.key==='Enter') executeRouteSearch()">
+              <span class="input-keycap">↵</span>
             </div>
           </div>
 
-          <div class="unslop-card">
-            <div class="card-label-row">
-              <span class="card-label">Corridor congestion distribution</span>
-              <span style="font-size: 11px; font-family: var(--font-mono); color: var(--positive);">71% nominal</span>
-            </div>
-            <div style="height: 6px; width: 100%; background: #232325; border-radius: 3px; display: flex; overflow: hidden;">
-              <div style="width: 71%; background: #10b981;"></div>
-              <div style="width: 19%; background: #f59e0b;"></div>
-              <div style="width: 10%; background: #ef4444;"></div>
-            </div>
-            <div style="display: flex; justify-content: space-between; font-size: 10.5px; color: var(--text-muted); font-family: var(--font-mono);">
-              <span>44 Nominal</span>
-              <span>12 Moderate</span>
-              <span>6 Saturated</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- VIEW 3: SIGNAL LAB (WEBSTER HCM & 4-WAY JUNCTION SIMULATOR) -->
-        <div class="view-panel" id="panel-signals">
-          
-          <!-- Interactive 4-Way Junction Visualizer -->
-          <div class="junction-visualizer" id="junction-visualizer">
-            <div class="road-ns"></div>
-            <div class="road-ew"></div>
-            
-            <!-- Intersection Center Phase Badge -->
-            <div class="intersection-center">
-              <span style="font-size: 9px; font-family: var(--font-mono); color: var(--text-muted);">PHASE</span>
-              <span style="font-size: 15px; font-weight: 700; font-family: var(--font-mono); color: #ededed;" id="sim-countdown">32s</span>
-              <span style="font-size: 8px; color: var(--positive);" id="sim-phase-name">N-S GREEN</span>
-            </div>
-
-            <!-- North Approach -->
-            <div class="arm-indicator arm-north">
-              <span class="arm-badge" id="badge-q-north">N: 38 veh</span>
-              <div class="signal-head">
-                <span class="signal-lamp red lit" id="lamp-n-red"></span>
-                <span class="signal-lamp yellow" id="lamp-n-yellow"></span>
-                <span class="signal-lamp green" id="lamp-n-green"></span>
-              </div>
-            </div>
-
-            <!-- South Approach -->
-            <div class="arm-indicator arm-south">
-              <div class="signal-head">
-                <span class="signal-lamp red lit" id="lamp-s-red"></span>
-                <span class="signal-lamp yellow" id="lamp-s-yellow"></span>
-                <span class="signal-lamp green" id="lamp-s-green"></span>
-              </div>
-              <span class="arm-badge" id="badge-q-south">S: 12 veh</span>
-            </div>
-
-            <!-- East Approach -->
-            <div class="arm-indicator arm-east">
-              <div class="signal-head">
-                <span class="signal-lamp red lit" id="lamp-e-red"></span>
-                <span class="signal-lamp yellow" id="lamp-e-yellow"></span>
-                <span class="signal-lamp green" id="lamp-e-green"></span>
-              </div>
-              <span class="arm-badge" id="badge-q-east">E: 44 veh</span>
-            </div>
-
-            <!-- West Approach -->
-            <div class="arm-indicator arm-west">
-              <span class="arm-badge" id="badge-q-west">W: 18 veh</span>
-              <div class="signal-head">
-                <span class="signal-lamp red lit" id="lamp-w-red"></span>
-                <span class="signal-lamp yellow" id="lamp-w-yellow"></span>
-                <span class="signal-lamp green" id="lamp-w-green"></span>
-              </div>
+          <!-- Quick Destination Pills -->
+          <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 2px;">
+            <span style="font-size: 10.5px; color: var(--text-muted); font-family: var(--font-mono);">Popular destinations:</span>
+            <div class="destination-chips-row">
+              <span class="destination-chip" onclick="quickSelectDest('Dharwad')">Dharwad</span>
+              <span class="destination-chip" onclick="quickSelectDest('Bagalkot')">Bagalkot</span>
+              <span class="destination-chip" onclick="quickSelectDest('Hubballi')">Hubballi</span>
+              <span class="destination-chip" onclick="quickSelectDest('Belagavi Sambre Airport')">Belagavi Airport</span>
+              <span class="destination-chip" onclick="quickSelectDest('Goa Panaji')">Goa Panaji</span>
+              <span class="destination-chip" onclick="quickSelectDest('Bengaluru')">Bengaluru</span>
             </div>
           </div>
 
-          <!-- Simulation State Controls -->
-          <div style="display: flex; gap: 6px;">
-            <button class="btn-primary" id="btn-sim-toggle" style="flex: 1;" onclick="toggleSignalSimulation()">
-              <span id="btn-sim-label">▶ Run simulation</span>
-            </button>
-            <button class="btn-secondary" onclick="resetSignalSimulation()">
-              <span>↺ Reset</span>
-            </button>
-          </div>
+          <datalist id="common-places">
+            <option value="Dharwad">
+            <option value="Bagalkot">
+            <option value="Hubballi">
+            <option value="Belagavi Sambre Airport">
+            <option value="KLE Tech Campus (Vidya Nagar)">
+            <option value="Belagavi Central Railway Station">
+            <option value="Rani Chennamma Circle Hub">
+            <option value="BIMS Civil Hospital Gate">
+            <option value="Goa Panaji">
+            <option value="Pune">
+            <option value="Mumbai">
+            <option value="Bengaluru Majestic">
+          </datalist>
 
-          <!-- 4 Directional Queue Tuning Steppers -->
-          <div class="unslop-card">
-            <div class="card-label-row">
-              <span class="card-label">Approach queue lengths (vehicles)</span>
-              <span style="font-size: 10px; color: var(--text-muted); font-family: var(--font-mono);">JNC-14 Chennamma Circle</span>
-            </div>
-
-            <!-- North -->
-            <div class="stepper-row">
-              <span style="font-size: 12px; color: var(--text-secondary);">North (College Rd)</span>
-              <div class="stepper-btns">
-                <button class="step-btn" onclick="adjustQueue('north', -5)">−</button>
-                <span class="step-val" id="val-q-north">38</span>
-                <button class="step-btn" onclick="adjustQueue('north', 5)">+</button>
-              </div>
-            </div>
-
-            <!-- South -->
-            <div class="stepper-row">
-              <span style="font-size: 12px; color: var(--text-secondary);">South (Khanapur Rd)</span>
-              <div class="stepper-btns">
-                <button class="step-btn" onclick="adjustQueue('south', -5)">−</button>
-                <span class="step-val" id="val-q-south">12</span>
-                <button class="step-btn" onclick="adjustQueue('south', 5)">+</button>
-              </div>
-            </div>
-
-            <!-- East -->
-            <div class="stepper-row">
-              <span style="font-size: 12px; color: var(--text-secondary);">East (Civil Hospital Rd)</span>
-              <div class="stepper-btns">
-                <button class="step-btn" onclick="adjustQueue('east', -5)">−</button>
-                <span class="step-val" id="val-q-east">44</span>
-                <button class="step-btn" onclick="adjustQueue('east', 5)">+</button>
-              </div>
-            </div>
-
-            <!-- West -->
-            <div class="stepper-row">
-              <span style="font-size: 12px; color: var(--text-secondary);">West (Camp / Goa Bypass)</span>
-              <div class="stepper-btns">
-                <button class="step-btn" onclick="adjustQueue('west', -5)">−</button>
-                <span class="step-val" id="val-q-west">18</span>
-                <button class="step-btn" onclick="adjustQueue('west', 5)">+</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Webster HCM Optimization Analytics -->
-          <div class="unslop-card">
-            <div class="card-label-row">
-              <span class="card-label">Webster cycle optimization</span>
-              <span style="font-size: 11px; font-weight: 600; color: var(--positive); font-family: var(--font-mono);" id="signal-reduction">-36.2% delay</span>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-              <div style="background: var(--raised); padding: 8px; border-radius: var(--radius-sm);">
-                <div class="stat-label">Baseline Fixed (90s)</div>
-                <div style="font-size: 12.5px; font-family: var(--font-mono); margin-top: 2px;" id="signal-fixed-splits">N-S 40s • E-W 40s</div>
-                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;" id="signal-fixed-wait">Wait: 63.6s</div>
-              </div>
-              <div style="background: var(--raised); padding: 8px; border-radius: var(--radius-sm); border: 1px solid rgba(59, 130, 246, 0.25);">
-                <div class="stat-label" style="color: #60a5fa;">Webster Adaptive</div>
-                <div style="font-size: 12.5px; font-family: var(--font-mono); margin-top: 2px;" id="signal-adaptive-splits">N-S 42s • E-W 48s</div>
-                <div style="font-size: 11px; color: var(--positive); margin-top: 2px;" id="signal-adaptive-wait">Wait: 41.3s</div>
-              </div>
-            </div>
-
-            <!-- Mathematical Rationale -->
-            <div style="font-size: 11px; color: var(--text-muted); line-height: 1.45; border-top: 1px solid var(--border-subtle); padding-top: 6px;" id="signal-explanation">
-              Webster formula Co = (1.5L + 5)/(1 - Y) adjusts cycle to 100s. Critical flow ratio Y = 0.85 prioritizes East-West corridor while maintaining 3s yellow and 2s all-red intergreen conflict prevention.
-            </div>
-          </div>
-        </div>
-
-        <!-- VIEW 4: EMERGENCY GREEN WAVE -->
-        <div class="view-panel" id="panel-emergency">
-          <div class="unslop-card" style="border-left: 3px solid var(--positive);">
-            <div class="card-label-row">
-              <span class="card-label">Active Emergency Corridor</span>
-              <span style="font-size: 11px; color: var(--positive); font-family: var(--font-mono); font-weight: 600;">#EMS-901</span>
-            </div>
-            <div style="font-size: 13px; font-weight: 500;">BIMS Civil Hospital ICU Corridor</div>
-            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px;">
-              <span style="font-size: 11px; color: var(--text-muted);">Estimated time saved:</span>
-              <span style="font-size: 20px; font-weight: 600; font-family: var(--font-mono); color: var(--positive);"><span id="emg-saved">10.3</span> min</span>
-            </div>
-          </div>
-
-          <button class="btn-primary" style="background: #10b981; border-color: #10b981; color: #fff;" onclick="activateGreenWave()">
-            <span>Dispatch ambulance &amp; preempt corridor</span>
+          <button class="btn-primary" onclick="executeRouteSearch()" style="margin-top: 6px;">
+            <span>Calculate optimal path</span>
           </button>
+          
+          <div style="font-size: 10.5px; color: var(--text-muted); text-align: center; margin-top: 2px;">
+            Tip: You can also click anywhere on the map to set destination
+          </div>
+        </div>
 
-          <div class="unslop-card">
-            <div class="card-label">Preempted Junctions</div>
-            <div style="font-size: 11.5px; color: var(--text-secondary); line-height: 1.6;">
-              • <b>JNC-14 Chennamma Circle:</b> Instant green lock (0s delay)<br>
-              • <b>JNC-21 Central Bus Terminal:</b> Approaching clearance<br>
-              • <b>JNC-19 Civil Hospital Gate:</b> Direct emergency ingress
+        <!-- ROUTE COMPARISON CARDS -->
+        <div id="routes-comparison-container" style="display: none; flex-direction: column; gap: 8px;">
+          <!-- A* Card -->
+          <div class="route-card selected-fastest" id="card-route-0" onclick="selectRoute(0)">
+            <div class="route-header">
+              <div class="route-title">
+                <span style="color: #3b82f6;">● A* Optimal</span>
+                <span style="font-size: 9.5px; background: rgba(59, 130, 246, 0.15); color: #60a5fa; padding: 1px 5px; border-radius: 4px;">FASTEST</span>
+              </div>
+              <span class="route-eta" id="fastest-eta">-- min</span>
+            </div>
+            <p style="font-size: 11.5px; color: var(--text-secondary);" id="fastest-desc">Optimal path via primary highway corridor.</p>
+            <div class="route-stats-grid">
+              <div>
+                <div class="stat-label">Distance</div>
+                <div class="stat-val" id="fastest-dist">-- km</div>
+              </div>
+              <div>
+                <div class="stat-label">Fuel Est.</div>
+                <div class="stat-val" id="fastest-fuel">-- L</div>
+              </div>
+              <div>
+                <div class="stat-label">Reliability</div>
+                <div class="stat-val" style="color: var(--positive);" id="fastest-rel">94%</div>
+              </div>
             </div>
           </div>
+
+          <!-- Dijkstra Card -->
+          <div class="route-card" id="card-route-1" onclick="selectRoute(1)">
+            <div class="route-header">
+              <div class="route-title">
+                <span style="color: #a855f7;">● Dijkstra Shortest</span>
+                <span style="font-size: 9.5px; background: rgba(168, 85, 247, 0.15); color: #c084fc; padding: 1px 5px; border-radius: 4px;">DISTANCE</span>
+              </div>
+              <span class="route-eta" id="shortest-eta">-- min</span>
+            </div>
+            <p style="font-size: 11.5px; color: var(--text-secondary);" id="shortest-desc">Direct geometric shortest physical distance.</p>
+            <div class="route-stats-grid">
+              <div>
+                <div class="stat-label">Distance</div>
+                <div class="stat-val" id="shortest-dist">-- km</div>
+              </div>
+              <div>
+                <div class="stat-label">Fuel Est.</div>
+                <div class="stat-val" id="shortest-fuel">-- L</div>
+              </div>
+              <div>
+                <div class="stat-label">Reliability</div>
+                <div class="stat-val" style="color: var(--text-secondary);" id="shortest-rel">88%</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Turn by Turn Navigation Box -->
+          <div class="unslop-card" id="nav-steps-box" style="display: none; padding: 10px 14px;">
+            <div class="card-label">Turn-by-turn guidance</div>
+            <div id="nav-steps-list" style="display: flex; flex-direction: column; gap: 6px; font-size: 11.5px; color: var(--text-secondary); max-height: 180px; overflow-y: auto;"></div>
+          </div>
         </div>
 
-        <!-- VIEW 5: INCIDENTS -->
-        <div class="view-panel" id="panel-incidents">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span class="card-label">Active roadway obstructions</span>
-            <button class="btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="triggerIncidentModal()">+ Report new</button>
-          </div>
-          <div id="admin-incident-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
-        </div>
-
-        <!-- VIEW 6: MAP OVERLAYS -->
-        <div class="view-panel" id="panel-layers">
-          <div class="unslop-card">
-            <div class="card-label">Map Overlays</div>
-            <button class="btn-secondary" id="btn-layer-heatmap" onclick="toggleCongestionOverlay()">Toggle traffic heatmap</button>
-            <button class="btn-secondary" id="btn-layer-signals" onclick="toggleSignalsOverlay()">Toggle signal nodes</button>
-            <button class="btn-primary" onclick="locateUserGPS()">Re-center on live GPS</button>
-          </div>
+        <!-- Clean Placeholder Notice -->
+        <div id="route-placeholder-notice" style="text-align: center; padding: 24px 14px; color: var(--text-muted); font-size: 12px; background: var(--card); border: 1px dashed var(--border); border-radius: var(--radius);">
+          <div style="font-weight: 500; color: var(--text); margin-bottom: 2px;">Ready for navigation</div>
+          <div>Select a popular destination chip or type any city/street to compute real-time optimal routing.</div>
         </div>
 
       </div>
     </div>
   </main>
 
-  <!-- Incident Modal -->
-  <div class="modal-overlay" id="incident-modal">
-    <div class="modal-card">
-      <div style="font-size: 13.5px; font-weight: 600;">Report Roadway Incident</div>
-      
-      <div style="display: flex; flex-direction: column; gap: 4px;">
-        <span class="card-label">Incident Type</span>
-        <select id="report-type" class="unslop-input" style="background: var(--raised); border: 1px solid var(--border); padding: 6px; border-radius: 4px;">
-          <option value="accident">Accident / Collision</option>
-          <option value="roadblock">Roadblock / Construction</option>
-          <option value="hazard">Hazard / Waterlogging</option>
-          <option value="congestion">Severe Gridlock</option>
-        </select>
-      </div>
-
-      <div style="display: flex; flex-direction: column; gap: 4px;">
-        <span class="card-label">Severity Level</span>
-        <select id="report-severity" class="unslop-input" style="background: var(--raised); border: 1px solid var(--border); padding: 6px; border-radius: 4px;">
-          <option value="1">1 - Minor delay</option>
-          <option value="2">2 - Single lane blocked</option>
-          <option value="3" selected>3 - Severe lane blockage</option>
-          <option value="4">4 - Road closed</option>
-          <option value="5">5 - Critical gridlock</option>
-        </select>
-      </div>
-
-      <div style="display: flex; flex-direction: column; gap: 4px;">
-        <span class="card-label">Location Note</span>
-        <input type="text" id="report-desc" class="unslop-input" style="background: var(--raised); border: 1px solid var(--border); padding: 6px; border-radius: 4px;" value="Rani Chennamma Circle Arterial">
-      </div>
-
-      <div style="display: flex; gap: 6px; margin-top: 6px;">
-        <button class="btn-primary" style="flex: 1;" onclick="submitIncident()">Submit to SQLite</button>
-        <button class="btn-secondary" style="flex: 1;" onclick="closeIncidentModal()">Cancel</button>
-      </div>
-    </div>
-  </div>
-
   <div id="toast-container"></div>
 
   <!-- Leaflet Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/socket.io/socket.io.js"></script>
 
   <script>
     // 1. Initialize Map
@@ -1266,69 +790,47 @@
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    // Navigation & Drawer State
-    let currentActiveTab = 'routes';
+    // Drawer state
+    let isDrawerOpen = true;
 
-    function toggleRailTab(tabKey) {
+    function toggleDrawer() {
       const drawer = document.getElementById('main-drawer');
-      const isOpen = drawer.classList.contains('open');
-
-      if (isOpen && currentActiveTab === tabKey) {
-        closeDrawer();
-        return;
+      isDrawerOpen = !isDrawerOpen;
+      if (isDrawerOpen) {
+        drawer.classList.add('open');
+      } else {
+        drawer.classList.remove('open');
       }
-
-      currentActiveTab = tabKey;
-
-      document.querySelectorAll('.rail-btn').forEach(b => b.classList.remove('active'));
-      const activeRailBtn = document.getElementById(`rail-btn-${tabKey}`);
-      if (activeRailBtn) activeRailBtn.classList.add('active');
-
-      document.querySelectorAll('.drawer-tab').forEach(t => t.classList.remove('active'));
-      const activeDrawerTab = document.getElementById(`tab-${tabKey}`);
-      if (activeDrawerTab) activeDrawerTab.classList.add('active');
-
-      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
-      const targetPanel = document.getElementById(`panel-${tabKey}`);
-      if (targetPanel) targetPanel.classList.add('active');
-
-      const titles = {
-        'routes': 'Route Navigator',
-        'dashboard': 'City Overview',
-        'signals': 'Signal Lab (Webster HCM)',
-        'emergency': 'Green Wave Corridor',
-        'incidents': 'Incident Management',
-        'layers': 'Map Layers'
-      };
-      const titleEl = document.getElementById('drawer-main-title');
-      if (titleEl) titleEl.innerText = titles[tabKey] || 'Controls';
-
-      openDrawer();
-    }
-
-    function openDrawer() {
-      const drawer = document.getElementById('main-drawer');
-      drawer.classList.add('open');
       setTimeout(() => map.invalidateSize(), 250);
     }
 
-    function closeDrawer() {
-      const drawer = document.getElementById('main-drawer');
-      drawer.classList.remove('open');
-      document.querySelectorAll('.rail-btn').forEach(b => b.classList.remove('active'));
-      setTimeout(() => map.invalidateSize(), 250);
-    }
-
-    // Live GPS Location
+    // Map Route Polylines and Markers
+    let fastestPoly = L.polyline([], { color: '#3b82f6', weight: 5, opacity: 0.95 }).addTo(map);
+    let shortestPoly = L.polyline([], { color: '#a855f7', weight: 4, opacity: 0.65, dashArray: '5, 8' }).addTo(map);
+    let originMarker = null;
+    let destMarker = null;
     let userGpsMarker = null;
+
     let userGpsCoords = null;
     let customOriginCoords = null;
     let customDestCoords = null;
 
+    // Toast Notification
+    function showToast(msg, type = 'info') {
+      const c = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.innerText = msg;
+      c.appendChild(t);
+      setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 200); }, 3000);
+    }
+
+    // Live GPS Location
     function locateUserGPS() {
       showToast('Connecting to live GPS...');
       if (!navigator.geolocation) {
-        showToast('Geolocation not supported', 'error');
+        showToast('Geolocation not supported, using Belagavi hub', 'error');
+        fallbackGPS();
         return;
       }
 
@@ -1351,85 +853,28 @@
         },
         (err) => {
           console.warn("GPS notice:", err.message);
-          userGpsCoords = { lat: 15.8497, lng: 74.5089, name: "Rani Chennamma Circle Hub" };
-          customOriginCoords = userGpsCoords;
-          const origInput = document.getElementById('route-origin-input');
-          if (origInput) origInput.value = "Rani Chennamma Circle Hub";
+          fallbackGPS();
         },
         { enableHighAccuracy: true, timeout: 8000, maximumAge: 30000 }
       );
     }
 
-    // Map Layers
-    const congestionLayer = L.layerGroup();
-    const incidentsLayer = L.layerGroup().addTo(map);
-    const signalsLayer = L.layerGroup().addTo(map);
-
-    let fastestPoly = L.polyline([], { color: '#3b82f6', weight: 5, opacity: 0.95 }).addTo(map);
-    let shortestPoly = L.polyline([], { color: '#a855f7', weight: 4, opacity: 0.65, dashArray: '5, 8' }).addTo(map);
-    let emergencyPoly = L.polyline([], { color: '#10b981', weight: 7, opacity: 0.95 });
-    let ambulanceMarker = null;
-
-    let isRouteActive = false;
-    let congestionVisible = false;
-    let signalsVisible = true;
-
-    // Toast
-    function showToast(msg, type = 'info') {
-      const c = document.getElementById('toast-container');
-      const t = document.createElement('div');
-      t.className = 'toast';
-      t.innerText = msg;
-      c.appendChild(t);
-      setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 200); }, 3000);
+    function fallbackGPS() {
+      userGpsCoords = { lat: 15.8497, lng: 74.5089, name: "Rani Chennamma Circle Hub" };
+      customOriginCoords = userGpsCoords;
+      const origInput = document.getElementById('route-origin-input');
+      if (origInput) origInput.value = "Rani Chennamma Circle Hub";
+      map.setView([15.8497, 74.5089], 13);
     }
 
-    // Heatmap Overlay
-    async function loadHeatmapOverlay() {
-      try {
-        const res = await fetch('/api/routes/heatmap');
-        const json = await res.json();
-        if (json.data && json.data.edgePredictions) {
-          congestionLayer.clearLayers();
-          json.data.edgePredictions.forEach(edge => {
-            if (edge.coordinates && edge.coordinates.length >= 2) {
-              L.polyline(edge.coordinates, {
-                color: edge.color,
-                weight: 4,
-                opacity: 0.8
-              }).bindPopup(`<b>${edge.name}</b><br>Congestion: ${(edge.congestionIndex * 100).toFixed(0)}%<br>Speed: ~${edge.predictedSpeedKmh} km/h`).addTo(congestionLayer);
-            }
-          });
-        }
-      } catch (e) {
-        console.warn('Heatmap notice', e);
-      }
+    // Quick Select Destination
+    function quickSelectDest(city) {
+      document.getElementById('route-dest-input').value = city;
+      customDestCoords = null; // Let backend resolve city name globally
+      executeRouteSearch();
     }
 
-    function toggleCongestionOverlay() {
-      congestionVisible = !congestionVisible;
-      if (congestionVisible) {
-        loadHeatmapOverlay();
-        map.addLayer(congestionLayer);
-        showToast('Traffic heatmap shown');
-      } else {
-        map.removeLayer(congestionLayer);
-        showToast('Traffic heatmap hidden');
-      }
-    }
-
-    function toggleSignalsOverlay() {
-      signalsVisible = !signalsVisible;
-      if (signalsVisible) {
-        map.addLayer(signalsLayer);
-        showToast('Signals shown');
-      } else {
-        map.removeLayer(signalsLayer);
-        showToast('Signals hidden');
-      }
-    }
-
-    // 2. Global Route Calculation
+    // Resolve Input Helper
     async function resolveInputToParam(val) {
       if (!val) return 'chennamma_circle';
       const vLower = val.toLowerCase();
@@ -1438,16 +883,17 @@
       return found || val;
     }
 
+    // Execute Route Search
     async function executeRouteSearch() {
       const origText = document.getElementById('route-origin-input').value.trim();
       const destText = document.getElementById('route-dest-input').value.trim();
 
       if (!destText) {
-        showToast('Please type a destination', 'error');
+        showToast('Please specify a destination', 'error');
         return;
       }
 
-      showToast(`Calculating path to "${destText}"...`);
+      showToast(`Calculating route to "${destText}"...`);
       let orig = customOriginCoords || await resolveInputToParam(origText);
       let dest = customDestCoords || await resolveInputToParam(destText);
 
@@ -1458,7 +904,7 @@
           body: JSON.stringify({ origin: orig, destination: dest })
         });
         const json = await res.json();
-        if (json.data && json.data.routes) {
+        if (json.data && json.data.routes && json.data.routes.length > 0) {
           const r0 = json.data.routes[0];
           const r1 = json.data.routes[1] || r0;
 
@@ -1470,17 +916,62 @@
           document.getElementById('shortest-eta').innerText = `${r1.etaMinutes} min`;
           document.getElementById('shortest-dist').innerText = `${r1.distanceKm} km`;
           document.getElementById('shortest-fuel').innerText = `${r1.fuelConsumptionLiters} L`;
+          document.getElementById('shortest-rel').innerText = `${r1.reliabilityScore || 88}%`;
 
+          // Update Map Polylines
           if (r0.waypoints && r0.waypoints.length > 0) {
             fastestPoly.setLatLngs(r0.waypoints);
-            if (r1.waypoints) shortestPoly.setLatLngs(r1.waypoints);
-            map.fitBounds(fastestPoly.getBounds(), { padding: [40, 40] });
+            if (r1.waypoints && r1.waypoints.length > 0) {
+              shortestPoly.setLatLngs(r1.waypoints);
+            }
+
+            // Set Origin Marker
+            const startPt = r0.waypoints[0];
+            const endPt = r0.waypoints[r0.waypoints.length - 1];
+
+            if (originMarker) map.removeLayer(originMarker);
+            originMarker = L.circleMarker(startPt, {
+              radius: 7,
+              color: '#3b82f6',
+              fillColor: '#3b82f6',
+              fillOpacity: 1
+            }).bindPopup(`<b>Origin:</b> ${origText}`).addTo(map);
+
+            // Set Destination Marker
+            if (destMarker) map.removeLayer(destMarker);
+            destMarker = L.circleMarker(endPt, {
+              radius: 7,
+              color: '#f43f5e',
+              fillColor: '#f43f5e',
+              fillOpacity: 1
+            }).bindPopup(`<b>Destination:</b> ${destText}`).addTo(map);
+
+            map.fitBounds(fastestPoly.getBounds(), { padding: [50, 50] });
+          }
+
+          // Turn-by-Turn guidance
+          const navBox = document.getElementById('nav-steps-box');
+          const navList = document.getElementById('nav-steps-list');
+          if (r0.turnByTurnInstructions && r0.turnByTurnInstructions.length > 0) {
+            navList.innerHTML = '';
+            r0.turnByTurnInstructions.forEach((step, idx) => {
+              const item = document.createElement('div');
+              item.style.borderBottom = '1px solid var(--border-subtle)';
+              item.style.padding = '4px 0';
+              item.innerText = typeof step === 'string' ? step : `Step ${idx + 1}: ${step.instruction || step}`;
+              navList.appendChild(item);
+            });
+            navBox.style.display = 'flex';
+          } else {
+            navBox.style.display = 'none';
           }
 
           document.getElementById('routes-comparison-container').style.display = 'flex';
           document.getElementById('route-placeholder-notice').style.display = 'none';
-          isRouteActive = true;
-          showToast('Route calculated');
+          selectRoute(0);
+          showToast(`Optimal route found: ${r0.distanceKm} km, ~${r0.etaMinutes} min`);
+        } else {
+          showToast('No route found between points', 'error');
         }
       } catch (e) {
         showToast('Routing failed: ' + e.message, 'error');
@@ -1518,275 +1009,32 @@
     function clearCurrentRoute() {
       fastestPoly.setLatLngs([]);
       shortestPoly.setLatLngs([]);
+      if (originMarker) { map.removeLayer(originMarker); originMarker = null; }
+      if (destMarker) { map.removeLayer(destMarker); destMarker = null; }
       document.getElementById('route-dest-input').value = '';
       document.getElementById('routes-comparison-container').style.display = 'none';
       document.getElementById('route-placeholder-notice').style.display = 'block';
-      isRouteActive = false;
       map.setView([15.855, 74.515], 13);
       showToast('Route cleared');
     }
 
-    // 3. Signal Lab Simulator (Webster Model & 4-Way Approach State Machine)
-    let currentQueues = { north: 38, south: 12, east: 44, west: 18 };
-    let simTimer = null;
-    let simRunning = false;
-    let simPhase = 1; // 1: NS Green, 2: NS Yellow, 3: All-Red, 4: EW Green, 5: EW Yellow, 6: All-Red
-    let simRemainingSec = 30;
-    let currentAdaptiveTimings = { greenNS: 42, greenEW: 48 };
-
-    function adjustQueue(dir, delta) {
-      currentQueues[dir] = Math.max(0, Math.min(150, currentQueues[dir] + delta));
-      document.getElementById(`val-q-${dir}`).innerText = currentQueues[dir];
-      document.getElementById(`badge-q-${dir}`).innerText = `${dir[0].toUpperCase()}: ${currentQueues[dir]} veh`;
-      recalculateSignalTiming();
-    }
-
-    async function recalculateSignalTiming() {
-      try {
-        const res = await fetch('/api/signals/optimize', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            junctionId: "JNC-14",
-            currentQueueLengths: currentQueues
-          })
-        });
-        const json = await res.json();
-        if (json.data) {
-          const d = json.data;
-          currentAdaptiveTimings.greenNS = d.optimizedAdaptiveTiming.greenTimeSec.northSouth;
-          currentAdaptiveTimings.greenEW = d.optimizedAdaptiveTiming.greenTimeSec.eastWest;
-
-          document.getElementById('signal-reduction').innerText = `-${d.waitTimeReductionPercent}% delay`;
-          document.getElementById('signal-fixed-splits').innerText = `N-S ${d.baselineFixedTiming.greenTimeSec.northSouth}s • E-W ${d.baselineFixedTiming.greenTimeSec.eastWest}s`;
-          document.getElementById('signal-fixed-wait').innerText = `Wait: ${d.baselineFixedTiming.avgWaitTimeSec}s`;
-          
-          document.getElementById('signal-adaptive-splits').innerText = `N-S ${d.optimizedAdaptiveTiming.greenTimeSec.northSouth}s • E-W ${d.optimizedAdaptiveTiming.greenTimeSec.eastWest}s`;
-          document.getElementById('signal-adaptive-wait').innerText = `Wait: ${d.optimizedAdaptiveTiming.avgWaitTimeSec}s`;
-
-          if (d.optimizationExplanation) {
-            document.getElementById('signal-explanation').innerText = d.optimizationExplanation;
-          }
-        }
-      } catch (e) {
-        console.warn('Signal calculation notice', e);
-      }
-    }
-
-    function updateSignalLamps(nsState, ewState) {
-      ['n', 's'].forEach(dir => {
-        document.getElementById(`lamp-${dir}-red`).className = 'signal-lamp red' + (nsState === 'red' ? ' lit' : '');
-        document.getElementById(`lamp-${dir}-yellow`).className = 'signal-lamp yellow' + (nsState === 'yellow' ? ' lit' : '');
-        document.getElementById(`lamp-${dir}-green`).className = 'signal-lamp green' + (nsState === 'green' ? ' lit' : '');
-      });
-      ['e', 'w'].forEach(dir => {
-        document.getElementById(`lamp-${dir}-red`).className = 'signal-lamp red' + (ewState === 'red' ? ' lit' : '');
-        document.getElementById(`lamp-${dir}-yellow`).className = 'signal-lamp yellow' + (ewState === 'yellow' ? ' lit' : '');
-        document.getElementById(`lamp-${dir}-green`).className = 'signal-lamp green' + (ewState === 'green' ? ' lit' : '');
-      });
-    }
-
-    function toggleSignalSimulation() {
-      simRunning = !simRunning;
-      const btnLabel = document.getElementById('btn-sim-label');
-      if (simRunning) {
-        btnLabel.innerText = '⏸ Pause simulation';
-        simTimer = setInterval(tickSignalSimulation, 1000);
-      } else {
-        btnLabel.innerText = '▶ Run simulation';
-        clearInterval(simTimer);
-      }
-    }
-
-    function resetSignalSimulation() {
-      clearInterval(simTimer);
-      simRunning = false;
-      document.getElementById('btn-sim-label').innerText = '▶ Run simulation';
-      simPhase = 1;
-      simRemainingSec = currentAdaptiveTimings.greenNS;
-      document.getElementById('sim-countdown').innerText = `${simRemainingSec}s`;
-      document.getElementById('sim-phase-name').innerText = 'N-S GREEN';
-      document.getElementById('sim-phase-name').style.color = '#10b981';
-      updateSignalLamps('green', 'red');
-    }
-
-    function tickSignalSimulation() {
-      simRemainingSec--;
-
-      // Discharge vehicles during green phases
-      if (simPhase === 1) { // NS Green
-        if (currentQueues.north > 0 && Math.random() > 0.3) currentQueues.north--;
-        if (currentQueues.south > 0 && Math.random() > 0.4) currentQueues.south--;
-      } else if (simPhase === 4) { // EW Green
-        if (currentQueues.east > 0 && Math.random() > 0.3) currentQueues.east--;
-        if (currentQueues.west > 0 && Math.random() > 0.4) currentQueues.west--;
-      }
-
-      ['north', 'south', 'east', 'west'].forEach(d => {
-        document.getElementById(`val-q-${d}`).innerText = currentQueues[d];
-        document.getElementById(`badge-q-${d}`).innerText = `${d[0].toUpperCase()}: ${currentQueues[d]} veh`;
-      });
-
-      if (simRemainingSec <= 0) {
-        // State transitions
-        if (simPhase === 1) { // NS Green -> NS Yellow
-          simPhase = 2;
-          simRemainingSec = 3;
-          document.getElementById('sim-phase-name').innerText = 'N-S YELLOW';
-          document.getElementById('sim-phase-name').style.color = '#f59e0b';
-          updateSignalLamps('yellow', 'red');
-        } else if (simPhase === 2) { // NS Yellow -> All-Red
-          simPhase = 3;
-          simRemainingSec = 2;
-          document.getElementById('sim-phase-name').innerText = 'ALL-RED CLEAR';
-          document.getElementById('sim-phase-name').style.color = '#ef4444';
-          updateSignalLamps('red', 'red');
-        } else if (simPhase === 3) { // All-Red -> EW Green
-          simPhase = 4;
-          simRemainingSec = currentAdaptiveTimings.greenEW;
-          document.getElementById('sim-phase-name').innerText = 'E-W GREEN';
-          document.getElementById('sim-phase-name').style.color = '#10b981';
-          updateSignalLamps('red', 'green');
-        } else if (simPhase === 4) { // EW Green -> EW Yellow
-          simPhase = 5;
-          simRemainingSec = 3;
-          document.getElementById('sim-phase-name').innerText = 'E-W YELLOW';
-          document.getElementById('sim-phase-name').style.color = '#f59e0b';
-          updateSignalLamps('red', 'yellow');
-        } else if (simPhase === 5) { // EW Yellow -> All-Red
-          simPhase = 6;
-          simRemainingSec = 2;
-          document.getElementById('sim-phase-name').innerText = 'ALL-RED CLEAR';
-          document.getElementById('sim-phase-name').style.color = '#ef4444';
-          updateSignalLamps('red', 'red');
-        } else if (simPhase === 6) { // All-Red -> NS Green
-          simPhase = 1;
-          simRemainingSec = currentAdaptiveTimings.greenNS;
-          document.getElementById('sim-phase-name').innerText = 'N-S GREEN';
-          document.getElementById('sim-phase-name').style.color = '#10b981';
-          updateSignalLamps('green', 'red');
-        }
-      }
-
-      document.getElementById('sim-countdown').innerText = `${simRemainingSec}s`;
-    }
-
-    // 4. Emergency Corridor
-    async function activateGreenWave() {
-      try {
-        const res = await fetch('/api/emergency/corridor', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            vehicleType: "ambulance", 
-            priorityLevel: 1, 
-            originNode: "chennamma_circle", 
-            hospitalDestinationNode: "bims_hospital" 
-          })
-        });
-        const json = await res.json();
-        if (json.data) {
-          document.getElementById('emg-saved').innerText = json.data.timeSavedMin;
-          if (json.data.corridorWaypoints) {
-            emergencyPoly.setLatLngs(json.data.corridorWaypoints).addTo(map);
-            map.fitBounds(emergencyPoly.getBounds(), { padding: [30, 30] });
-          }
-          showToast('Green wave corridor preempted');
-        }
-      } catch (e) {
-        showToast('Green wave activation notice: ' + e.message, 'error');
-      }
-    }
-
-    // 5. Incident Management
-    function triggerIncidentModal() {
-      document.getElementById('incident-modal').style.display = 'flex';
-    }
-    function closeIncidentModal() {
-      document.getElementById('incident-modal').style.display = 'none';
-    }
-
-    async function loadActiveIncidents() {
-      try {
-        const res = await fetch('/api/incidents/active');
-        const json = await res.json();
-        if (json.data) {
-          const list = document.getElementById('admin-incident-list');
-          list.innerHTML = '';
-          incidentsLayer.clearLayers();
-
-          json.data.forEach(inc => {
-            const row = document.createElement('div');
-            row.className = 'unslop-card';
-            row.style.padding = '10px 12px';
-            row.innerHTML = `
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-weight: 500; font-size: 12px;">${inc.road_name || 'Arterial Obstruction'}</span>
-                <span style="font-size: 10px; background: rgba(239, 68, 68, 0.15); color: #f87171; padding: 2px 6px; border-radius: 4px; font-family: var(--font-mono);">SEV ${inc.severity}</span>
-              </div>
-              <div style="font-size: 11px; color: var(--text-muted);">${inc.description || 'Reported blockage'}</div>
-            `;
-            list.appendChild(row);
-
-            if (inc.lat && inc.lng) {
-              L.circleMarker([inc.lat, inc.lng], { radius: 6, color: '#e5484d', fillColor: '#e5484d', fillOpacity: 0.9 }).addTo(incidentsLayer);
-            }
-          });
-        }
-      } catch (e) {
-        console.warn('Incident load notice', e);
-      }
-    }
-
-    async function submitIncident() {
-      const type = document.getElementById('report-type').value;
-      const severity = parseInt(document.getElementById('report-severity').value);
-      const desc = document.getElementById('report-desc').value;
-
-      try {
-        const res = await fetch('/api/incidents/report', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type, severity, description: desc, roadName: desc, lat: 15.8497, lng: 74.5089 })
-        });
-        if (res.ok) {
-          showToast('Incident recorded to SQLite');
-          closeIncidentModal();
-          loadActiveIncidents();
-        }
-      } catch (e) {
-        showToast('Incident submission notice', 'error');
-      }
-    }
-
-    async function resetDemoData() {
-      try {
-        const res = await fetch('/api/demo/reset', { method: 'POST' });
-        if (res.ok) {
-          showToast('System baseline reset');
-          clearCurrentRoute();
-          loadActiveIncidents();
-          recalculateSignalTiming();
-        }
-      } catch (e) {
-        showToast('Reset notice', 'error');
-      }
-    }
+    // Map Click to Set Destination
+    map.on('click', (e) => {
+      const lat = Number(e.latlng.lat.toFixed(4));
+      const lng = Number(e.latlng.lng.toFixed(4));
+      customDestCoords = { lat, lng, name: `Location (${lat}, ${lng})` };
+      document.getElementById('route-dest-input').value = `Map Point (${lat}, ${lng})`;
+      
+      // Auto open drawer and execute search
+      const drawer = document.getElementById('main-drawer');
+      drawer.classList.add('open');
+      isDrawerOpen = true;
+      executeRouteSearch();
+    });
 
     // Startup Initialization
     window.addEventListener('DOMContentLoaded', () => {
       locateUserGPS();
-      loadActiveIncidents();
-      recalculateSignalTiming();
-      resetSignalSimulation();
-      
-      // Hash Routing
-      if (window.location.hash) {
-        const h = window.location.hash.replace('#', '');
-        if (['routes', 'dashboard', 'signals', 'emergency', 'incidents', 'layers'].includes(h)) {
-          toggleRailTab(h);
-        }
-      }
     });
   </script>
 </body>
