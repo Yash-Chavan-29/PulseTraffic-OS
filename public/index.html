@@ -640,11 +640,10 @@
 
     L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
-    // High-performance Dark Matter Basemap Tiles (No 403 blocks on localhost)
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      maxZoom: 19,
-      subdomains: 'abcd',
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+    // Enterprise Dark Canvas Basemap (Free, No API Key Required, No Watermarks)
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 16,
+      attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'
     }).addTo(map);
 
     // 2. City Graph Simulation (Synthetic 12x12 grid + arterial corridors)
