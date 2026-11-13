@@ -595,8 +595,47 @@ export async function fetchExternalRoute(originCoords, destCoords) {
       }
     }
   } catch (err) {
-    console.error("External routing error:", err.message);
+    console.error("External routing fetch error, falling back to estimation:", err.message);
   }
+
+  // Robust Haversine estimation fallback for any global coordinates
+  try {
+    const dLat = (destCoords[1] - originCoords[1]) * Math.PI / 180;
+    const dLon = (destCoords[0] - originCoords[0]) * Math.PI / 180;
+    const lat1 = originCoords[1] * Math.PI / 180;
+    const lat2 = destCoords[1] * Math.PI / 180;
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const straightKm = 6371 * c;
+    const roadDistKm = Number((Math.max(1, straightKm * 1.32)).toFixed(2));
+    const estimatedMinutes = Number((roadDistKm / 55 * 60).toFixed(1)); // ~55 km/h avg speed
+    
+    // Generate intermediate interpolated waypoints for smooth polyline display
+    const numPoints = 8;
+    const waypoints = [];
+    for (let i = 0; i <= numPoints; i++) {
+      const frac = i / numPoints;
+      waypoints.push([
+        Number((originCoords[1] + (destCoords[1] - originCoords[1]) * frac).toFixed(5)),
+        Number((originCoords[0] + (destCoords[0] - originCoords[0]) * frac).toFixed(5))
+      ]);
+    }
+
+    return {
+      source: 'global_estimation',
+      totalDistanceKm: roadDistKm,
+      estimatedTravelTimeMinutes: estimatedMinutes,
+      waypoints,
+      turnByTurnInstructions: [
+        `Depart towards destination coordinates (${destCoords[1].toFixed(3)}, ${destCoords[0].toFixed(3)})`,
+        `Estimated global highway transit distance: ${roadDistKm} km (~${estimatedMinutes} min)`
+      ]
+    };
+  } catch (e) {
+    console.error("Haversine fallback error:", e.message);
+  }
+
   return null;
 }
 
@@ -611,25 +650,41 @@ export async function calculateMultiFactorRoutes(originParam, destParam, departu
   let rawDestCoords = null;
 
   if (typeof originParam === 'object' && originParam && originParam.lat && originParam.lng) {
-    rawOriginCoords = [originParam.lng, originParam.lat];
+    rawOriginCoords = [Number(originParam.lng), Number(originParam.lat)];
     const nearOrigin = findNearestGraphNode(originParam.lat, originParam.lng);
-    if (nearOrigin) originKey = nearOrigin.key;
+    if (nearOrigin && nearOrigin.distanceMeters < 12000) {
+      originKey = nearOrigin.key;
+    } else {
+      isArbitraryCoordinates = true;
+    }
   } else {
     originKey = resolveNodeKey(originParam);
   }
 
   if (typeof destParam === 'object' && destParam && destParam.lat && destParam.lng) {
-    rawDestCoords = [destParam.lng, destParam.lat];
+    rawDestCoords = [Number(destParam.lng), Number(destParam.lat)];
     const nearDest = findNearestGraphNode(destParam.lat, destParam.lng);
-    if (nearDest) destKey = nearDest.key;
+    if (nearDest && nearDest.distanceMeters < 12000) {
+      destKey = nearDest.key;
+    } else {
+      isArbitraryCoordinates = true;
+    }
   } else {
     destKey = resolveNodeKey(destParam);
+  }
+
+  // Populate coordinates if one or both are standard Belagavi nodes
+  if (!rawOriginCoords && ROAD_NODES[originKey]) {
+    rawOriginCoords = [ROAD_NODES[originKey].lng, ROAD_NODES[originKey].lat];
+  }
+  if (!rawDestCoords && ROAD_NODES[destKey]) {
+    rawDestCoords = [ROAD_NODES[destKey].lng, ROAD_NODES[destKey].lat];
   }
 
   if (rawOriginCoords && rawDestCoords) {
     const nearOrigin = findNearestGraphNode(rawOriginCoords[1], rawOriginCoords[0]);
     const nearDest = findNearestGraphNode(rawDestCoords[1], rawDestCoords[0]);
-    if (nearOrigin.distanceMeters >= 12000 || nearDest.distanceMeters >= 12000) {
+    if (!nearOrigin || nearOrigin.distanceMeters >= 12000 || !nearDest || nearDest.distanceMeters >= 12000) {
       isArbitraryCoordinates = true;
     }
   }
