@@ -1,4 +1,19 @@
-import Database from 'better-sqlite3';
+let Database;
+try {
+  const mod = await import('better-sqlite3');
+  Database = mod.default;
+} catch {
+  const { DatabaseSync } = await import('node:sqlite');
+  Database = class extends DatabaseSync {
+    pragma(str) {
+      try {
+        return this.exec(`PRAGMA ${str}`);
+      } catch (err) {
+        return null;
+      }
+    }
+  };
+}
 import path from 'path';
 import { fileURLToPath } from 'url';
 
