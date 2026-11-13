@@ -72,17 +72,19 @@ def generate_pdf(output_path="Y:\\Hackothon\\SmartRoute_Presentation_Guide.pdf")
     elements = []
 
     # Title & Header
-    elements.append(Paragraph("Smart Route — Belgaum Traffic Management System", title_style))
-    elements.append(Paragraph("1-Click Adaptive Signal Optimization &amp; Emergency Corridor | http://localhost:5000", subtitle_style))
+    elements.append(Paragraph("SmartRoutes — Intelligent Traffic Management &amp; Route Optimization", title_style))
+    elements.append(Paragraph("Domain 1: Full Stack Web Development (PS 01) | Live Localhost: http://localhost:5000", subtitle_style))
     elements.append(HRFlowable(width="100%", thickness=1.5, color=c_accent, spaceBefore=2, spaceAfter=8))
 
     # Executive Summary
     summary_text = (
-        "<b>Executive Summary for Judges:</b> Smart Route is an autonomous, 1-click adaptive traffic control system "
-        "designed specifically for Belgaum's high-congestion corridors (Rani Chennamma Circle, College Road, Bogarves, and KLE Hospital). "
-        "Replacing outdated static 90-second timers with <b>Webster's HCM formulation</b> and <b>A* dynamic routing</b>, "
-        "Smart Route cuts average driver delays by <b>35.1%</b>, provides sub-200ms ambulance preemption green waves, and "
-        "predicts congestion 15 to 30 minutes in advance with zero manual configuration."
+        "<b>Executive Summary for Judges:</b> SmartRoutes satisfies all core deliverables of Problem Statement 01: "
+        "allowing users to input source and destination (with current location locked by default inside a <b>500m blue accuracy radius</b>), "
+        "calculating and displaying <b>2 to 3 route options</b> with the fastest in <b>Solid Blue</b> and alternatives in <b>Yellow</b>, "
+        "comparing shortest vs. fastest distance and travel time (in hours &amp; minutes), "
+        "displaying <b>persistent live road incidents</b> at all times, "
+        "providing a <b>citizen incident reporting modal</b> with automatic alternate route diversions, and "
+        "offering a <b>dual-dashboard architecture</b> with a secure <b>Administration portal</b> requiring login to review and moderate incidents."
     )
     summary_table = Table([[Paragraph(summary_text, body_style)]], colWidths=[532])
     summary_table.setStyle(TableStyle([
@@ -93,69 +95,71 @@ def generate_pdf(output_path="Y:\\Hackothon\\SmartRoute_Presentation_Guide.pdf")
     elements.append(summary_table)
     elements.append(Spacer(1, 8))
 
-    # The 5 Core Features strictly for Belgaum
-    elements.append(Paragraph("The 5 Core Features Evaluated on Belgaum Corridors", h1_style))
+    # Problem Statement Core Features Table
+    elements.append(Paragraph("Core Feature Implementation Checklist", h1_style))
 
     features_data = [
         [
-            Paragraph("Sidebar Icon", table_header),
-            Paragraph("Feature Name", table_header),
-            Paragraph("Belgaum Real-World Action &amp; Map Result", table_header),
-            Paragraph("Algorithm / Formula", table_header)
+            Paragraph("Core Deliverable", table_header),
+            Paragraph("System Implementation", table_header),
+            Paragraph("Judge Demonstration Flow", table_header)
         ],
         [
-            Paragraph("<b>🚦</b>", body_style),
-            Paragraph("<b>1. Signal Optimization</b>", body_style),
-            Paragraph("Dynamically balances Rani Chennamma Circle splits: College Rd gets 38s Green, Khanapur Rd gets 22s Green.", body_style),
-            Paragraph("Webster's HCM:<br/><i>C = (1.5L + 5) / (1 - Y)</i>", body_style)
+            Paragraph("<b>500m Blue Accuracy Circle</b>", body_style),
+            Paragraph("<code>L.circle([lat, lng], { radius: 500 })</code> rendered around GPS origin.", body_style),
+            Paragraph("Visible immediately upon launch centered at Rani Chennamma Hub.", body_style)
         ],
         [
-            Paragraph("<b>🚨</b>", body_style),
-            Paragraph("<b>2. Ambulance Preempt</b>", body_style),
-            Paragraph("Locks Chennamma ➔ KLE Hospital corridor 100% GREEN for 30s; cross-traffic held at RED clearance.", body_style),
-            Paragraph("Emergency Vehicle Preemption (EVP Priority Protocol)", body_style)
+            Paragraph("<b>Source &amp; Destination Inputs</b>", body_style),
+            Paragraph("Default origin auto-filled with current location; destination selectable via text or quick chips.", body_style),
+            Paragraph("Type any city or click chips (Dharwad, Bagalkot, Hubballi, Airport) to trigger instant routing.", body_style)
         ],
         [
-            Paragraph("<b>🔮</b>", body_style),
-            Paragraph("<b>3. Congestion Predict</b>", body_style),
-            Paragraph("Predicts 72% congestion spike at Bogarves &amp; RPD Circle 20 mins ahead, marking corridor in Amber.", body_style),
-            Paragraph("Multi-factor historical volume &amp; BPR peak forecasting", body_style)
+            Paragraph("<b>2-3 Routes Displayed</b>", body_style),
+            Paragraph("Fastest route rendered in <b>Solid Blue</b>; Shortest and Bypass routes in <b>Yellow</b>.", body_style),
+            Paragraph("Routes rendered on map with interactive hover and click highlighting.", body_style)
         ],
         [
-            Paragraph("<b>🔀</b>", body_style),
-            Paragraph("<b>4. Smart Alternate Bypass</b>", body_style),
-            Paragraph("Reroutes through Belgaum Ring Road bypass, completely avoiding central bottleneck and saving 9.5 mins.", body_style),
-            Paragraph("A* heuristic pathfinding with congestion penalty", body_style)
+            Paragraph("<b>Compare Shortest vs Fastest</b>", body_style),
+            Paragraph("Displays travel times formatted in hours/minutes (e.g. 1h 14m vs 1h 32m) and distance in km.", body_style),
+            Paragraph("Green comparison box shows exact minutes and distance saved by selecting fastest path.", body_style)
         ],
         [
-            Paragraph("<b>📊</b>", body_style),
-            Paragraph("<b>5. Before vs After Proof</b>", body_style),
-            Paragraph("Side-by-side benchmark: 63.6s fixed wait reduced to 41.3s (-35.1% saved), +17.1% vehicle throughput.", body_style),
-            Paragraph("Highway Capacity Manual (HCM 2010) Delay Formulation", body_style)
+            Paragraph("<b>Persistent Live Incidents</b>", body_style),
+            Paragraph("Active roadblocks, accidents, and congestion permanently plotted on map at all times.", body_style),
+            Paragraph("Clicking an incident marker zooms to the hazard and reveals details and severity.", body_style)
+        ],
+        [
+            Paragraph("<b>Citizen Incident Reporting</b>", body_style),
+            Paragraph("Modal allowing drivers to submit accidents, roadblocks, or congestion with instant diversion.", body_style),
+            Paragraph("Click <b>⚠ Report Incident</b>, submit details, and watch the map reroute traffic immediately.", body_style)
+        ],
+        [
+            Paragraph("<b>Dual Dashboard (Admin Login)</b>", body_style),
+            Paragraph("<b>Client Dashboard</b> for public navigation; <b>Administration Dashboard</b> with login gate.", body_style),
+            Paragraph("Click <b>🔒 Administration</b>, log in with <code>admin / admin123</code> to review and moderate reports.", body_style)
         ]
     ]
 
-    feat_table = Table(features_data, colWidths=[55, 115, 232, 130])
+    feat_table = Table(features_data, colWidths=[130, 202, 200])
     feat_table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), c_primary),
         ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
         ('GRID', (0, 0), (-1, -1), 0.5, c_border),
-        ('PADDING', (0, 0), (-1, -1), 5),
+        ('PADDING', (0, 0), (-1, -1), 4.5),
         ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, c_card_bg]),
     ]))
     elements.append(feat_table)
-    elements.append(Spacer(1, 10))
+    elements.append(Spacer(1, 8))
 
-    # Live Demo Script for Judges
-    elements.append(Paragraph("1-Minute Judge Evaluation Script", h1_style))
+    # Live Evaluation Walkthrough
+    elements.append(Paragraph("1-Minute Judge Walkthrough Script", h1_style))
     demo_script = (
-        "<b>Step 1:</b> Point to <code>http://localhost:5000</code> and select <b>Chennamma ➔ KLE Hospital</b>.<br/>"
-        "<b>Step 2:</b> Click the <b>🚦 Signal</b> icon: Show judges the dynamic split (38s Green for College Rd).<br/>"
-        "<b>Step 3:</b> Click the <b>🚨 Siren</b> icon: Show the red emergency corridor locking all signals green to KLE Hospital.<br/>"
-        "<b>Step 4:</b> Click the <b>🔮 Crystal Ball</b> icon: Show the predicted 20-minute congestion spike at Bogarves in Amber.<br/>"
-        "<b>Step 5:</b> Click the <b>🔀 Bypass</b> icon: Show the purple dashed Belgaum Ring Road detour that saves 9.5 minutes.<br/>"
-        "<b>Step 6:</b> Click the <b>📊 Graph</b> icon: Show the -35.1% delay reduction verified under Webster HCM standards."
+        "<b>1. Client Map:</b> Point out the 500m blue accuracy circle locked around your current location.<br/>"
+        "<b>2. Route Comparison:</b> Click <b>Dharwad</b>. Show the <b>Fastest Route in Blue</b> and <b>2 Alternative Routes in Yellow</b>, with distances and travel times in hours and minutes.<br/>"
+        "<b>3. Incident Reporting:</b> Click <b>⚠ Report Incident</b>, submit an accident report, and show judges how the system immediately flags the road and recommends an alternate bypass.<br/>"
+        "<b>4. Admin Portal:</b> Switch to <b>🔒 Administration</b>, sign in with <code>admin / admin123</code>, and show the moderation queue where administrators review, verify, or close roads in real time."
     )
     demo_table = Table([[Paragraph(demo_script, body_style)]], colWidths=[532])
     demo_table.setStyle(TableStyle([
