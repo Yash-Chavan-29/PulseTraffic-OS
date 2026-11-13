@@ -972,13 +972,35 @@
 
     L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
-    // Reliable CARTO Dark Matter Tile Server
-    const cartoDarkUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-    const baseLayer = L.tileLayer(cartoDarkUrl, {
-      subdomains: 'abcd',
-      maxZoom: 19,
-      attribution: '© OpenStreetMap © CARTO'
+    // High-contrast Dark Basemap with zero watermarks (Esri Dark Canvas + Mapbox upgrade)
+    const esriDarkUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
+    let currentBaseLayer = L.tileLayer(esriDarkUrl, {
+      maxZoom: 18,
+      attribution: '© Esri, HERE, Garmin, © OpenStreetMap'
     }).addTo(map);
+
+    // Dynamic upgrade to Mapbox Dark v11 if token is available
+    fetch('/api/config')
+      .then(res => res.json())
+      .then(cfg => {
+        if (cfg && cfg.mapboxToken) {
+          const mapboxDark = `https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/512/{z}/{x}/{y}?access_token=${cfg.mapboxToken}`;
+          const mbLayer = L.tileLayer(mapboxDark, {
+            tileSize: 512,
+            zoomOffset: -1,
+            maxZoom: 19,
+            attribution: '© Mapbox © OpenStreetMap'
+          });
+          mbLayer.on('load', () => {
+            if (currentBaseLayer) {
+              map.removeLayer(currentBaseLayer);
+              currentBaseLayer = mbLayer;
+            }
+          });
+          mbLayer.addTo(map);
+        }
+      })
+      .catch(err => console.log('Using default Esri Dark Canvas basemap'));
 
     // Re-invalidate size to guarantee zero blank screens
     setTimeout(() => { map.invalidateSize(); }, 250);
