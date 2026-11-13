@@ -18,8 +18,8 @@
       "body": {
         "type": "accident",
         "severity": 3,
-        "location": { "lat": 12.985, "lng": 77.602, "roadSegmentId": "SEG-42" },
-        "description": "Multi-car collision blocking 2 outbound lanes",
+        "location": { "lat": 15.8497, "lng": 74.5089, "roadSegmentId": "BEL-CHEN-01" },
+        "description": "Multi-car collision blocking College Road near Rani Chennamma Circle",
         "reportedBy": "Citizen-4819"
       }
     },
@@ -43,12 +43,12 @@
       "body": {
         "vehicleType": "ambulance",
         "priorityLevel": 1,
-        "originNode": 14,
-        "hospitalDestinationNode": 88
+        "originNode": "chennamma_circle",
+        "hospitalDestinationNode": "bims_hospital"
       }
     },
     "congestionHeatmap": {
-      "url": "http://localhost:5000/api/predictions/heatmap",
+      "url": "http://localhost:5000/api/routes/heatmap",
       "method": "GET"
     }
   }

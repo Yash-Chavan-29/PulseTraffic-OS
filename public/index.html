@@ -3,41 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PulseTraffic OS // Intelligent Traffic Management (PS 01)</title>
+  <title>PulseTraffic OS // City Traffic Command Centre</title>
   
-  <!-- Typography & Icons -->
+  <!-- Typography & Font Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   
   <!-- Leaflet Map CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
+  <!-- Chart.js for Live Analytics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     :root {
-      --bg: #090a0f;
-      --panel: #11141c;
-      --panel-elevated: #161a24;
-      --panel-glass: rgba(17, 20, 28, 0.94);
+      --bg: #0b0f19;
+      --card-bg: rgba(17, 24, 39, 0.94);
+      --card-elevated: rgba(30, 41, 59, 0.85);
       --border: rgba(255, 255, 255, 0.08);
-      --border-focus: rgba(255, 255, 255, 0.2);
+      --border-focus: rgba(59, 130, 246, 0.5);
       --text: #f8fafc;
-      --text-muted: #8b95a5;
-      --text-dim: #4b5565;
-      --accent-blue: #3b82f6;
-      --accent-cyan: #06b6d4;
-      --accent-emerald: #10b981;
-      --accent-amber: #f59e0b;
-      --accent-rose: #f43f5e;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --blue: #3b82f6;
+      --emerald: #10b981;
+      --amber: #f59e0b;
+      --rose: #f43f5e;
+      --purple: #a855f7;
       --radius: 12px;
-      --radius-sm: 8px;
+      --shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
       -webkit-font-smoothing: antialiased;
     }
 
@@ -50,168 +52,226 @@
       flex-direction: column;
     }
 
-    /* Top Navigation Bar */
+    /* Top Command Header */
     header {
-      height: 56px;
+      height: 60px;
+      background: rgba(11, 15, 25, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
-      background: var(--panel);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 20px;
-      z-index: 1000;
+      padding: 0 24px;
+      z-index: 1100;
     }
 
-    .brand-section {
+    .brand-group {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
     }
 
-    .brand-badge {
-      width: 30px;
-      height: 30px;
-      background: #ffffff;
-      color: #090a0f;
-      font-weight: 700;
-      font-size: 14px;
-      font-family: 'Geist Mono', monospace;
-      border-radius: 8px;
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      border-radius: 9px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
+      font-weight: 800;
+      font-size: 15px;
+      color: #fff;
+      box-shadow: 0 0 16px rgba(37, 99, 235, 0.4);
     }
 
-    .brand-title {
-      font-size: 14px;
-      font-weight: 600;
+    .brand-text h1 {
+      font-size: 15px;
+      font-weight: 700;
       letter-spacing: -0.01em;
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .simulated-pill {
-      font-family: 'Geist Mono', monospace;
-      font-size: 11px;
-      font-weight: 500;
-      background: rgba(59, 130, 246, 0.12);
-      color: #60a5fa;
-      border: 1px solid rgba(59, 130, 246, 0.3);
+    .telemetry-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
       padding: 2px 8px;
       border-radius: 9999px;
+      font-weight: 600;
+      background: rgba(16, 185, 129, 0.12);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
 
-    /* Navigation Tabs */
-    .nav-tabs {
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+      animation: pulse 1.8s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.3); }
+    }
+
+    .header-nav {
       display: flex;
-      background: var(--bg);
+      background: rgba(0, 0, 0, 0.3);
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 3px;
-      gap: 2px;
+      gap: 3px;
     }
 
-    .tab-item {
-      padding: 6px 14px;
-      font-size: 12.5px;
-      font-weight: 500;
-      color: var(--text-muted);
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    .nav-btn {
       background: transparent;
       border: none;
+      color: var(--text-muted);
+      font-size: 12.5px;
+      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: 6px;
+      cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 7px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .tab-item:hover {
-      color: #ffffff;
+    .nav-btn:hover {
+      color: #fff;
     }
 
-    .tab-item.active {
-      background: var(--panel-elevated);
-      color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    .nav-btn.active {
+      background: #1e293b;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
-    .top-meta {
+    .header-stats {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 20px;
+      font-family: 'JetBrains Mono', monospace;
       font-size: 12px;
-      font-family: 'Geist Mono', monospace;
       color: var(--text-muted);
     }
 
-    .system-status {
+    .header-stat-item {
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--accent-emerald);
-      box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
-      animation: pulseDot 2s infinite ease-in-out;
+    .header-stat-item strong {
+      color: #fff;
+      font-weight: 600;
     }
 
-    @keyframes pulseDot {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.3); opacity: 0.7; }
-    }
-
-    /* Main Workspace Layout */
-    .app-main {
+    /* Main Workspace */
+    .workspace {
       flex: 1;
-      display: flex;
       position: relative;
       overflow: hidden;
     }
 
-    /* Left Control Drawer */
-    .control-drawer {
+    /* Fullscreen Leaflet Map */
+    #city-map {
+      width: 100%;
+      height: 100%;
+      background: #090d16;
+    }
+
+    .leaflet-tile-pane {
+      filter: none !important;
+    }
+
+    /* Google Maps Floating Command Panel */
+    .floating-panel {
       position: absolute;
       top: 16px;
       left: 16px;
       bottom: 16px;
-      width: 440px;
-      background: var(--panel-glass);
-      backdrop-filter: blur(24px) saturate(180%);
-      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      width: 430px;
+      background: var(--card-bg);
+      backdrop-filter: blur(28px) saturate(190%);
+      -webkit-backdrop-filter: blur(28px) saturate(190%);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       z-index: 1000;
-      box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.75);
+      box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
     }
 
-    .drawer-header {
+    .floating-panel.collapsed {
+      transform: translateX(-470px);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .panel-toggle-btn {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      z-index: 999;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .panel-head {
       padding: 16px 20px;
       border-bottom: 1px solid var(--border);
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      background: rgba(255, 255, 255, 0.015);
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.02);
     }
 
-    .drawer-title-group h2 {
+    .panel-head-titles h2 {
       font-size: 15px;
-      font-weight: 600;
+      font-weight: 700;
       letter-spacing: -0.01em;
     }
+    .panel-head-titles p {
+      font-size: 11.5px;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
 
-    .drawer-body {
+    .close-panel-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 4px;
+    }
+    .close-panel-btn:hover { color: #fff; }
+
+    .panel-scroll-content {
       flex: 1;
       overflow-y: auto;
       padding: 18px 20px;
@@ -220,188 +280,73 @@
       gap: 16px;
     }
 
-    /* Custom Scrollbar */
-    .drawer-body::-webkit-scrollbar {
+    .panel-scroll-content::-webkit-scrollbar {
       width: 4px;
     }
-    .drawer-body::-webkit-scrollbar-thumb {
+    .panel-scroll-content::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.1);
       border-radius: 4px;
     }
 
-    /* View Panels */
-    .view-panel {
+    /* Views */
+    .tab-view {
       display: none;
       flex-direction: column;
       gap: 16px;
     }
-    .view-panel.active {
+    .tab-view.active {
       display: flex;
     }
 
-    /* --- View 0: Executive City Dashboard --- */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .kpi-card {
-      background: var(--panel-elevated);
+    /* Search & Autocomplete Input */
+    .search-card {
+      background: rgba(0, 0, 0, 0.35);
       border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .kpi-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.6), transparent);
-    }
-
-    .kpi-title {
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .kpi-val {
-      font-size: 20px;
-      font-weight: 700;
-      font-family: 'Geist Mono', monospace;
-      color: #ffffff;
-    }
-
-    .kpi-status {
-      font-size: 10.5px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      margin-top: 2px;
-    }
-
-    .quick-preset-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-muted);
-      margin-top: 6px;
-    }
-
-    .quick-preset-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .preset-chip {
-      background: var(--panel-elevated);
-      border: 1px solid var(--border);
-      padding: 10px 14px;
-      border-radius: 8px;
-      font-size: 12px;
-      color: var(--text);
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: all 0.2s ease;
-    }
-
-    .preset-chip:hover {
-      background: rgba(59, 130, 246, 0.12);
-      border-color: rgba(59, 130, 246, 0.4);
-      transform: translateX(3px);
-    }
-
-    /* Global Search Box */
-    .search-box-wrapper {
-      position: relative;
-      margin-bottom: 2px;
-    }
-
-    .search-input {
-      width: 100%;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      color: var(--text);
-      font-size: 12.5px;
-      padding: 10px 12px 10px 36px;
-      border-radius: 8px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    .search-input:focus {
-      border-color: var(--accent-blue);
-      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 14px;
-      color: var(--text-dim);
-    }
-
-    /* Route Form Inputs */
-    .route-input-group {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+      border-radius: 10px;
       padding: 4px;
       display: flex;
       flex-direction: column;
     }
 
-    .input-row {
+    .search-row {
       display: flex;
       align-items: center;
-      padding: 8px 12px;
       gap: 10px;
+      padding: 9px 12px;
     }
 
-    .node-pin {
+    .search-pin {
       width: 10px;
       height: 10px;
       border-radius: 50%;
       flex-shrink: 0;
     }
-    .pin-source { background: var(--accent-blue); box-shadow: 0 0 8px var(--accent-blue); }
-    .pin-dest { background: var(--accent-emerald); box-shadow: 0 0 8px var(--accent-emerald); }
+    .search-pin.blue { background: var(--blue); box-shadow: 0 0 10px var(--blue); }
+    .search-pin.emerald { background: var(--emerald); box-shadow: 0 0 10px var(--emerald); }
 
-    .node-select {
+    .search-select {
       background: transparent;
       border: none;
       color: var(--text);
-      font-size: 12.5px;
+      font-size: 13px;
       font-weight: 500;
       width: 100%;
       outline: none;
       cursor: pointer;
     }
 
-    .node-select option {
-      background: var(--panel-elevated);
-      color: var(--text);
+    .search-select option {
+      background: #1e293b;
+      color: #fff;
     }
 
-    .input-divider {
+    .search-divider {
       height: 1px;
       background: var(--border);
-      margin: 0 12px;
+      margin: 0 10px;
     }
 
-    /* Time Pills */
+    /* Departure Pill Row */
     .departure-row {
       display: flex;
       justify-content: space-between;
@@ -416,104 +361,86 @@
     }
 
     .time-pill {
-      background: var(--panel-elevated);
+      background: var(--card-elevated);
       border: 1px solid var(--border);
       color: var(--text-muted);
-      font-family: 'Geist Mono', monospace;
+      font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
-      padding: 5px 10px;
+      padding: 4px 10px;
       border-radius: 6px;
       cursor: pointer;
       transition: all 0.2s;
     }
 
     .time-pill.selected {
-      background: rgba(59, 130, 246, 0.15);
-      border-color: var(--accent-blue);
+      background: rgba(59, 130, 246, 0.18);
+      border-color: var(--blue);
       color: #93c5fd;
     }
 
     /* Buttons */
-    .action-btn-primary {
+    .primary-btn {
       width: 100%;
       padding: 12px;
       background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 8px;
-      color: #ffffff;
+      color: #fff;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
     }
-
-    .action-btn-primary:hover {
+    .primary-btn:hover {
       transform: translateY(-1px);
-      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.45);
+      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.5);
     }
 
-    .action-btn-emerald {
-      background: linear-gradient(180deg, #059669 0%, #047857 100%);
-      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35);
-    }
-
-    /* Specular Route Cards */
-    .routes-container {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .specular-card {
-      background: var(--panel-elevated);
+    /* Route Cards */
+    .route-card {
+      background: var(--card-elevated);
       border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+      border-radius: 10px;
       padding: 14px;
-      position: relative;
       cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.2s ease;
+      position: relative;
     }
 
-    .specular-card:hover {
-      border-color: var(--border-focus);
+    .route-card:hover {
+      border-color: rgba(255, 255, 255, 0.2);
       transform: translateY(-2px);
     }
 
-    .specular-card.active-fastest {
-      border-color: rgba(59, 130, 246, 0.6);
-      background: linear-gradient(180deg, rgba(37, 99, 235, 0.08) 0%, rgba(17, 20, 28, 0.6) 100%);
-      box-shadow: 0 8px 24px -6px rgba(37, 99, 235, 0.25);
+    .route-card.selected-route {
+      border-color: var(--blue);
+      background: linear-gradient(180deg, rgba(37, 99, 235, 0.12) 0%, rgba(30, 41, 59, 0.7) 100%);
+      box-shadow: 0 8px 24px -6px rgba(37, 99, 235, 0.3);
     }
 
-    .specular-card.active-shortest {
-      border-color: rgba(16, 185, 129, 0.6);
-      background: linear-gradient(180deg, rgba(16, 185, 129, 0.08) 0%, rgba(17, 20, 28, 0.6) 100%);
-      box-shadow: 0 8px 24px -6px rgba(16, 185, 129, 0.25);
-    }
-
-    .route-header {
+    .route-card-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 6px;
     }
 
-    .route-name-badge {
+    .route-title {
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 700;
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .rec-badge {
+    .route-badge {
+      font-family: 'JetBrains Mono', monospace;
       font-size: 10px;
-      font-family: 'Geist Mono', monospace;
       padding: 2px 6px;
       border-radius: 4px;
       background: rgba(16, 185, 129, 0.15);
@@ -524,10 +451,10 @@
     .route-eta {
       font-size: 18px;
       font-weight: 700;
-      font-family: 'Geist Mono', monospace;
+      font-family: 'JetBrains Mono', monospace;
     }
 
-    .route-stats-grid {
+    .route-metrics-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 8px;
@@ -536,72 +463,138 @@
       border-top: 1px solid var(--border);
     }
 
-    .stat-col {
+    .metric-col {
       display: flex;
       flex-direction: column;
       gap: 2px;
     }
-
-    .stat-label {
+    .metric-label {
       font-size: 10px;
-      font-weight: 500;
       color: var(--text-dim);
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
-
-    .stat-val {
+    .metric-val {
       font-size: 12px;
       font-weight: 600;
-      font-family: 'Geist Mono', monospace;
-      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
     }
 
-    /* Dynamic Reroute Alert Banner */
-    .reroute-banner {
-      background: rgba(244, 63, 94, 0.12);
-      border: 1px solid rgba(244, 63, 94, 0.35);
+    /* Turn-by-Turn Collapsible Box */
+    .turn-steps-box {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 12px;
+      padding: 10px 12px;
       display: flex;
       flex-direction: column;
       gap: 6px;
-      animation: alertPulse 2s infinite ease-in-out;
+      max-height: 140px;
+      overflow-y: auto;
     }
-
-    @keyframes alertPulse {
-      0%, 100% { border-color: rgba(244, 63, 94, 0.35); }
-      50% { border-color: rgba(244, 63, 94, 0.7); }
-    }
-
-    .reroute-banner-top {
+    .step-item {
+      font-size: 11.5px;
+      color: var(--text-muted);
       display: flex;
-      justify-content: space-between;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    /* Physical Animated Traffic Light Fixture */
+    .traffic-fixture {
+      background: #0f172a;
+      border: 2px solid #334155;
+      border-radius: 36px;
+      padding: 14px 18px;
+      display: flex;
       align-items: center;
-      font-size: 12px;
-      font-weight: 600;
-      color: #fb7185;
+      justify-content: space-around;
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.8), 0 8px 24px rgba(0, 0, 0, 0.6);
+      margin: 8px 0;
     }
 
-    .reroute-btn {
-      background: #f43f5e;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 4px;
-      transition: background 0.2s;
+    .fixture-light {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #1e293b;
+      border: 1px solid rgba(0, 0, 0, 0.4);
+      transition: all 0.3s ease;
     }
 
-    /* --- Custom iOS / Stitch Modern Toggle Switches --- */
-    .map-hud {
+    .fixture-light.red.active {
+      background: #ef4444;
+      box-shadow: 0 0 20px #ef4444;
+    }
+    .fixture-light.yellow.active {
+      background: #f59e0b;
+      box-shadow: 0 0 20px #f59e0b;
+    }
+    .fixture-light.green.active {
+      background: #10b981;
+      box-shadow: 0 0 24px #10b981;
+    }
+
+    .countdown-circle {
+      text-align: center;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .countdown-val {
+      font-size: 26px;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      color: #34d399;
+    }
+
+    /* Live Legend in Bottom-Right */
+    .map-legend {
+      position: absolute;
+      bottom: 24px;
+      right: 24px;
+      background: var(--card-bg);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 1000;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6);
+      font-size: 11.5px;
+    }
+
+    .legend-title {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .legend-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-muted);
+    }
+
+    .legend-bar {
+      width: 22px;
+      height: 4px;
+      border-radius: 2px;
+    }
+
+    /* Modern Toggle Switches in HUD (Top-Right) */
+    .hud-controls {
       position: absolute;
       top: 16px;
       right: 16px;
-      background: var(--panel-glass);
+      background: var(--card-bg);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--border);
@@ -609,131 +602,80 @@
       padding: 12px 16px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       z-index: 1000;
       box-shadow: 0 16px 32px rgba(0, 0, 0, 0.5);
-      min-width: 220px;
-    }
-
-    .hud-title {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 6px;
+      min-width: 210px;
     }
 
     .hud-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 12.5px;
-      font-weight: 500;
+      font-size: 12px;
+      font-weight: 600;
       color: var(--text);
     }
 
-    /* iOS Animated Switch Slider */
     .switch {
       position: relative;
       display: inline-block;
-      width: 40px;
-      height: 22px;
-      flex-shrink: 0;
+      width: 38px;
+      height: 20px;
     }
-
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
+    .switch input { opacity: 0; width: 0; height: 0; }
     .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
+      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
       background-color: rgba(255, 255, 255, 0.12);
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      border-radius: 22px;
+      border-radius: 20px;
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
-
     .slider:before {
-      position: absolute;
-      content: "";
-      height: 16px;
-      width: 16px;
-      left: 3px;
-      bottom: 2px;
-      background-color: #ffffff;
+      position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 2px;
+      background-color: #fff;
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       border-radius: 50%;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.4);
     }
-
     input:checked + .slider {
-      background-color: var(--accent-blue);
+      background-color: var(--blue);
       border-color: #60a5fa;
-      box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
     }
-
-    input:checked + .slider.slider-emerald {
-      background-color: var(--accent-emerald);
+    input:checked + .slider.green {
+      background-color: var(--emerald);
       border-color: #34d399;
-      box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
     }
-
     input:checked + .slider:before {
       transform: translateX(18px);
     }
 
-    /* Fullscreen Leaflet Map */
-    #city-map {
-      flex: 1;
-      height: 100%;
-      background: #090a0f;
-    }
-
-    /* Leaflet Dark Filter override */
-    .leaflet-tile-pane {
-      filter: none !important;
-    }
-
-    /* Interactive Click Popup */
-    .custom-map-popup .leaflet-popup-content-wrapper {
-      background: var(--panel-elevated);
-      color: var(--text);
-      border: 1px solid var(--border-focus);
-      border-radius: 10px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
-    }
-    .custom-map-popup .leaflet-popup-tip {
-      background: var(--panel-elevated);
-    }
-    .popup-actions {
+    /* Belagavi Quick Preset Chips */
+    .preset-container {
       display: flex;
       flex-direction: column;
       gap: 6px;
-      margin-top: 8px;
     }
-    .popup-btn {
-      background: rgba(255, 255, 255, 0.06);
+    .preset-pill {
+      background: var(--card-elevated);
       border: 1px solid var(--border);
-      color: var(--text);
-      padding: 6px 10px;
-      font-size: 11px;
-      border-radius: 5px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 11.5px;
       cursor: pointer;
-      text-align: left;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       transition: all 0.2s;
     }
-    .popup-btn:hover {
-      background: var(--accent-blue);
-      color: white;
+    .preset-pill:hover {
+      border-color: var(--blue);
+      background: rgba(59, 130, 246, 0.12);
     }
 
-    /* Incident Modal */
+    /* Modal */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -744,351 +686,388 @@
       align-items: center;
       justify-content: center;
     }
-
-    .modal-card {
+    .modal-box {
       width: 420px;
-      background: var(--panel);
-      border: 1px solid var(--border-focus);
-      border-radius: var(--radius);
+      background: #111827;
+      border: 1px solid var(--border);
+      border-radius: 12px;
       padding: 24px;
       display: flex;
       flex-direction: column;
       gap: 16px;
-      box-shadow: 0 32px 64px rgba(0, 0, 0, 0.8);
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .form-group label {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-muted);
-    }
-    .form-group input, .form-group select, .form-group textarea {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 8px 12px;
-      color: var(--text);
-      font-size: 13px;
-      outline: none;
+      box-shadow: 0 32px 64px rgba(0,0,0,0.8);
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Navigation Header -->
+  <!-- Top Enterprise Command Header -->
   <header>
-    <div class="brand-section">
-      <div class="brand-badge">PT</div>
-      <div class="brand-title">
-        <span>PulseTraffic OS</span>
-        <span class="simulated-pill">Simulated Traffic Platform</span>
+    <div class="brand-group">
+      <div class="brand-icon">PT</div>
+      <div class="brand-text">
+        <h1>
+          <span>PulseTraffic Command Centre</span>
+          <span class="telemetry-badge"><span class="live-dot"></span> SYSTEM ONLINE</span>
+        </h1>
       </div>
     </div>
 
-    <!-- Mode Tabs -->
-    <div class="nav-tabs">
-      <button class="tab-item active" onclick="switchView('dashboard')">
-        <span>📊 City Dashboard</span>
+    <!-- Mode Navigation Tabs -->
+    <div class="header-nav">
+      <button class="nav-btn active" onclick="switchNav('routes')">
+        <span>🧭 Route Planner</span>
       </button>
-      <button class="tab-item" onclick="switchView('routes')">
-        <span>🗺️ Commuter Routing</span>
-      </button>
-      <button class="tab-item" onclick="switchView('emergency')">
+      <button class="nav-btn" onclick="switchNav('emergency')">
         <span>🚨 Green Wave</span>
       </button>
-      <button class="tab-item" onclick="switchView('signals')">
+      <button class="nav-btn" onclick="switchNav('signals')">
         <span>🚦 Signal Lab</span>
       </button>
-      <button class="tab-item" onclick="switchView('admin')">
-        <span>⚠️ Incident Queue</span>
+      <button class="nav-btn" onclick="switchNav('analytics')">
+        <span>📈 Analytics</span>
+      </button>
+      <button class="nav-btn" onclick="switchNav('incidents')">
+        <span>⚠️ Incident Triage</span>
       </button>
     </div>
 
-    <div class="top-meta">
-      <div class="system-status">
-        <span class="status-dot"></span>
-        <span id="socket-status">SQLite & BPR Engine Live</span>
+    <!-- Live Telemetry KPI Metrics -->
+    <div class="header-stats">
+      <div class="header-stat-item">
+        <span>Belagavi Grid:</span>
+        <strong id="stat-nodes">23 Nodes Linked</strong>
       </div>
-      <span>Belagavi Grid (15.85°N, 74.51°E)</span>
+      <div class="header-stat-item">
+        <span>Network Delay:</span>
+        <strong style="color: #34d399;" id="stat-delay">1.12x BPR</strong>
+      </div>
+      <div class="header-stat-item">
+        <span>Active Incidents:</span>
+        <strong style="color: #f59e0b;" id="stat-incidents">02 Logged</strong>
+      </div>
     </div>
   </header>
 
-  <!-- Main Application Body -->
-  <main class="app-main">
+  <!-- Main Viewport -->
+  <main class="workspace">
     
-    <!-- Left Floating Control Drawer -->
-    <div class="control-drawer" id="main-drawer">
-      <div class="drawer-header">
-        <div class="drawer-title-group">
-          <h2 id="drawer-title">City Command Overview</h2>
-          <span style="font-family: 'Geist Mono'; font-size: 11px; color: var(--text-dim);" id="drawer-subtitle">Executive Traffic Intelligence</span>
+    <!-- Collapsible Open Button (when sidebar is hidden) -->
+    <button class="panel-toggle-btn" id="open-panel-btn" onclick="toggleSidebar(true)" style="display: none;">
+      <span>☰ Open Command Panel</span>
+    </button>
+
+    <!-- Google Maps Floating Command Panel -->
+    <div class="floating-panel" id="sidebar-panel">
+      <div class="panel-head">
+        <div class="panel-head-titles">
+          <h2 id="panel-title">Smart Route Planner</h2>
+          <p id="panel-sub">A* vs Dijkstra Multi-Factor Engine</p>
         </div>
+        <button class="close-panel-btn" title="Collapse Panel" onclick="toggleSidebar(false)">✕</button>
       </div>
 
-      <div class="drawer-body">
+      <div class="panel-scroll-content">
 
-        <!-- VIEW 0: EXECUTIVE STARTING DASHBOARD -->
-        <div class="view-panel active" id="panel-dashboard">
-          <div class="kpi-grid">
-            <div class="kpi-card">
-              <span class="kpi-title">Network Fluidity</span>
-              <span class="kpi-val" style="color: #34d399;" id="kpi-fluidity">86.4%</span>
-              <span class="kpi-status" style="color: #34d399;">● Nominal Freeflow</span>
-            </div>
-            <div class="kpi-card">
-              <span class="kpi-title">BPR Impedance</span>
-              <span class="kpi-val" style="color: #60a5fa;" id="kpi-bpr">1.12x</span>
-              <span class="kpi-status" style="color: #60a5fa;">● Low Delay Index</span>
-            </div>
-            <div class="kpi-card">
-              <span class="kpi-title">Active Incidents</span>
-              <span class="kpi-val" style="color: #f59e0b;" id="kpi-incidents">2 Logged</span>
-              <span class="kpi-status" style="color: #f59e0b;">● SQLite Synchronized</span>
-            </div>
-            <div class="kpi-card">
-              <span class="kpi-title">Smart Signals</span>
-              <span class="kpi-val" style="color: #a78bfa;" id="kpi-signals">5 Hubs</span>
-              <span class="kpi-status" style="color: #a78bfa;">● Dynamic Queue Balancer</span>
-            </div>
-          </div>
-
-          <div class="search-box-wrapper">
-            <span class="search-icon">🔍</span>
-            <input type="text" class="search-input" id="global-search" placeholder="Search any street, hospital, or city worldwide..." onkeydown="handleSearchKey(event)">
-          </div>
-
-          <span class="quick-preset-label">Belagavi Live Demo Scenarios</span>
-          <div class="quick-preset-group">
-            <div class="preset-chip" onclick="loadDemoScenario('kle_airport')">
-              <div>
-                <b>KLE Tech ➔ Sambre Airport</b>
-                <div style="font-size: 11px; color: var(--text-muted);">Highway NH-48 vs PB Road downtown</div>
-              </div>
-              <span style="color: #60a5fa; font-weight: 600;">Run A* →</span>
-            </div>
-
-            <div class="preset-chip" onclick="loadDemoScenario('station_hospital')">
-              <div>
-                <b>Railway Station ➔ BIMS Hospital</b>
-                <div style="font-size: 11px; color: var(--text-muted);">Critical emergency civil hospital link</div>
-              </div>
-              <span style="color: #34d399; font-weight: 600;">Run Green Wave →</span>
-            </div>
-
-            <div class="preset-chip" onclick="loadDemoScenario('chennamma_suvarna')">
-              <div>
-                <b>Chennamma Circle ➔ Suvarna Soudha</b>
-                <div style="font-size: 11px; color: var(--text-muted);">State Secretariat express corridor</div>
-              </div>
-              <span style="color: #f59e0b; font-weight: 600;">Analyze BPR →</span>
-            </div>
-          </div>
-
-          <button class="action-btn-primary" onclick="switchView('routes')">
-            <span>Open Granular Route Optimizer</span>
-          </button>
-        </div>
-        
-        <!-- VIEW 1: COMMUTER ROUTE SEARCH -->
-        <div class="view-panel" id="panel-routes">
-          <div class="route-input-group">
-            <div class="input-row">
-              <span class="node-pin pin-source"></span>
-              <select class="node-select" id="origin-select" onchange="runRouting()">
-                <option value="kle_tech" selected>KLE Technological University (15.8902, 74.5180)</option>
-                <option value="chennamma_circle">Rani Chennamma Circle Hub (15.8497, 74.5089)</option>
-                <option value="railway_station">Belagavi Railway Station (15.8640, 74.5065)</option>
-                <option value="bims_hospital">BIMS District Hospital (15.8560, 74.5150)</option>
-                <option value="rpd_cross">RPD College Cross (15.8340, 74.5020)</option>
-                <option value="tilakwadi">Tilakwadi 1st Gate (15.8380, 74.5050)</option>
+        <!-- TAB 1: ROUTE PLANNER -->
+        <div class="tab-view active" id="view-routes">
+          <div class="search-card">
+            <div class="search-row">
+              <span class="search-pin blue"></span>
+              <select class="search-select" id="origin-select" onchange="calculateRoutes()">
+                <option value="kle_tech" selected>KLE Technological University (Belagavi)</option>
+                <option value="chennamma_circle">Rani Chennamma Circle Hub</option>
+                <option value="railway_station">Belagavi Central Railway Station</option>
+                <option value="bims_hospital">BIMS District Hospital</option>
+                <option value="rpd_cross">RPD College Cross Junction</option>
+                <option value="tilakwadi">Tilakwadi 1st Gate</option>
+                <option value="peeranwadi">Peeranwadi Industrial Bypass</option>
+                <option value="nehru_nagar">Nehru Nagar Circle</option>
               </select>
             </div>
-            <div class="input-divider"></div>
-            <div class="input-row">
-              <span class="node-pin pin-dest"></span>
-              <select class="node-select" id="dest-select" onchange="runRouting()">
-                <option value="sambre_airport" selected>Belagavi Sambre Airport IXG (15.8590, 74.6180)</option>
-                <option value="bims_hospital">BIMS Civil Hospital (15.8560, 74.5150)</option>
-                <option value="suvarna_soudha">Suvarna Vidhana Soudha (15.7890, 74.5680)</option>
-                <option value="auto_nagar">Auto Nagar Industrial Hub (15.8750, 74.5420)</option>
-                <option value="peeranwadi">Peeranwadi Industrial Bypass (15.8150, 74.4650)</option>
+            <div class="search-divider"></div>
+            <div class="search-row">
+              <span class="search-pin emerald"></span>
+              <select class="search-select" id="dest-select" onchange="calculateRoutes()">
+                <option value="sambre_airport" selected>Belagavi Sambre Airport (IXG)</option>
+                <option value="bims_hospital">BIMS Civil Hospital Emergency</option>
+                <option value="suvarna_soudha">Suvarna Vidhana Soudha</option>
+                <option value="auto_nagar">Auto Nagar Industrial Hub</option>
+                <option value="rpd_cross">RPD College Cross</option>
+                <option value="shahapur">Shahapur Historic Square</option>
+                <option value="machhe">Machhe Industrial Estate</option>
               </select>
             </div>
           </div>
 
           <div class="departure-row">
-            <span>Departure Window:</span>
+            <span>Departure Forecast:</span>
             <div class="pill-group">
-              <button class="time-pill selected" onclick="setTime(this, 0)">Now</button>
-              <button class="time-pill" onclick="setTime(this, 15)">+15 min</button>
-              <button class="time-pill" onclick="setTime(this, 30)">+30 min</button>
+              <button class="time-pill selected" onclick="setDepartureOffset(this, 0)">Now</button>
+              <button class="time-pill" onclick="setDepartureOffset(this, 15)">+15 min</button>
+              <button class="time-pill" onclick="setDepartureOffset(this, 30)">+30 min</button>
             </div>
           </div>
 
-          <button class="action-btn-primary" onclick="runRouting()">
-            <span>Calculate A* vs Dijkstra Routes</span>
+          <button class="primary-btn" onclick="calculateRoutes()">
+            <span>Calculate Multi-Factor Routes</span>
           </button>
 
-          <!-- Dynamic Reroute Alert -->
-          <div class="reroute-banner" id="reroute-alert" style="display: none;">
-            <div class="reroute-banner-top">
-              <span id="reroute-title">⚠️ Incident on Primary Route</span>
-              <span id="reroute-delay">+9.2 min delay</span>
+          <!-- Quick Belagavi Scenarios -->
+          <div class="preset-container">
+            <span style="font-size: 11px; font-weight: 600; color: var(--text-dim); text-transform: uppercase;">Benchmark Scenarios</span>
+            <div class="preset-pill" onclick="loadBenchmark('kle_airport')">
+              <span><b>KLE Tech ➔ Sambre Airport</b> (Expressway NH-48)</span>
+              <span style="color: var(--blue);">→</span>
             </div>
-            <p style="font-size: 11.5px; color: #fecdd3; line-height: 1.4;" id="reroute-msg">Active collision detected. Alternate route bypasses bottleneck.</p>
-            <button class="reroute-btn" onclick="applyReroute()">Switch to Dynamic Bypass</button>
-          </div>
-
-          <!-- Route Comparison Cards -->
-          <div class="routes-container" id="routes-list">
-            <div class="specular-card active-fastest" id="card-route-0" onclick="selectRoute(0)">
-              <div class="route-header">
-                <div class="route-name-badge">
-                  <span style="color: #60a5fa;">● A* Optimal Path</span>
-                  <span class="rec-badge" id="fastest-badge">Recommended</span>
-                </div>
-                <span class="route-eta" id="fastest-eta">24.2 min</span>
-              </div>
-              <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;" id="fastest-desc">Bypasses downtown arterial congestion via Outer Corridor.</p>
-              <div class="route-stats-grid">
-                <div class="stat-col">
-                  <span class="stat-label">Distance</span>
-                  <span class="stat-val" id="fastest-dist">15.4 km</span>
-                </div>
-                <div class="stat-col">
-                  <span class="stat-label">Fuel Est.</span>
-                  <span class="stat-val" id="fastest-fuel">1.05 L</span>
-                </div>
-                <div class="stat-col">
-                  <span class="stat-label">Risk</span>
-                  <span class="stat-val" style="color: #34d399;" id="fastest-cong">LOW</span>
-                </div>
-              </div>
+            <div class="preset-pill" onclick="loadBenchmark('station_bims')">
+              <span><b>Railway Station ➔ BIMS Hospital</b> (Civil Corridor)</span>
+              <span style="color: var(--emerald);">→</span>
             </div>
-
-            <div class="specular-card" id="card-route-1" onclick="selectRoute(1)">
-              <div class="route-header">
-                <div class="route-name-badge">
-                  <span style="color: #a78bfa;">● Dijkstra Shortest</span>
-                </div>
-                <span class="route-eta" id="shortest-eta">32.8 min</span>
-              </div>
-              <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;" id="shortest-desc">Direct line through Central College Road; high bottleneck delay.</p>
-              <div class="route-stats-grid">
-                <div class="stat-col">
-                  <span class="stat-label">Distance</span>
-                  <span class="stat-val" id="shortest-dist">13.2 km</span>
-                </div>
-                <div class="stat-col">
-                  <span class="stat-label">Fuel Est.</span>
-                  <span class="stat-val" id="shortest-fuel">1.18 L</span>
-                </div>
-                <div class="stat-col">
-                  <span class="stat-label">Risk</span>
-                  <span class="stat-val" style="color: #f43f5e;" id="shortest-cong">HIGH</span>
-                </div>
-              </div>
+            <div class="preset-pill" onclick="loadBenchmark('chennamma_suvarna')">
+              <span><b>Chennamma Circle ➔ Suvarna Soudha</b></span>
+              <span style="color: var(--amber);">→</span>
             </div>
           </div>
-        </div>
 
-        <!-- VIEW 2: EMERGENCY GREEN WAVE -->
-        <div class="view-panel" id="panel-emergency">
-          <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 8px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span style="font-size: 13px; font-weight: 600; color: #34d399;">Ambulance Corridor #EMS-901</span>
-              <span style="font-size: 11px; background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 2px 6px; border-radius: 4px;">ACTIVE</span>
-            </div>
-            <p style="font-size: 12px; color: var(--text-muted);">Target: BIMS Civil Hospital Emergency ICU Gate. Cascading junction preemption ready.</p>
-            <div style="font-size: 22px; font-weight: 700; font-family: 'Geist Mono'; color: #ffffff;">
-              <span id="emg-saved">12.6</span> min saved
-            </div>
-          </div>
-          <button class="action-btn-primary action-btn-emerald" onclick="activateGreenWave()">
-            <span>Dispatch & Preempt Next Signals</span>
-          </button>
-        </div>
-
-        <!-- VIEW 3: SIGNAL LAB -->
-        <div class="view-panel" id="panel-signals">
-          <div style="background: var(--panel-elevated); border: 1px solid var(--border); border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 12px;">
-            <span style="font-size: 12.5px; font-weight: 600;">Rani Chennamma Circle (JNC-14)</span>
+          <!-- Dynamic Route Comparison Cards -->
+          <div style="display: flex; flex-direction: column; gap: 10px;" id="route-cards-list">
             
-            <div class="form-group">
-              <label>Northbound Queue (College Rd): <span id="val-q-north">38</span> veh</label>
-              <input type="range" id="slider-north" min="5" max="80" value="38" oninput="updateQueue('north', this.value); optimizeSignalTiming();">
+            <!-- Route 1: A* Fastest -->
+            <div class="route-card selected-route" id="card-astar" onclick="activateRouteVisual(0)">
+              <div class="route-card-top">
+                <div class="route-title">
+                  <span style="color: #60a5fa;">● A* Optimal Path</span>
+                  <span class="route-badge">Recommended</span>
+                </div>
+                <span class="route-eta" id="astar-eta">11.3 min</span>
+              </div>
+              <p style="font-size: 11.5px; color: var(--text-muted);" id="astar-desc">Bypasses bottleneck delays via PB Road & Airport Link.</p>
+              <div class="route-metrics-grid">
+                <div class="metric-col">
+                  <span class="metric-label">Distance</span>
+                  <span class="metric-val" id="astar-dist">13.1 km</span>
+                </div>
+                <div class="metric-col">
+                  <span class="metric-label">Fuel Est.</span>
+                  <span class="metric-val" id="astar-fuel">0.89 L</span>
+                </div>
+                <div class="metric-col">
+                  <span class="metric-label">Reliability</span>
+                  <span class="metric-val" style="color: #34d399;" id="astar-rel">95%</span>
+                </div>
+              </div>
             </div>
 
-            <div class="form-group">
-              <label>Eastbound Queue (Civil Hospital Rd): <span id="val-q-east">44</span> veh</label>
-              <input type="range" id="slider-east" min="5" max="80" value="44" oninput="updateQueue('east', this.value); optimizeSignalTiming();">
+            <!-- Route 2: Dijkstra Shortest -->
+            <div class="route-card" id="card-dijkstra" onclick="activateRouteVisual(1)">
+              <div class="route-card-top">
+                <div class="route-title">
+                  <span style="color: #c084fc;">● Dijkstra Shortest</span>
+                </div>
+                <span class="route-eta" id="dijkstra-eta">11.3 min</span>
+              </div>
+              <p style="font-size: 11.5px; color: var(--text-muted);" id="dijkstra-desc">Shortest physical path through city arterials.</p>
+              <div class="route-metrics-grid">
+                <div class="metric-col">
+                  <span class="metric-label">Distance</span>
+                  <span class="metric-val" id="dijkstra-dist">13.1 km</span>
+                </div>
+                <div class="metric-col">
+                  <span class="metric-label">Fuel Est.</span>
+                  <span class="metric-val" id="dijkstra-fuel">1.03 L</span>
+                </div>
+                <div class="metric-col">
+                  <span class="metric-label">Reliability</span>
+                  <span class="metric-val" style="color: #f59e0b;" id="dijkstra-rel">82%</span>
+                </div>
+              </div>
             </div>
 
-            <div style="display: flex; justify-content: space-between; padding-top: 8px; border-top: 1px solid var(--border);">
-              <span style="font-size: 12px; color: var(--text-muted);">Wait Time Reduction:</span>
-              <span style="font-size: 13px; font-weight: 700; color: #34d399;" id="signal-reduction">-38.4%</span>
+            <!-- Route 3: Dynamic Perimeter Alternate -->
+            <div class="route-card" id="card-alternate" onclick="activateRouteVisual(2)">
+              <div class="route-card-top">
+                <div class="route-title">
+                  <span style="color: #f59e0b;">● Perimeter Alternate</span>
+                </div>
+                <span class="route-eta" id="alt-eta">12.5 min</span>
+              </div>
+              <p style="font-size: 11.5px; color: var(--text-muted);">Dynamic outer diversion in case of incident or congestion.</p>
+              <div class="route-metrics-grid">
+                <div class="metric-col">
+                  <span class="metric-label">Distance</span>
+                  <span class="metric-val" id="alt-dist">14.8 km</span>
+                </div>
+                <div class="metric-col">
+                  <span class="metric-label">Fuel Est.</span>
+                  <span class="metric-val" id="alt-fuel">1.05 L</span>
+                </div>
+                <div class="metric-col">
+                  <span class="metric-label">Reliability</span>
+                  <span class="metric-val" style="color: #60a5fa;" id="alt-rel">88%</span>
+                </div>
+              </div>
             </div>
-            <div style="display: flex; justify-content: space-between;">
-              <span style="font-size: 12px; color: var(--text-muted);">Baseline vs Adaptive:</span>
-              <span style="font-size: 12px; font-family: 'Geist Mono';" id="signal-times">68.4s ➔ 42.1s</span>
+
+          </div>
+
+          <!-- Turn-by-Turn Steps -->
+          <span style="font-size: 11px; font-weight: 600; color: var(--text-dim); text-transform: uppercase;">Step-by-Step Navigation</span>
+          <div class="turn-steps-box" id="turn-by-turn-list">
+            <div class="step-item"><span>1.</span> Follow PB Road Northern Spine towards Airport Expressway</div>
+            <div class="step-item"><span>2.</span> Merge onto Airport Link towards Sambre Terminal (8.5 km)</div>
+          </div>
+        </div>
+
+        <!-- TAB 2: EMERGENCY GREEN WAVE -->
+        <div class="tab-view" id="view-emergency">
+          <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 13.5px; font-weight: 700; color: #34d399;">Ambulance Unit #AMB-104</span>
+              <span style="font-size: 10.5px; background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 2px 6px; border-radius: 4px; font-weight: 700;">PRIORITY 1</span>
+            </div>
+            <p style="font-size: 12px; color: var(--text-muted);">Route to BIMS Civil Hospital Emergency ICU Gate. Intersections preempted dynamically.</p>
+            
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.06);">
+              <div>
+                <div style="font-size: 10px; color: var(--text-dim); text-transform: uppercase;">Time Saved</div>
+                <div style="font-size: 26px; font-weight: 800; font-family: 'JetBrains Mono'; color: #34d399;"><span id="emg-saved-val">10.3</span> min</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 10px; color: var(--text-dim); text-transform: uppercase;">Corridor Speed</div>
+                <div style="font-size: 16px; font-weight: 700; font-family: 'JetBrains Mono'; color: #fff;">+35% Green Wave</div>
+              </div>
+            </div>
+          </div>
+
+          <button class="primary-btn" style="background: linear-gradient(180deg, #059669 0%, #047857 100%);" onclick="triggerEmergencyDispatch()">
+            <span>⚡ Dispatch & Lock Green Corridor</span>
+          </button>
+
+          <span style="font-size: 11px; font-weight: 600; color: var(--text-dim); text-transform: uppercase;">Preempted Junction Cascade</span>
+          <div id="emergency-junctions-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+        </div>
+
+        <!-- TAB 3: SMART SIGNAL LAB -->
+        <div class="tab-view" id="view-signals">
+          <div style="background: var(--card-elevated); border: 1px solid var(--border); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 13px; font-weight: 700;">Chennamma Circle Hub (JNC-14)</span>
+              <span style="font-size: 11px; color: var(--text-dim); font-family: 'JetBrains Mono';">1s Step Sim</span>
+            </div>
+
+            <!-- Visual Traffic Light Fixture -->
+            <div class="traffic-fixture">
+              <div class="fixture-light red" id="light-red"></div>
+              <div class="fixture-light yellow" id="light-yellow"></div>
+              <div class="fixture-light green active" id="light-green"></div>
+            </div>
+
+            <div class="countdown-circle">
+              <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Active Green Phase Remaining</div>
+              <div class="countdown-val" id="signal-countdown">28s</div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <div style="display: flex; justify-content: space-between; font-size: 12px;">
+                <span>Northbound Queue (College Rd):</span>
+                <strong id="val-q-north">38 veh</strong>
+              </div>
+              <input type="range" id="slider-north" min="5" max="80" value="38" oninput="runLiveSignalSimulation()">
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <div style="display: flex; justify-content: space-between; font-size: 12px;">
+                <span>Eastbound Queue (Civil Hospital Rd):</span>
+                <strong id="val-q-east">44 veh</strong>
+              </div>
+              <input type="range" id="slider-east" min="5" max="80" value="44" oninput="runLiveSignalSimulation()">
+            </div>
+
+            <div style="padding-top: 10px; border-top: 1px solid var(--border); display: flex; justify-content: space-between;">
+              <span style="font-size: 12px; color: var(--text-muted);">Empirical Delay Reduction:</span>
+              <span style="font-size: 14px; font-weight: 800; color: #34d399;" id="signal-reduction">-38.4%</span>
             </div>
           </div>
         </div>
 
-        <!-- VIEW 4: ADMIN INCIDENT QUEUE -->
-        <div class="view-panel" id="panel-admin">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Active Roadway Events</span>
-            <button class="reroute-btn" style="padding: 4px 8px; font-size: 11px;" onclick="triggerIncidentModal()">+ Report New</button>
+        <!-- TAB 4: ANALYTICS & TRAFFIC MODEL -->
+        <div class="tab-view" id="view-analytics">
+          <div style="background: var(--card-elevated); border: 1px solid var(--border); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 10px;">
+            <span style="font-size: 12.5px; font-weight: 700;">Belagavi 24-Hour Congestion Curve</span>
+            <div style="height: 170px; width: 100%;">
+              <canvas id="trafficChart"></canvas>
+            </div>
           </div>
-          <div id="admin-incident-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+
+          <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 12px; display: flex; flex-direction: column; gap: 6px;">
+            <div style="font-weight: 600; color: #60a5fa;">Trained ML Regressor Benchmark</div>
+            <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
+              <span>Holdout Test MAE:</span>
+              <strong style="color: #fff;" id="model-mae">0.107</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
+              <span>Root Mean Sq. Error (RMSE):</span>
+              <strong style="color: #fff;" id="model-rmse">0.139</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
+              <span>Model R² Score:</span>
+              <strong style="color: #34d399;" id="model-r2">0.789</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 5: INCIDENT TRIAGE -->
+        <div class="tab-view" id="view-incidents">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Active Incidents (SQLite)</span>
+            <button class="primary-btn" style="padding: 4px 10px; font-size: 11px; width: auto;" onclick="openIncidentModal()">+ Report New</button>
+          </div>
+          <div id="incidents-feed" style="display: flex; flex-direction: column; gap: 8px;"></div>
         </div>
 
       </div>
     </div>
 
-    <!-- Map View -->
-    <div id="city-map"></div>
-
-    <!-- Floating HUD iOS Toggle Switches -->
-    <div class="map-hud">
-      <div class="hud-title">Map Overlays</div>
-      
+    <!-- Top-Right Floating Layer Switch HUD -->
+    <div class="hud-controls">
       <div class="hud-row">
-        <span>Traffic Congestion</span>
+        <span>Traffic Flow Overlay</span>
         <label class="switch">
-          <input type="checkbox" id="layer-congestion" checked onchange="toggleLayers()">
+          <input type="checkbox" id="toggle-congestion" checked onchange="handleLayerToggle()">
+          <span class="slider green"></span>
+        </label>
+      </div>
+      <div class="hud-row">
+        <span>Incident Markers</span>
+        <label class="switch">
+          <input type="checkbox" id="toggle-incidents" checked onchange="handleLayerToggle()">
           <span class="slider"></span>
         </label>
       </div>
-
-      <div class="hud-row">
-        <span>Active Incidents</span>
-        <label class="switch">
-          <input type="checkbox" id="layer-incidents" checked onchange="toggleLayers()">
-          <span class="slider"></span>
-        </label>
-      </div>
-
       <div class="hud-row">
         <span>Signal Hubs</span>
         <label class="switch">
-          <input type="checkbox" id="layer-signals" checked onchange="toggleLayers()">
-          <span class="slider slider-emerald"></span>
+          <input type="checkbox" id="toggle-signals" checked onchange="handleLayerToggle()">
+          <span class="slider green"></span>
         </label>
       </div>
+    </div>
 
-      <div class="hud-row">
-        <span>Satellite / Dark</span>
-        <label class="switch">
-          <input type="checkbox" id="layer-satellite" onchange="toggleBasemap()">
-          <span class="slider"></span>
-        </label>
+    <!-- Bottom-Right Google Maps Traffic Legend -->
+    <div class="map-legend">
+      <div class="legend-title">Live Traffic Conditions</div>
+      <div class="legend-row">
+        <span class="legend-bar" style="background: #10b981;"></span>
+        <span>Clear / Freeflow (Avg >45 km/h)</span>
+      </div>
+      <div class="legend-row">
+        <span class="legend-bar" style="background: #f59e0b;"></span>
+        <span>Moderate / Slow (25-45 km/h)</span>
+      </div>
+      <div class="legend-row">
+        <span class="legend-bar" style="background: #ef4444;"></span>
+        <span>Heavy / Bottleneck (<25 km/h)</span>
       </div>
     </div>
 
@@ -1096,45 +1075,41 @@
 
   <!-- Incident Reporting Modal -->
   <div class="modal-overlay" id="incident-modal">
-    <div class="modal-card">
-      <h3 style="font-size: 16px; font-weight: 600;">Report Traffic Incident</h3>
-      <div class="form-group">
-        <label>Incident Type</label>
-        <select id="report-type">
+    <div class="modal-box">
+      <h3 style="font-size: 16px; font-weight: 700;">Report Road Obstruction</h3>
+      <div>
+        <label style="font-size: 12px; color: var(--text-muted);">Type</label>
+        <select id="modal-type" style="width: 100%; padding: 8px; background: #1e293b; color: #fff; border: 1px solid var(--border); border-radius: 6px; margin-top: 4px;">
           <option value="accident">Accident / Collision</option>
           <option value="roadblock">Roadblock / Construction</option>
-          <option value="hazard">Waterlogging / Hazard</option>
-          <option value="congestion">Severe Bottleneck</option>
+          <option value="hazard">Flooding / Road Hazard</option>
         </select>
       </div>
-      <div class="form-group">
-        <label>Severity Level (1-5)</label>
-        <select id="report-severity">
+      <div>
+        <label style="font-size: 12px; color: var(--text-muted);">Severity Level (1-5)</label>
+        <select id="modal-severity" style="width: 100%; padding: 8px; background: #1e293b; color: #fff; border: 1px solid var(--border); border-radius: 6px; margin-top: 4px;">
           <option value="1">1 - Minor Shoulder Delay</option>
           <option value="2">2 - Single Lane Blocked</option>
-          <option value="3" selected>3 - Multi-lane Severe Blockage</option>
-          <option value="4">4 - Complete Segment Closure</option>
-          <option value="5">5 - Critical Emergency Gridlock</option>
+          <option value="3" selected>3 - Severe Multi-Lane Blockage</option>
+          <option value="4">4 - Road Fully Impassable</option>
         </select>
       </div>
-      <div class="form-group">
-        <label>Location / Landmark Note</label>
-        <input type="text" id="report-desc" placeholder="e.g. Near Chennamma Circle PB Road Flyover" value="Rani Chennamma Circle Arterial">
+      <div>
+        <label style="font-size: 12px; color: var(--text-muted);">Landmark Description</label>
+        <input type="text" id="modal-desc" value="PB Road Northern Corridor Bottleneck" style="width: 100%; padding: 8px; background: #1e293b; color: #fff; border: 1px solid var(--border); border-radius: 6px; margin-top: 4px;">
       </div>
       <div style="display: flex; gap: 8px; margin-top: 8px;">
-        <button class="action-btn-primary" style="flex: 1;" onclick="submitIncident()">Submit to SQLite</button>
-        <button class="action-btn-primary" style="flex: 1; background: var(--panel-elevated);" onclick="closeIncidentModal()">Cancel</button>
+        <button class="primary-btn" style="flex: 1;" onclick="submitNewIncident()">Submit to SQLite</button>
+        <button class="primary-btn" style="flex: 1; background: #334155;" onclick="closeIncidentModal()">Cancel</button>
       </div>
     </div>
   </div>
 
-  <!-- Leaflet & Socket.IO Client Scripts -->
+  <!-- Leaflet & Socket.IO Client -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="/socket.io/socket.io.js"></script>
 
   <script>
-    let MAPBOX_TOKEN = '';
-
     // 1. Initialize Map centered on Belagavi
     const map = L.map('city-map', {
       center: [15.855, 74.515],
@@ -1144,118 +1119,93 @@
 
     L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
-    // Dark Tile Layers
-    const esriDarkUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
-    const satUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
-    let currentBaseLayer = L.tileLayer(esriDarkUrl, { attribution: '© Esri & OSM', maxZoom: 18 }).addTo(map);
+    // Dark Map Basemap
+    const esriDark = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
+    let currentTileLayer = L.tileLayer(esriDark, { attribution: '© Esri & OSM', maxZoom: 18 }).addTo(map);
 
-    // Fetch Mapbox token dynamically from server
+    // Fetch Mapbox Vector Tiles if available
     fetch('/api/config')
       .then(res => res.json())
-      .then(config => {
-        if (config && config.mapboxToken) {
-          MAPBOX_TOKEN = config.mapboxToken;
-          const mapboxDarkUrl = `https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`;
-          map.removeLayer(currentBaseLayer);
-          currentBaseLayer = L.tileLayer(mapboxDarkUrl, { attribution: '© Mapbox © OpenStreetMap', maxZoom: 19 }).addTo(map);
+      .then(cfg => {
+        if (cfg && cfg.mapboxToken) {
+          const mapboxDark = `https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/256/{z}/{x}/{y}@2x?access_token=${cfg.mapboxToken}`;
+          map.removeLayer(currentTileLayer);
+          currentTileLayer = L.tileLayer(mapboxDark, { attribution: '© Mapbox © OpenStreetMap', maxZoom: 19 }).addTo(map);
         }
       })
-      .catch(e => console.log('Using Esri fallback basemap'));
+      .catch(e => console.log('Using Esri Dark Canvas fallback'));
 
-    function toggleBasemap() {
-      const isSat = document.getElementById('layer-satellite').checked;
-      map.removeLayer(currentBaseLayer);
-      if (isSat) {
-        currentBaseLayer = L.tileLayer(satUrl, { attribution: '© Esri Satellite', maxZoom: 18 }).addTo(map);
-      } else {
-        const url = MAPBOX_TOKEN 
-          ? `https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`
-          : esriDarkUrl;
-        currentBaseLayer = L.tileLayer(url, { maxZoom: 19 }).addTo(map);
-      }
-    }
-
-    // 2. Map Layers
+    // Map Overlays
     const congestionLayer = L.layerGroup().addTo(map);
     const incidentsLayer = L.layerGroup().addTo(map);
     const signalsLayer = L.layerGroup().addTo(map);
 
-    // Initial Path Polylines
-    let fastestPoly = L.polyline([], { color: '#3b82f6', weight: 6, opacity: 0.95 }).addTo(map);
-    let shortestPoly = L.polyline([], { color: '#a78bfa', weight: 4, opacity: 0.7, dashArray: '5, 8' }).addTo(map);
-    let emergencyPoly = L.polyline([], { color: '#10b981', weight: 8, opacity: 0.95 });
+    // Polylines for the 3 routes
+    const astarPoly = L.polyline([], { color: '#3b82f6', weight: 6, opacity: 0.95 }).addTo(map);
+    const dijkstraPoly = L.polyline([], { color: '#c084fc', weight: 4, opacity: 0.75, dashArray: '6, 8' }).addTo(map);
+    const altPoly = L.polyline([], { color: '#f59e0b', weight: 4, opacity: 0.75, dashArray: '4, 6' }).addTo(map);
+    const emergencyPoly = L.polyline([], { color: '#10b981', weight: 8, opacity: 0.95 });
 
-    let clickedCoords = [15.8497, 74.5089];
+    let clickCoords = [15.8497, 74.5089];
+    let departureOffsetMin = 0;
 
-    // Map Click Interaction (Set Origin, Set Destination, or Report Incident)
+    // Map Click Interaction (Google Maps style)
     map.on('click', function(e) {
-      clickedCoords = [e.latlng.lat, e.latlng.lng];
-      const popupHtml = `
-        <div style="font-size: 12px; font-weight: 600; margin-bottom: 4px;">Selected Point (${clickedCoords[0].toFixed(4)}, ${clickedCoords[1].toFixed(4)})</div>
-        <div class="popup-actions">
-          <button class="popup-btn" onclick="setOriginFromClick(${clickedCoords[0]}, ${clickedCoords[1]})">📍 Set as Route Origin</button>
-          <button class="popup-btn" onclick="setDestFromClick(${clickedCoords[0]}, ${clickedCoords[1]})">🏁 Set as Destination</button>
-          <button class="popup-btn" onclick="openIncidentAtClick(${clickedCoords[0]}, ${clickedCoords[1]})">⚠️ Report Obstruction Here</button>
+      clickCoords = [e.latlng.lat, e.latlng.lng];
+      const html = `
+        <div style="font-size: 12px; font-weight: 700; color: #fff; margin-bottom: 6px;">Location (${clickCoords[0].toFixed(4)}, ${clickCoords[1].toFixed(4)})</div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <button style="background: #2563eb; color: #fff; border: none; padding: 6px 10px; border-radius: 5px; font-size: 11px; cursor: pointer;" onclick="setPointAsOrigin(${clickCoords[0]}, ${clickCoords[1]})">📍 Route From Here</button>
+          <button style="background: #059669; color: #fff; border: none; padding: 6px 10px; border-radius: 5px; font-size: 11px; cursor: pointer;" onclick="setPointAsDest(${clickCoords[0]}, ${clickCoords[1]})">🏁 Route To Here</button>
+          <button style="background: #e11d48; color: #fff; border: none; padding: 6px 10px; border-radius: 5px; font-size: 11px; cursor: pointer;" onclick="openIncidentModal()">⚠️ Report Obstruction</button>
         </div>
       `;
-      L.popup({ className: 'custom-map-popup' })
-        .setLatLng(e.latlng)
-        .setContent(popupHtml)
-        .openOn(map);
+      L.popup().setLatLng(e.latlng).setContent(html).openOn(map);
     });
 
-    let customOriginCoords = null;
-    let customDestCoords = null;
+    let customOrigin = null;
+    let customDest = null;
 
-    function setOriginFromClick(lat, lng) {
-      customOriginCoords = { lat, lng };
+    function setPointAsOrigin(lat, lng) {
+      customOrigin = { lat, lng };
       map.closePopup();
-      switchView('routes');
-      runRouting();
+      switchNav('routes');
+      calculateRoutes();
     }
 
-    function setDestFromClick(lat, lng) {
-      customDestCoords = { lat, lng };
+    function setPointAsDest(lat, lng) {
+      customDest = { lat, lng };
       map.closePopup();
-      switchView('routes');
-      runRouting();
+      switchNav('routes');
+      calculateRoutes();
     }
 
-    function openIncidentAtClick(lat, lng) {
-      clickedCoords = [lat, lng];
-      map.closePopup();
-      triggerIncidentModal();
+    // 2. Fetch Heatmap Overlay from Server
+    async function loadHeatmapOverlay() {
+      try {
+        const res = await fetch('/api/routes/heatmap');
+        const json = await res.json();
+        if (json.data && json.data.edgePredictions) {
+          congestionLayer.clearLayers();
+          json.data.edgePredictions.forEach(edge => {
+            if (edge.coordinates && edge.coordinates.length >= 2) {
+              L.polyline(edge.coordinates, {
+                color: edge.color,
+                weight: 5,
+                opacity: 0.85
+              }).bindPopup(`<b>${edge.name}</b><br>Congestion: ${(edge.congestionIndex * 100).toFixed(0)}% (${edge.riskLevel})<br>Speed: ~${edge.predictedSpeedKmh} km/h`).addTo(congestionLayer);
+            }
+          });
+        }
+      } catch (e) {
+        console.warn('Heatmap load notice', e);
+      }
     }
 
-    // 3. Socket.IO Real-time Events
-    try {
-      const socket = io();
-      socket.on('incident:new', (inc) => {
-        L.circleMarker([inc.lat, inc.lng], {
-          radius: 8,
-          color: '#ffffff',
-          fillColor: '#f43f5e',
-          fillOpacity: 1,
-          weight: 2
-        }).bindPopup(`<b>${inc.type.toUpperCase()}:</b> ${inc.roadName}`).addTo(incidentsLayer);
-        
-        document.getElementById('reroute-alert').style.display = 'flex';
-        loadActiveIncidents();
-      });
-
-      socket.on('reroute:triggered', () => {
-        runRouting();
-      });
-    } catch (e) {
-      console.warn('Socket.IO in standalone mode');
-    }
-
-    // 4. Routing Engine API Call
-    let currentDepartureOffset = 0;
-
-    async function runRouting() {
-      const orig = customOriginCoords || document.getElementById('origin-select').value;
-      const dest = customDestCoords || document.getElementById('dest-select').value;
+    // 3. Routing Engine Execution
+    async function calculateRoutes() {
+      const orig = customOrigin || document.getElementById('origin-select').value;
+      const dest = customDest || document.getElementById('dest-select').value;
 
       try {
         const res = await fetch('/api/routes/calculate', {
@@ -1264,157 +1214,153 @@
           body: JSON.stringify({
             origin: orig,
             destination: dest,
-            departureOffsetMinutes: currentDepartureOffset
+            departureOffsetMinutes: departureOffsetMin
           })
         });
         const json = await res.json();
         if (json.data && json.data.routes) {
-          const r0 = json.data.routes[0] || json.data.routes.astarFastest;
-          const r1 = json.data.routes[1] || json.data.routes.dijkstraShortest;
+          const r0 = json.data.routes[0];
+          const r1 = json.data.routes[1];
+          const r2 = json.data.routes[2];
 
           if (r0) {
-            document.getElementById('fastest-eta').innerText = r0.etaMinutes + ' min';
-            document.getElementById('fastest-dist').innerText = r0.distanceKm + ' km';
-            document.getElementById('fastest-fuel').innerText = (r0.fuelConsumptionLiters || r0.fuelConsumptionLitres) + ' L';
-            document.getElementById('fastest-cong').innerText = r0.congestionRisk || 'LOW';
-            document.getElementById('fastest-desc').innerText = r0.recommendationReason || r0.name;
-
+            document.getElementById('astar-eta').innerText = r0.etaMinutes + ' min';
+            document.getElementById('astar-dist').innerText = r0.distanceKm + ' km';
+            document.getElementById('astar-fuel').innerText = (r0.fuelConsumptionLiters || 0.89) + ' L';
+            document.getElementById('astar-rel').innerText = ((r0.reliabilityScore || 0.95) * 100).toFixed(0) + '%';
             if (r0.waypoints && r0.waypoints.length > 0) {
-              fastestPoly.setLatLngs(r0.waypoints);
-              map.fitBounds(fastestPoly.getBounds(), { padding: [60, 60] });
+              astarPoly.setLatLngs(r0.waypoints);
+              map.fitBounds(astarPoly.getBounds(), { padding: [50, 50] });
+            }
+            if (r0.turnByTurn) {
+              document.getElementById('turn-by-turn-list').innerHTML = r0.turnByTurn.map((t, idx) => `
+                <div class="step-item"><span>${idx + 1}.</span> ${t}</div>
+              `).join('');
             }
           }
 
           if (r1) {
-            document.getElementById('shortest-eta').innerText = r1.etaMinutes + ' min';
-            document.getElementById('shortest-dist').innerText = r1.distanceKm + ' km';
-            document.getElementById('shortest-fuel').innerText = (r1.fuelConsumptionLiters || r1.fuelConsumptionLitres) + ' L';
-            document.getElementById('shortest-cong').innerText = r1.congestionRisk || 'HIGH';
-            document.getElementById('shortest-desc').innerText = r1.recommendationReason || r1.name;
-
+            document.getElementById('dijkstra-eta').innerText = r1.etaMinutes + ' min';
+            document.getElementById('dijkstra-dist').innerText = r1.distanceKm + ' km';
+            document.getElementById('dijkstra-fuel').innerText = (r1.fuelConsumptionLiters || 1.03) + ' L';
+            document.getElementById('dijkstra-rel').innerText = ((r1.reliabilityScore || 0.82) * 100).toFixed(0) + '%';
             if (r1.waypoints && r1.waypoints.length > 0) {
-              shortestPoly.setLatLngs(r1.waypoints);
+              dijkstraPoly.setLatLngs(r1.waypoints);
             }
+          }
+
+          if (r2 && r2.waypoints && r2.waypoints.length > 0) {
+            document.getElementById('alt-eta').innerText = r2.etaMinutes + ' min';
+            document.getElementById('alt-dist').innerText = r2.distanceKm + ' km';
+            altPoly.setLatLngs(r2.waypoints);
           }
         }
       } catch (err) {
-        console.warn('API routing error', err);
+        console.warn('Routing error', err);
       }
     }
 
-    function setTime(el, minutes) {
-      document.querySelectorAll('.time-pill').forEach(p => p.classList.remove('selected'));
-      el.classList.add('selected');
-      currentDepartureOffset = minutes;
-      runRouting();
+    function activateRouteVisual(index) {
+      document.getElementById('card-astar').classList.toggle('selected-route', index === 0);
+      document.getElementById('card-dijkstra').classList.toggle('selected-route', index === 1);
+      document.getElementById('card-alternate').classList.toggle('selected-route', index === 2);
+
+      if (index === 0) {
+        astarPoly.bringToFront();
+        astarPoly.setStyle({ opacity: 1, weight: 7 });
+        dijkstraPoly.setStyle({ opacity: 0.35, weight: 3 });
+        altPoly.setStyle({ opacity: 0.35, weight: 3 });
+      } else if (index === 1) {
+        dijkstraPoly.bringToFront();
+        dijkstraPoly.setStyle({ opacity: 1, weight: 7 });
+        astarPoly.setStyle({ opacity: 0.35, weight: 3 });
+        altPoly.setStyle({ opacity: 0.35, weight: 3 });
+      } else {
+        altPoly.bringToFront();
+        altPoly.setStyle({ opacity: 1, weight: 7 });
+        astarPoly.setStyle({ opacity: 0.35, weight: 3 });
+        dijkstraPoly.setStyle({ opacity: 0.35, weight: 3 });
+      }
     }
 
-    // 5. Incidents Lifecycle with SQLite API
-    async function loadActiveIncidents() {
+    function setDepartureOffset(el, min) {
+      document.querySelectorAll('.time-pill').forEach(p => p.classList.remove('selected'));
+      el.classList.add('selected');
+      departureOffsetMin = min;
+      calculateRoutes();
+    }
+
+    // 4. Incident Management with SQLite
+    async function fetchIncidents() {
       try {
         const res = await fetch('/api/incidents/active');
         const json = await res.json();
         if (json.data) {
-          document.getElementById('kpi-incidents').innerText = `${json.data.length} Logged`;
+          document.getElementById('stat-incidents').innerText = `${json.data.length} Logged`;
           incidentsLayer.clearLayers();
-
-          const container = document.getElementById('admin-incident-list');
-          container.innerHTML = json.data.map(inc => {
-            // Draw on map
+          const list = document.getElementById('incidents-feed');
+          list.innerHTML = json.data.map(inc => {
             L.circleMarker([inc.lat, inc.lng], {
               radius: 7,
               color: '#ffffff',
-              fillColor: inc.severity >= 3 ? '#f43f5e' : '#f59e0b',
-              fillOpacity: 0.9,
+              fillColor: inc.severity >= 3 ? '#ef4444' : '#f59e0b',
+              fillOpacity: 0.95,
               weight: 2
             }).bindPopup(`<b>${inc.type.toUpperCase()}:</b> ${inc.roadName} (${inc.status})`).addTo(incidentsLayer);
 
             return `
-              <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 6px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                  <span style="font-size: 12px; font-weight: 600; color: ${inc.severity >= 3 ? '#f43f5e' : '#f59e0b'};">● ${inc.type.toUpperCase()} (Sev ${inc.severity})</span>
-                  <span style="font-size: 10px; color: #34d399; font-family: 'Geist Mono'; text-transform: uppercase;">${inc.status}</span>
+              <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 4px;">
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="font-weight: 700; font-size: 12px; color: ${inc.severity >= 3 ? '#fb7185' : '#fcd34d'};">● ${inc.type.toUpperCase()} (Sev ${inc.severity})</span>
+                  <span style="font-size: 10px; color: #34d399; font-family: 'JetBrains Mono';">${inc.status}</span>
                 </div>
-                <p style="font-size: 11.5px; color: var(--text-muted);">${inc.roadName} — Capacity -${inc.capacityReductionPercent}%.</p>
+                <p style="font-size: 11px; color: var(--text-muted);">${inc.roadName}</p>
                 <div style="display: flex; gap: 6px; margin-top: 4px;">
-                  <button class="reroute-btn" style="flex: 1; padding: 4px 6px; font-size: 11px; background: #2563eb;" onclick="updateIncidentStatus('${inc.id}', 'verified')">Verify</button>
-                  <button class="reroute-btn" style="flex: 1; padding: 4px 6px; font-size: 11px; background: #059669;" onclick="updateIncidentStatus('${inc.id}', 'resolved')">Resolve</button>
+                  <button style="flex: 1; background: #2563eb; color: #fff; border: none; padding: 3px 6px; border-radius: 4px; font-size: 10.5px; cursor: pointer;" onclick="updateStatus('${inc.id}', 'verified')">Verify</button>
+                  <button style="flex: 1; background: #059669; color: #fff; border: none; padding: 3px 6px; border-radius: 4px; font-size: 10.5px; cursor: pointer;" onclick="updateStatus('${inc.id}', 'resolved')">Resolve</button>
                 </div>
               </div>
             `;
           }).join('');
         }
       } catch (e) {
-        console.warn('Failed to load incidents', e);
+        console.warn('Incident load notice', e);
       }
     }
 
-    async function updateIncidentStatus(id, newStatus) {
-      try {
-        await fetch(`/api/incidents/${id}/status`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ status: newStatus })
-        });
-        loadActiveIncidents();
-        runRouting();
-      } catch (err) {
-        console.warn('Status update failed', err);
-      }
+    async function updateStatus(id, st) {
+      await fetch(`/api/incidents/${id}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: st })
+      });
+      fetchIncidents();
+      calculateRoutes();
     }
 
-    async function submitIncident() {
-      const type = document.getElementById('report-type').value;
-      const severity = parseInt(document.getElementById('report-severity').value, 10);
-      const desc = document.getElementById('report-desc').value;
+    async function submitNewIncident() {
+      const type = document.getElementById('modal-type').value;
+      const severity = parseInt(document.getElementById('modal-severity').value, 10);
+      const desc = document.getElementById('modal-desc').value;
       closeIncidentModal();
 
-      try {
-        const res = await fetch('/api/incidents/report', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            type,
-            severity,
-            description: desc,
-            location: { lat: clickedCoords[0], lng: clickedCoords[1], roadSegmentId: "BEL-PB-ROAD" }
-          })
-        });
-        const result = await res.json();
-        loadActiveIncidents();
-        runRouting();
-      } catch (e) {
-        console.warn('Incident submit failed', e);
-      }
+      await fetch('/api/incidents/report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type,
+          severity,
+          description: desc,
+          location: { lat: clickCoords[0], lng: clickCoords[1], roadSegmentId: "BEL-PB-ROAD" }
+        })
+      });
+      fetchIncidents();
+      calculateRoutes();
     }
 
-    // 6. Signal Simulation
-    async function optimizeSignalTiming() {
-      const north = parseInt(document.getElementById('slider-north').value, 10);
-      const east = parseInt(document.getElementById('slider-east').value, 10);
-
-      try {
-        const res = await fetch('/api/signals/optimize', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            junctionId: "JNC-14",
-            currentQueueLengths: { north, south: Math.round(north * 0.4), east, west: Math.round(east * 0.4) }
-          })
-        });
-        const json = await res.json();
-        if (json.data) {
-          document.getElementById('signal-reduction').innerText = `-${json.data.waitTimeReductionPercent}%`;
-          document.getElementById('signal-times').innerText = `${json.data.baselineFixedTiming.avgWaitTimeSec}s ➔ ${json.data.optimizedAdaptiveTiming.avgWaitTimeSec}s`;
-        }
-      } catch (e) {
-        console.warn('Signal API error', e);
-      }
-    }
-
-    // 7. Emergency Green Wave
-    async function activateGreenWave() {
-      emergencyPoly.setStyle({ color: '#34d399', weight: 8 });
+    // 5. Emergency Corridor Dispatch
+    async function triggerEmergencyDispatch() {
+      emergencyPoly.setStyle({ color: '#10b981', weight: 8 });
       try {
         const res = await fetch('/api/emergency/corridor', {
           method: 'POST',
@@ -1423,147 +1369,205 @@
         });
         const json = await res.json();
         if (json.data) {
-          document.getElementById('emg-saved').innerText = json.data.timeSavedMin;
+          document.getElementById('emg-saved-val').innerText = json.data.timeSavedMin;
           if (json.data.waypoints) {
             emergencyPoly.setLatLngs(json.data.waypoints).addTo(map);
             map.fitBounds(emergencyPoly.getBounds(), { padding: [60, 60] });
           }
+          if (json.data.preemptedJunctions) {
+            document.getElementById('emergency-junctions-list').innerHTML = json.data.preemptedJunctions.map(j => `
+              <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
+                <span>${j.name}</span>
+                <span style="font-family: 'JetBrains Mono'; font-weight: 700; color: #34d399;">${j.status} (T+${j.preemptInSec}s)</span>
+              </div>
+            `).join('');
+          }
         }
       } catch (e) {
-        console.warn('Emergency API error', e);
+        console.warn('Emergency dispatch notice', e);
       }
     }
 
-    // 8. Navigation & UI Controls
-    function switchView(tabKey) {
-      document.querySelectorAll('.tab-item').forEach(btn => btn.classList.remove('active'));
-      const activeBtn = Array.from(document.querySelectorAll('.tab-item')).find(b => b.onclick.toString().includes(tabKey));
+    // 6. Signal Simulation & Animated Countdown
+    let signalSecLeft = 28;
+    setInterval(() => {
+      signalSecLeft--;
+      if (signalSecLeft <= 0) signalSecLeft = 35;
+      document.getElementById('signal-countdown').innerText = signalSecLeft + 's';
+
+      if (signalSecLeft > 5) {
+        document.getElementById('light-green').className = 'fixture-light green active';
+        document.getElementById('light-yellow').className = 'fixture-light yellow';
+        document.getElementById('light-red').className = 'fixture-light red';
+      } else if (signalSecLeft > 2) {
+        document.getElementById('light-green').className = 'fixture-light green';
+        document.getElementById('light-yellow').className = 'fixture-light yellow active';
+        document.getElementById('light-red').className = 'fixture-light red';
+      } else {
+        document.getElementById('light-green').className = 'fixture-light green';
+        document.getElementById('light-yellow').className = 'fixture-light yellow';
+        document.getElementById('light-red').className = 'fixture-light red active';
+      }
+    }, 1000);
+
+    async function runLiveSignalSimulation() {
+      const n = parseInt(document.getElementById('slider-north').value, 10);
+      const e = parseInt(document.getElementById('slider-east').value, 10);
+      document.getElementById('val-q-north').innerText = n + ' veh';
+      document.getElementById('val-q-east').innerText = e + ' veh';
+
+      try {
+        const res = await fetch('/api/signals/optimize', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            junctionId: "JNC-14",
+            currentQueueLengths: { north: n, south: Math.round(n * 0.4), east: e, west: Math.round(e * 0.4) }
+          })
+        });
+        const json = await res.json();
+        if (json.data) {
+          document.getElementById('signal-reduction').innerText = `-${json.data.waitTimeReductionPercent}%`;
+        }
+      } catch (err) {
+        console.warn('Signal sim notice', err);
+      }
+    }
+
+    // 7. Navigation & Tabs
+    function switchNav(tabKey) {
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      const activeBtn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.onclick.toString().includes(tabKey));
       if (activeBtn) activeBtn.classList.add('active');
 
-      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
-      const targetPanel = document.getElementById('panel-' + tabKey);
-      if (targetPanel) targetPanel.classList.add('active');
+      document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
+      const targetView = document.getElementById('view-' + tabKey);
+      if (targetView) targetView.classList.add('active');
 
       const titleMap = {
-        'dashboard': ['City Command Overview', 'Executive Traffic Intelligence'],
-        'routes': ['Commuter Routing', 'BPR Cost + A* vs Dijkstra'],
-        'emergency': ['Emergency Green Wave', 'Priority Corridor Preemption'],
-        'signals': ['Signal Lab', 'Adaptive Queue Simulation'],
-        'admin': ['Admin Incident Queue', 'Network Impact & SQLite']
+        'routes': ['Smart Route Planner', 'A* vs Dijkstra Multi-Factor Engine'],
+        'emergency': ['Green Wave Priority', 'Ambulance Preemption Corridor'],
+        'signals': ['Smart Signal Lab', 'Adaptive Webster Cycle Optimizer'],
+        'analytics': ['Diurnal Traffic Analytics', '30-Day Sensor Model Validation'],
+        'incidents': ['Incident Triage Feed', 'Real-time SQLite Disruption Queue']
       };
 
       if (titleMap[tabKey]) {
-        document.getElementById('drawer-title').innerText = titleMap[tabKey][0];
-        document.getElementById('drawer-subtitle').innerText = titleMap[tabKey][1];
+        document.getElementById('panel-title').innerText = titleMap[tabKey][0];
+        document.getElementById('panel-sub').innerText = titleMap[tabKey][1];
       }
+
+      toggleSidebar(true);
 
       if (tabKey === 'emergency') {
         if (!map.hasLayer(emergencyPoly)) emergencyPoly.addTo(map);
-        fastestPoly.setStyle({ opacity: 0.2 });
-        shortestPoly.setStyle({ opacity: 0.2 });
+        astarPoly.setStyle({ opacity: 0.2 });
+        dijkstraPoly.setStyle({ opacity: 0.2 });
+        altPoly.setStyle({ opacity: 0.2 });
       } else {
         if (map.hasLayer(emergencyPoly)) map.removeLayer(emergencyPoly);
-        fastestPoly.setStyle({ opacity: 0.95 });
-        shortestPoly.setStyle({ opacity: 0.7 });
+        astarPoly.setStyle({ opacity: 0.95 });
+        dijkstraPoly.setStyle({ opacity: 0.75 });
+        altPoly.setStyle({ opacity: 0.75 });
       }
     }
 
-    function selectRoute(idx) {
-      document.getElementById('card-route-0').classList.toggle('active-fastest', idx === 0);
-      document.getElementById('card-route-1').classList.toggle('active-shortest', idx === 1);
-      if (idx === 0) {
-        fastestPoly.bringToFront();
-        fastestPoly.setStyle({ opacity: 1, weight: 7 });
-        shortestPoly.setStyle({ opacity: 0.35, weight: 3 });
-      } else {
-        shortestPoly.bringToFront();
-        shortestPoly.setStyle({ opacity: 1, weight: 7 });
-        fastestPoly.setStyle({ opacity: 0.35, weight: 3 });
-      }
+    function toggleSidebar(open) {
+      document.getElementById('sidebar-panel').classList.toggle('collapsed', !open);
+      document.getElementById('open-panel-btn').style.display = open ? 'none' : 'flex';
     }
 
-    function toggleLayers() {
-      const cong = document.getElementById('layer-congestion').checked;
-      const inc = document.getElementById('layer-incidents').checked;
-      const sig = document.getElementById('layer-signals').checked;
+    function handleLayerToggle() {
+      const cong = document.getElementById('toggle-congestion').checked;
+      const inc = document.getElementById('toggle-incidents').checked;
+      const sig = document.getElementById('toggle-signals').checked;
 
       if (cong) map.addLayer(congestionLayer); else map.removeLayer(congestionLayer);
       if (inc) map.addLayer(incidentsLayer); else map.removeLayer(incidentsLayer);
       if (sig) map.addLayer(signalsLayer); else map.removeLayer(signalsLayer);
     }
 
-    function loadDemoScenario(key) {
-      customOriginCoords = null;
-      customDestCoords = null;
-
+    function loadBenchmark(key) {
+      customOrigin = null;
+      customDest = null;
       if (key === 'kle_airport') {
         document.getElementById('origin-select').value = 'kle_tech';
         document.getElementById('dest-select').value = 'sambre_airport';
-        switchView('routes');
-        runRouting();
-      } else if (key === 'station_hospital') {
-        switchView('emergency');
-        activateGreenWave();
+        calculateRoutes();
+      } else if (key === 'station_bims') {
+        document.getElementById('origin-select').value = 'railway_station';
+        document.getElementById('dest-select').value = 'bims_hospital';
+        calculateRoutes();
       } else if (key === 'chennamma_suvarna') {
         document.getElementById('origin-select').value = 'chennamma_circle';
         document.getElementById('dest-select').value = 'suvarna_soudha';
-        switchView('routes');
-        runRouting();
+        calculateRoutes();
       }
     }
 
-    function handleSearchKey(event) {
-      if (event.key === 'Enter') {
-        const query = event.target.value;
-        if (!query) return;
-        // Search Belagavi landmarks or geocode
-        fetch(`/api/routes/calculate`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ origin: 'chennamma_circle', destination: query })
-        })
-        .then(res => res.json())
-        .then(json => {
-          if (json.data) {
-            switchView('routes');
-            runRouting();
-          }
-        });
-      }
-    }
-
-    function triggerIncidentModal() {
+    function openIncidentModal() {
       document.getElementById('incident-modal').style.display = 'flex';
     }
-
     function closeIncidentModal() {
       document.getElementById('incident-modal').style.display = 'none';
     }
 
-    function updateQueue(dir, val) {
-      document.getElementById('val-q-' + dir).innerText = val;
-    }
-
-    // Pre-populate Signal Markers
+    // 8. Pre-populate Signals on Map
     fetch('/api/signals/junctions')
       .then(r => r.json())
       .then(res => {
         if (res.data) {
-          res.data.forEach(jnc => {
-            L.circleMarker([jnc.lat, jnc.lng], {
+          res.data.forEach(j => {
+            L.circleMarker([j.lat, j.lng], {
               radius: 6,
               color: '#34d399',
               fillColor: '#059669',
               fillOpacity: 0.9,
               weight: 2
-            }).bindPopup(`<b>${jnc.name}</b><br>Signal Wait: ${jnc.baseline_wait_sec}s ➔ ${jnc.optimized_wait_sec}s`).addTo(signalsLayer);
+            }).bindPopup(`<b>${j.name}</b><br>Signal Wait: ${j.baseline_wait_sec}s ➔ ${j.optimized_wait_sec}s`).addTo(signalsLayer);
           });
         }
       });
 
-    // Initial Load
-    loadActiveIncidents();
-    runRouting();
+    // 9. Chart.js Diurnal Congestion Chart
+    const ctx = document.getElementById('trafficChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '23:59'],
+        datasets: [{
+          label: 'Congestion Index (0-1.0)',
+          data: [0.10, 0.08, 0.88, 0.50, 0.92, 0.65, 0.18],
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59, 130, 246, 0.12)',
+          fill: true,
+          tension: 0.35,
+          pointRadius: 4,
+          pointBackgroundColor: '#60a5fa'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b', font: { size: 10 } } },
+          y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b', font: { size: 10 } }, min: 0, max: 1.0 }
+        }
+      }
+    });
+
+    // Initial Execution
+    fetchIncidents();
+    loadHeatmapOverlay();
+    calculateRoutes();
+
+    // Socket.IO Listener
+    try {
+      const socket = io();
+      socket.on('incident:new', () => { fetchIncidents(); calculateRoutes(); });
+      socket.on('reroute:triggered', () => { calculateRoutes(); });
+    } catch (e) {}
   </script>
 </body>
 </html>

@@ -37,10 +37,11 @@ router.post('/corridor', (req, res) => {
     });
   }
 
-  // Calculate emergency preemption speed (35% faster + zero intersection delay)
+  // Calculate emergency green-wave route using genuine emergency speed factor
+  const emergencyRoute = runAStar(startKey, destKey, 0, new Set(), 1.0, true) || normalRoute;
   const normalTimeMin = normalRoute.estimatedTravelTimeMinutes;
-  const emergencyTimeMin = Number((normalTimeMin * 0.44).toFixed(1)); // ~56% time saved under green wave
-  const timeSavedMin = Number((normalTimeMin - emergencyTimeMin).toFixed(1));
+  const emergencyTimeMin = emergencyRoute.estimatedTravelTimeMinutes;
+  const timeSavedMin = Number(Math.max(0.1, normalTimeMin - emergencyTimeMin).toFixed(1));
   const timeSavedPercent = Number(((timeSavedMin / normalTimeMin) * 100).toFixed(1));
 
   // Extract junctions from path nodes
