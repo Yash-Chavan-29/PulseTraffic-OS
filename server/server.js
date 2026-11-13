@@ -196,6 +196,13 @@ app.post('/api/demo/reset', (req, res) => {
   }
 });
 
+process.on('uncaughtException', (err) => {
+  console.error('[Uncaught Exception]', err);
+});
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[Unhandled Rejection]', reason);
+});
+
 server.listen(PORT, () => {
   console.log(`\n=================================================`);
   console.log(`🚦 PulseTraffic OS Server listening on port ${PORT}`);
