@@ -1,7 +1,7 @@
 {
-  "name": "pulsetraffic-server",
+  "name": "smart-routes-server",
   "version": "1.0.0",
-  "description": "PulseTraffic OS - Intelligent Traffic Management & Route Optimization Backend",
+  "description": "Smart_Routes - Intelligent Traffic Management & Route Optimization Backend",
   "main": "server.js",
   "type": "module",
   "scripts": {

@@ -143,7 +143,11 @@ export const NODE_ALIASES = {
   "civic": "bogarves",
   "hebbal": "nehru_nagar",
   "outer_ring": "auto_nagar",
-  "indiranagar": "fort_lake"
+  "indiranagar": "fort_lake",
+  "cbt": "cbt_bus_terminal",
+  "cbt_stand": "cbt_bus_terminal",
+  "bus_stand": "cbt_bus_terminal",
+  "bus_terminal": "cbt_bus_terminal"
 };
 
 // --- Raw Directed Edge Definitions ---
@@ -272,15 +276,49 @@ hydrateGraphFromDB();
  */
 export function resolveNodeKey(query) {
   if (!query) return null;
-  const str = String(query).trim().toLowerCase();
+  const rawStr = String(query).trim().toLowerCase();
   
-  if (ROAD_NODES[str]) return str;
-  if (NODE_ALIASES[str]) return NODE_ALIASES[str];
+  if (ROAD_NODES[rawStr]) return rawStr;
+  if (NODE_ALIASES[rawStr]) return NODE_ALIASES[rawStr];
+  
+  // Clean string: strip parentheses, non-alphanumerics
+  const cleanStr = rawStr.replace(/\(.*?\)/g, '').replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+  
+  if (ROAD_NODES[cleanStr]) return cleanStr;
+  if (NODE_ALIASES[cleanStr]) return NODE_ALIASES[cleanStr];
   
   for (const [key, node] of Object.entries(ROAD_NODES)) {
-    if (node.name.toLowerCase().includes(str) || String(node.numId) === str) {
+    const nodeNameLow = node.name.toLowerCase();
+    const cleanNodeName = nodeNameLow.replace(/\(.*?\)/g, '').replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+    
+    if (nodeNameLow.includes(cleanStr) || cleanStr.includes(cleanNodeName) || cleanStr.includes(nodeNameLow)) {
       return key;
     }
+    if (String(node.numId) === rawStr || String(node.numId) === cleanStr) {
+      return key;
+    }
+    if (cleanStr.includes(key.replace(/_/g, ' '))) {
+      return key;
+    }
+  }
+
+  // Token matching
+  let bestKey = null;
+  let bestScore = 0;
+  const queryTokens = cleanStr.split(' ').filter(t => t.length > 2);
+  for (const [key, node] of Object.entries(ROAD_NODES)) {
+    const target = `${key.replace(/_/g, ' ')} ${node.name.toLowerCase()}`;
+    let score = 0;
+    for (const token of queryTokens) {
+      if (target.includes(token)) score += token.length;
+    }
+    if (score > bestScore) {
+      bestScore = score;
+      bestKey = key;
+    }
+  }
+  if (bestScore >= 3) {
+    return bestKey;
   }
 
   return null;

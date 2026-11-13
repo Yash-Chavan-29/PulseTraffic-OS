@@ -1,8 +1,26 @@
 import express from 'express';
-import { calculateMultiFactorRoutes } from '../services/graphEngine.js';
+import { calculateMultiFactorRoutes, ROAD_NODES, ROAD_EDGES } from '../services/graphEngine.js';
 import { getCongestionHeatmap } from '../services/mlPredictor.js';
 
 const router = express.Router();
+
+// GET /api/routes/junctions - Belagavi Core Landmark Junctions
+router.get('/junctions', (req, res) => {
+  res.status(200).json({
+    status: 200,
+    count: Object.keys(ROAD_NODES).length,
+    data: Object.values(ROAD_NODES)
+  });
+});
+
+// GET /api/routes/network - Belagavi Road Network Topology
+router.get('/network', (req, res) => {
+  res.status(200).json({
+    status: 200,
+    nodes: ROAD_NODES,
+    edges: ROAD_EDGES
+  });
+});
 
 // POST /api/routes/calculate
 router.post('/calculate', async (req, res) => {

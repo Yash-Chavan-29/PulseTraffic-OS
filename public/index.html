@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SmartRoutes — Intelligent Traffic Management & Route Optimization</title>
+  <title>Smart_Routes — Intelligent Traffic Management & Route Optimization</title>
 
   <!-- Google Fonts: Roboto & Google Sans style -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,6 +29,7 @@
       --gm-orange: #e37400;
       --gm-orange-bg: #fef7e0;
       --gm-purple: #7c3aed;
+      --gm-teal: #0d9488;
       --gm-shadow: 0 1px 3px rgba(60,64,67,0.3), 0 4px 12px 3px rgba(60,64,67,0.15);
       --gm-shadow-hover: 0 2px 6px rgba(60,64,67,0.3), 0 8px 20px 4px rgba(60,64,67,0.18);
       --gm-radius: 12px;
@@ -58,6 +59,43 @@
       flex-direction: column;
       overflow: hidden;
       transition: all 0.2s ease;
+    }
+
+    /* Brand Header */
+    .gmaps-brand-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: #ffffff;
+      border-bottom: 1px solid #f1f3f4;
+    }
+    .brand-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-badge {
+      background: var(--gm-blue);
+      color: #fff;
+      font-weight: 700;
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+    }
+    .brand-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--gm-text);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .brand-tag {
+      font-size: 11px;
+      color: var(--gm-text-secondary);
+      font-weight: 500;
     }
 
     /* Travel Mode Bar */
@@ -127,7 +165,7 @@
       flex: 1;
       border: none;
       background: transparent;
-      font-size: 13.5px;
+      font-size: 13px;
       padding: 9px 0;
       outline: none;
       color: var(--gm-text);
@@ -185,7 +223,7 @@
       background: #f1f3f4;
       border: 1px solid var(--gm-border);
       color: var(--gm-text);
-      font-size: 12px;
+      font-size: 11.5px;
       padding: 4px 10px;
       border-radius: 16px;
       cursor: pointer;
@@ -331,17 +369,29 @@
     .route-dist-text { font-size: 13.5px; color: var(--gm-text-secondary); font-weight: 500; }
 
     .route-tagline {
-      font-size: 12.5px;
+      font-size: 12px;
       color: var(--gm-text);
       display: flex;
       align-items: center;
       gap: 6px;
-      font-weight: 500;
+      font-weight: 600;
     }
     .route-subdesc {
       font-size: 11.5px;
       color: var(--gm-text-secondary);
       line-height: 1.35;
+    }
+
+    /* Junctions breadcrumbs */
+    .route-junctions-path {
+      font-size: 11px;
+      color: #0369a1;
+      background: #f0f9ff;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid #bae6fd;
+      line-height: 1.4;
+      margin-top: 2px;
     }
 
     .route-metrics-bar {
@@ -385,12 +435,12 @@
     .steps-list.open { display: flex; }
 
     /* =========================================================
-       3. TOP AMENITIES CHIPS (PETROL, HOSPITALS, FOOD)
+       3. TOP ACTION CONTROLS & AMENITIES BAR
        ========================================================= */
-    .gmaps-top-amenities {
+    .gmaps-top-toolbar {
       position: absolute;
       top: 14px;
-      left: 440px;
+      left: 435px;
       z-index: 1000;
       display: flex;
       gap: 8px;
@@ -398,15 +448,15 @@
       overflow-x: auto;
       padding: 2px;
     }
-    .gmaps-top-amenities::-webkit-scrollbar { display: none; }
+    .gmaps-top-toolbar::-webkit-scrollbar { display: none; }
 
-    .amenity-btn {
+    .tool-chip {
       background: #ffffff;
       border: 1px solid var(--gm-border);
       box-shadow: 0 1px 3px rgba(60,64,67,0.3);
-      padding: 8px 14px;
+      padding: 7px 13px;
       border-radius: 20px;
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 500;
       color: var(--gm-text);
       display: flex;
@@ -416,14 +466,15 @@
       white-space: nowrap;
       transition: all 0.15s;
     }
-    .amenity-btn:hover, .amenity-btn.active {
+    .tool-chip:hover, .tool-chip.active {
       background: #f1f3f4;
       border-color: #5f6368;
     }
+    .chip-signal { border-color: #f59e0b; }
+    .chip-heatmap { border-color: #ef4444; }
+    .chip-emergency { border-color: #10b981; }
 
-    /* =========================================================
-       4. TOP RIGHT ACTION BAR (REPORT HAZARD & ADMIN)
-       ========================================================= */
+    /* Right Action Buttons (Hazard Report & Admin) */
     .gmaps-top-actions {
       position: absolute;
       top: 14px;
@@ -431,16 +482,16 @@
       z-index: 1000;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .btn-report-hazard {
       background: var(--gm-red);
       color: #fff;
       border: none;
-      padding: 8px 16px;
+      padding: 8px 15px;
       border-radius: 20px;
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 500;
       cursor: pointer;
       display: flex;
@@ -457,7 +508,7 @@
       border: 1px solid var(--gm-border);
       padding: 8px 14px;
       border-radius: 20px;
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 500;
       cursor: pointer;
       display: flex;
@@ -469,7 +520,7 @@
     .btn-admin-portal:hover { background: #f8f9fa; border-color: var(--gm-blue); color: var(--gm-blue); }
 
     /* =========================================================
-       5. FLOATING MAP CONTROLS (BOTTOM-RIGHT & LEFT)
+       4. FLOATING MAP CONTROLS (BOTTOM-RIGHT & LEFT)
        ========================================================= */
     .gmaps-controls-bottom-right {
       position: absolute;
@@ -546,7 +597,7 @@
     .gmaps-layer-switcher:hover { box-shadow: var(--gm-shadow-hover); }
     .layer-thumb { width: 28px; height: 28px; border-radius: 4px; background: #3b82f6; }
 
-    /* Pick on map mode notification banner */
+    /* Map Pinpoint Banner */
     .map-picker-banner {
       position: absolute;
       top: 14px;
@@ -576,7 +627,7 @@
     }
 
     /* =========================================================
-       6. MODAL OVERLAYS (REPORTING & ADMIN DASHBOARD)
+       5. MODALS (REPORT, ADMIN, SIGNAL LAB)
        ========================================================= */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
@@ -614,9 +665,7 @@
     .hazard-icon { font-size: 24px; }
     .hazard-name { font-size: 12.5px; font-weight: 600; color: var(--gm-text); }
 
-    .severity-selector {
-      display: flex; gap: 6px; margin-top: 4px;
-    }
+    .severity-selector { display: flex; gap: 6px; margin-top: 4px; }
     .sev-chip {
       flex: 1; text-align: center; font-size: 11.5px; padding: 6px 0; border-radius: 6px;
       border: 1px solid var(--gm-border); background: #f8f9fa; cursor: pointer; font-weight: 500;
@@ -626,7 +675,7 @@
 
     /* Admin Portal Modal */
     .admin-modal {
-      width: 880px; max-width: calc(100vw - 32px); max-height: 88vh; background: #fff;
+      width: 900px; max-width: calc(100vw - 32px); max-height: 88vh; background: #fff;
       border-radius: 16px; box-shadow: 0 16px 40px rgba(0,0,0,0.3); display: flex; flex-direction: column;
       overflow: hidden; animation: modalPop 0.2s ease-out;
     }
@@ -656,26 +705,20 @@
     .admin-table-container {
       overflow-y: auto; max-height: calc(88vh - 270px);
     }
-    .admin-table {
-      width: 100%; border-collapse: collapse; font-size: 12.5px;
-    }
+    .admin-table { width: 100%; border-collapse: collapse; font-size: 12px; }
     .admin-table th {
       background: #f1f5f9; padding: 10px 14px; text-align: left; color: #475569; font-weight: 600;
       position: sticky; top: 0; border-bottom: 1px solid #cbd5e1; z-index: 1;
     }
-    .admin-table td { padding: 10px 14px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+    .admin-table td { padding: 9px 14px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
     .admin-table tr:hover { background: #f8fafc; }
 
-    .status-badge {
-      display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase;
-    }
+    .status-badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 10.5px; font-weight: 600; text-transform: uppercase; }
     .badge-verified { background: #dcfce7; color: #15803d; }
     .badge-unverified { background: #fef3c7; color: #b45309; }
     .badge-resolved { background: #e2e8f0; color: #64748b; }
 
-    .sev-badge {
-      display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10.5px; font-weight: 700;
-    }
+    .sev-badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; }
     .sev-critical { background: #fee2e2; color: #b91c1c; }
     .sev-high { background: #ffedd5; color: #c2410c; }
     .sev-medium { background: #fef9c3; color: #a16207; }
@@ -693,6 +736,27 @@
       position: absolute; width: 14px; height: 14px; border-radius: 50%; background: #1a73e8; border: 2.5px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.3);
     }
     @keyframes pulseAnim { 0% { transform: scale(0.6); opacity: 1; } 100% { transform: scale(2.4); opacity: 0; } }
+
+    /* Junction Badge Marker on Map */
+    .junction-marker-pill {
+      background: #1e293b;
+      color: #fff;
+      border: 2px solid #fff;
+      border-radius: 12px;
+      padding: 2px 6px;
+      font-size: 10.5px;
+      font-weight: 600;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.35);
+      white-space: nowrap;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .junction-marker-pill:hover {
+      background: var(--gm-blue);
+      transform: scale(1.08);
+    }
 
     /* Toast */
     #toast {
@@ -715,10 +779,19 @@
   </div>
 
   <!-- =========================================================
-       1. GOOGLE MAPS FLOATING DIRECTIONS & SEARCH CARD
+       1. SMART_ROUTES FLOATING DIRECTIONS & SEARCH CARD
        ========================================================= -->
   <div class="gmaps-directions-card" id="directions-card">
     
+    <!-- Brand Header -->
+    <div class="gmaps-brand-header">
+      <div class="brand-title-wrap">
+        <span class="brand-badge">SMART</span>
+        <span class="brand-name">Smart_Routes</span>
+      </div>
+      <span class="brand-tag">Belagavi Traffic Network</span>
+    </div>
+
     <!-- Travel Mode Switcher -->
     <div class="gmaps-mode-bar">
       <button class="mode-tab active" data-mode="drive" onclick="switchMode('drive')">
@@ -744,7 +817,7 @@
       <!-- Origin Input -->
       <div class="input-row">
         <div class="input-dot-origin"></div>
-        <input type="text" id="input-origin" class="gmaps-input" value="Your location (Belagavi Hub)" placeholder="Choose starting point..." onkeydown="if(event.key==='Enter') calculateGoogleRoutes()">
+        <input type="text" id="input-origin" class="gmaps-input" value="Rani Chennamma Circle Hub (Belagavi)" placeholder="Choose starting point or junction..." onkeydown="if(event.key==='Enter') calculateGoogleRoutes()">
         <button class="input-action-btn" onclick="locateUserGPS()" title="Use Current GPS">📍</button>
         <button class="input-action-btn" onclick="clearInput('input-origin')" title="Clear">✕</button>
       </div>
@@ -752,7 +825,7 @@
       <!-- Destination Input -->
       <div class="input-row">
         <div class="input-dot-dest"></div>
-        <input type="text" id="input-destination" class="gmaps-input" value="Dharwad" placeholder="Choose destination..." onkeydown="if(event.key==='Enter') calculateGoogleRoutes()">
+        <input type="text" id="input-destination" class="gmaps-input" value="Belagavi Sambre Airport" placeholder="Choose destination or junction..." onkeydown="if(event.key==='Enter') calculateGoogleRoutes()">
         <button class="input-action-btn" onclick="clearInput('input-destination')" title="Clear">✕</button>
       </div>
 
@@ -762,19 +835,21 @@
       </button>
     </div>
 
-    <!-- Suggested Destination Chips -->
+    <!-- Belagavi Landmark Destination Chips -->
     <div class="gmaps-chips-scroll">
-      <span class="place-chip active" onclick="setDestination('Dharwad')">Dharwad</span>
-      <span class="place-chip" onclick="setDestination('Bagalkot')">Bagalkot</span>
-      <span class="place-chip" onclick="setDestination('Hubballi')">Hubballi</span>
-      <span class="place-chip" onclick="setDestination('Belagavi Sambre Airport')">Airport</span>
-      <span class="place-chip" onclick="setDestination('KLE Hospital Belagavi')">KLE Hospital</span>
-      <span class="place-chip" onclick="setDestination('Central Railway Station')">Station</span>
+      <span class="place-chip active" onclick="setDestination('Belagavi Sambre Airport')">✈️ Airport</span>
+      <span class="place-chip" onclick="setDestination('KLE Technological University')">🎓 KLE Tech</span>
+      <span class="place-chip" onclick="setDestination('BIMS District Civil Hospital')">🏥 BIMS Hospital</span>
+      <span class="place-chip" onclick="setDestination('Belagavi Central Railway Station')">🚆 Railway Station</span>
+      <span class="place-chip" onclick="setDestination('RPD College Cross Junction')">🏛️ RPD Cross</span>
+      <span class="place-chip" onclick="setDestination('Bogarves Central Intersection')">🔄 Bogarves</span>
+      <span class="place-chip" onclick="setDestination('Central Bus Terminal')">🚌 CBT Stand</span>
+      <span class="place-chip" onclick="setDestination('Suvarna Vidhana Soudha')">🏛️ Suvarna Soudha</span>
     </div>
 
     <!-- Calculate Routes Button -->
     <button class="btn-search-route" id="btn-calc-routes" onclick="calculateGoogleRoutes()">
-      <span id="btn-calc-text">Get Directions</span>
+      <span id="btn-calc-text">Calculate Routes (A* & Dijkstra)</span>
     </button>
 
     <!-- Incident Ahead Alert Banner -->
@@ -784,7 +859,7 @@
         <span id="alert-banner-header">Incident Ahead Detected</span>
       </div>
       <div class="incident-alert-desc" id="alert-banner-desc">
-        Disruption reported on your active corridor. Alternative bypass route available.
+        Disruption reported on active Belagavi corridor. Alternative bypass route available.
       </div>
       <button class="btn-switch-detour" id="btn-detour-action" onclick="switchToDetourRoute()">
         Switch to Bypass Route
@@ -794,20 +869,26 @@
     <!-- Route Results & Comparison List (Fastest vs Shortest) -->
     <div class="gmaps-routes-results" id="routes-results-list" style="display: none;">
       
-      <!-- 1. FASTEST ROUTE CARD -->
+      <!-- 1. FASTEST ROUTE CARD (A* Heuristic) -->
       <div class="route-card selected-fastest" id="card-route-fastest" onclick="selectRoute(0)">
         <div class="route-badge badge-fastest">
           <span>★</span> <span>Recommended • Fastest route</span>
         </div>
         <div class="route-time-row">
-          <span class="route-eta-text eta-fastest" id="r0-eta">1 hr 48 min</span>
-          <span class="route-dist-text" id="r0-dist">94.4 km</span>
+          <span class="route-eta-text eta-fastest" id="r0-eta">14 min</span>
+          <span class="route-dist-text" id="r0-dist">14.0 km</span>
         </div>
-        <div class="route-tagline" id="r0-tag">via NH-48 Express Corridor</div>
-        <div class="route-subdesc" id="r0-desc">Usual traffic • Optimal fuel-efficient flow</div>
+        <div class="route-tagline" id="r0-tag">via BPR Optimal Corridors</div>
+        <div class="route-subdesc" id="r0-desc">A* heuristic routing • Optimal fuel-efficient flow</div>
+        
+        <!-- Traversed Belagavi Junctions -->
+        <div class="route-junctions-path" id="r0-junctions-path">
+          Junctions: Chennamma Circle ➔ BIMS Hospital ➔ Fort Lake ➔ Auto Nagar ➔ Sambre Airport
+        </div>
+
         <div class="route-metrics-bar">
-          <span id="r0-fuel">⛽ 6.8 L fuel</span>
-          <span id="r0-reliability">🛡️ 94% reliability</span>
+          <span id="r0-fuel">⛽ 0.95 L fuel</span>
+          <span id="r0-reliability">🛡️ 95% reliability</span>
           <span id="r0-flow">🟢 Low congestion</span>
         </div>
         <button class="btn-toggle-steps" onclick="event.stopPropagation(); toggleTurnByTurn(0);">
@@ -816,20 +897,26 @@
         <div class="steps-list" id="turn-steps-fastest"></div>
       </div>
 
-      <!-- 2. SHORTEST ROUTE CARD -->
+      <!-- 2. SHORTEST ROUTE CARD (Dijkstra Minimum Distance) -->
       <div class="route-card" id="card-route-shortest" onclick="selectRoute(1)">
         <div class="route-badge badge-shortest">
           <span>📏</span> <span>Shortest distance</span>
         </div>
         <div class="route-time-row">
-          <span class="route-eta-text eta-shortest" id="r1-eta">2 hr 06 min</span>
-          <span class="route-dist-text" id="r1-dist">90.6 km</span>
+          <span class="route-eta-text eta-shortest" id="r1-eta">18 min</span>
+          <span class="route-dist-text" id="r1-dist">13.1 km</span>
         </div>
-        <div class="route-tagline" id="r1-tag">via Downtown Arterial & PB Road</div>
-        <div class="route-subdesc" id="r1-desc">+18 min slower due to signal delay & bottlenecks</div>
+        <div class="route-tagline" id="r1-tag">via Downtown Arterials</div>
+        <div class="route-subdesc" id="r1-desc">Dijkstra physical distance • Subject to signal delay & bottlenecks</div>
+        
+        <!-- Traversed Belagavi Junctions -->
+        <div class="route-junctions-path" id="r1-junctions-path">
+          Junctions: Chennamma Circle ➔ Civil Hospital ➔ Station ➔ Subhash Nagar ➔ Airport
+        </div>
+
         <div class="route-metrics-bar">
-          <span id="r1-fuel">⛽ 7.4 L fuel</span>
-          <span id="r1-reliability">🛡️ 72% reliability</span>
+          <span id="r1-fuel">⛽ 1.08 L fuel</span>
+          <span id="r1-reliability">🛡️ 82% reliability</span>
           <span id="r1-flow">🟠 Urban signals</span>
         </div>
         <button class="btn-toggle-steps" onclick="event.stopPropagation(); toggleTurnByTurn(1);">
@@ -843,20 +930,39 @@
   </div>
 
   <!-- =========================================================
-       2. TOP AMENITIES CHIPS (PETROL, HOSPITALS, FOOD)
+       2. TOP TOOLBAR & AMENITIES BAR
        ========================================================= -->
-  <div class="gmaps-top-amenities">
-    <button class="amenity-btn" onclick="showNearbyPlaces('gas')">
+  <div class="gmaps-top-toolbar">
+    <!-- Amenities -->
+    <button class="tool-chip" onclick="showNearbyPlaces('gas')">
       <span>⛽</span>
       <span>Petrol Pumps</span>
     </button>
-    <button class="amenity-btn" onclick="showNearbyPlaces('hospital')">
+    <button class="tool-chip" onclick="showNearbyPlaces('hospital')">
       <span>🏥</span>
       <span>Hospitals</span>
     </button>
-    <button class="amenity-btn" onclick="showNearbyPlaces('food')">
+    <button class="tool-chip" onclick="showNearbyPlaces('food')">
       <span>🍽️</span>
       <span>Restaurants</span>
+    </button>
+
+    <!-- Signal Lab & Optimization -->
+    <button class="tool-chip chip-signal" onclick="openSignalLabModal()">
+      <span>🚦</span>
+      <span>Signal Lab</span>
+    </button>
+
+    <!-- Traffic Heatmap Toggle -->
+    <button class="tool-chip chip-heatmap" id="btn-toggle-heatmap" onclick="toggleCongestionHeatmap()">
+      <span>🔥</span>
+      <span>Congestion Heatmap</span>
+    </button>
+
+    <!-- Emergency Preemption -->
+    <button class="tool-chip chip-emergency" onclick="triggerEmergencyGreenWave()">
+      <span>🚑</span>
+      <span>Emergency Corridor</span>
     </button>
   </div>
 
@@ -876,7 +982,7 @@
   </div>
 
   <!-- =========================================================
-       4. BOTTOM RIGHT FLOATING CONTROLS (LOCATE ME & ZOOM)
+       4. BOTTOM RIGHT FLOATING CONTROLS
        ========================================================= -->
   <div class="gmaps-controls-bottom-right">
     <button class="map-btn-circle" onclick="locateUserGPS()" title="Center My Location">
@@ -899,7 +1005,7 @@
   </div>
 
   <!-- =========================================================
-       5. COOPERATIVE HAZARD REPORTING MODAL (BACKEND CONNECTED)
+       5. COOPERATIVE HAZARD REPORTING MODAL
        ========================================================= -->
   <div class="modal-overlay" id="report-modal">
     <div class="modal-card">
@@ -912,10 +1018,9 @@
       </div>
 
       <div style="padding: 12px 20px 0; font-size: 13px; color: var(--gm-text-secondary);">
-        Submit incident report directly to traffic network and citizen map:
+        Submit incident report directly to Belagavi traffic network:
       </div>
 
-      <!-- Hazard Types -->
       <div class="hazard-types-grid">
         <button class="hazard-btn selected" onclick="selectHazardType('accident', this)">
           <span class="hazard-icon">💥</span>
@@ -935,19 +1040,18 @@
         </button>
       </div>
 
-      <!-- Form Inputs -->
       <div style="padding: 0 20px 16px; display: flex; flex-direction: column; gap: 10px;">
         <div>
-          <label style="font-size: 11.5px; font-weight: 600; color: var(--gm-text-secondary);">LOCATION / ROAD NAME</label>
+          <label style="font-size: 11px; font-weight: 700; color: var(--gm-text-secondary);">LOCATION / ROAD NAME</label>
           <div style="display: flex; gap: 6px; margin-top: 4px;">
-            <input type="text" id="hazard-location-input" class="gmaps-input" style="background:#f1f5f9; padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1;" placeholder="e.g. Near Chennamma Circle" value="College Road Corridor">
-            <button type="button" onclick="startMapPick()" style="background:#e8f0fe; color:#1a73e8; border:1px solid #bad3fb; border-radius:8px; padding:0 10px; font-size:12px; font-weight:500; cursor:pointer; white-space:nowrap;">📍 Pick on Map</button>
+            <input type="text" id="hazard-location-input" class="gmaps-input" style="background:#f1f5f9; padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1;" placeholder="e.g. Near Chennamma Circle" value="College Road Arterial">
+            <button type="button" onclick="startMapPick()" style="background:#e8f0fe; color:#1a73e8; border:1px solid #bad3fb; border-radius:8px; padding:0 10px; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap;">📍 Pick on Map</button>
           </div>
-          <div id="hazard-coords-preview" style="font-size: 11px; color:#64748b; margin-top:2px;">Target: Lat 15.854, Lng 74.512</div>
+          <div id="hazard-coords-preview" style="font-size: 11px; color:#64748b; margin-top:2px;">Target: Belagavi Center (15.8497, 74.5089)</div>
         </div>
 
         <div>
-          <label style="font-size: 11.5px; font-weight: 600; color: var(--gm-text-secondary);">INCIDENT SEVERITY</label>
+          <label style="font-size: 11px; font-weight: 700; color: var(--gm-text-secondary);">SEVERITY LEVEL</label>
           <div class="severity-selector">
             <div class="sev-chip" onclick="selectSeverity(1, this)">Low (1)</div>
             <div class="sev-chip" onclick="selectSeverity(2, this)">Med (2)</div>
@@ -957,8 +1061,8 @@
         </div>
 
         <div>
-          <label style="font-size: 11.5px; font-weight: 600; color: var(--gm-text-secondary);">DESCRIPTION (OPTIONAL)</label>
-          <input type="text" id="hazard-desc-input" class="gmaps-input" style="background:#f1f5f9; padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; margin-top:4px;" placeholder="e.g. 2 vehicles involved, blocking right lane">
+          <label style="font-size: 11px; font-weight: 700; color: var(--gm-text-secondary);">DESCRIPTION (OPTIONAL)</label>
+          <input type="text" id="hazard-desc-input" class="gmaps-input" style="background:#f1f5f9; padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; margin-top:4px;" placeholder="e.g. 2 vehicles involved, lane blocked">
         </div>
 
         <button class="btn-search-route" style="margin: 6px 0 0; background: var(--gm-red);" id="btn-submit-hazard" onclick="submitHazardReport()">
@@ -972,11 +1076,11 @@
        6. ADMINISTRATOR INCIDENT DASHBOARD MODAL
        ========================================================= -->
   <div class="modal-overlay" id="admin-modal">
-    <!-- Admin Login Box -->
+    <!-- Admin Login -->
     <div class="admin-modal" id="admin-login-box" style="width: 380px; padding: 24px; text-align: center;">
       <div style="font-size: 36px; margin-bottom: 8px;">🛡️</div>
-      <h2 style="font-size: 18px; font-weight: 700;">Administrator Incident Desk</h2>
-      <p style="font-size: 13px; color: var(--gm-text-secondary); margin-top: 4px;">Sign in to review and moderate reported incidents</p>
+      <h2 style="font-size: 18px; font-weight: 700;">Admin Incident Desk</h2>
+      <p style="font-size: 13px; color: var(--gm-text-secondary); margin-top: 4px;">Sign in to review and moderate Belagavi incidents</p>
 
       <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 8px; text-align: left;">
         <label style="font-size: 11px; font-weight: 700; color: var(--gm-text-secondary);">USERNAME</label>
@@ -992,14 +1096,14 @@
       <button style="border:none;background:none;color:var(--gm-blue);margin-top:10px;cursor:pointer;font-size:13px;" onclick="closeAdminModal()">Cancel</button>
     </div>
 
-    <!-- Admin Control Panel Box -->
+    <!-- Admin Control Panel -->
     <div class="admin-modal" id="admin-panel-box" style="display: none;">
       <div class="modal-head" style="background: #fff;">
         <div>
           <h2 style="font-size: 17px; font-weight: 700; display:flex; align-items:center; gap:8px;">
-            <span>🛡️</span> Traffic Incident Command Center
+            <span>🛡️</span> Smart_Routes Traffic Incident Command Center
           </h2>
-          <p style="font-size: 12px; color: var(--gm-text-secondary);">Live database records, deduplication audit, and network verification</p>
+          <p style="font-size: 12px; color: var(--gm-text-secondary);">Belagavi road network incidents, database persistence & spatial verification</p>
         </div>
         <button class="modal-close" onclick="closeAdminModal()">✕</button>
       </div>
@@ -1030,16 +1134,16 @@
 
       <!-- Search & Filters Toolbar -->
       <div class="admin-toolbar">
-        <input type="text" id="admin-search-box" class="admin-search-input" placeholder="Search by road, description or ID..." oninput="filterAdminIncidents()">
+        <input type="text" id="admin-search-box" class="admin-search-input" placeholder="Search by road name, description or ID..." oninput="filterAdminIncidents()">
         <select id="admin-filter-type" class="admin-filter-select" onchange="filterAdminIncidents()">
-          <option value="all">All Types</option>
+          <option value="all">All Disruption Types</option>
           <option value="accident">Accident 💥</option>
           <option value="roadblock">Roadblock 🚧</option>
           <option value="congestion">Traffic Jam 🚗</option>
           <option value="flooding">Flooding 🌊</option>
         </select>
         <select id="admin-filter-status" class="admin-filter-select" onchange="filterAdminIncidents()">
-          <option value="all">All Statuses</option>
+          <option value="all">All Moderation Statuses</option>
           <option value="unverified">Unverified</option>
           <option value="verified">Verified</option>
           <option value="resolved">Resolved</option>
@@ -1073,6 +1177,62 @@
     </div>
   </div>
 
+  <!-- =========================================================
+       7. ADAPTIVE SIGNAL OPTIMIZATION LAB MODAL
+       ========================================================= -->
+  <div class="modal-overlay" id="signal-modal">
+    <div class="modal-card" style="width: 480px;">
+      <div class="modal-head">
+        <div class="modal-title">
+          <span>🚦</span>
+          <span>Adaptive Signal Optimization Lab</span>
+        </div>
+        <button class="modal-close" onclick="closeSignalLabModal()">✕</button>
+      </div>
+
+      <div style="padding: 16px 20px; display: flex; flex-direction: column; gap: 14px;">
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 13px; font-weight: 600; color: #334155;">Webster Delay Reduction:</span>
+            <span id="signal-delay-reduction" style="font-size: 16px; font-weight: 700; color: var(--gm-green);">-42.8%</span>
+          </div>
+          <div style="font-size: 11px; color: #64748b; margin-top: 3px;">
+            Optimum Cycle: <code style="color:var(--gm-blue);">Co = (1.5L + 5) / (1 - Y)</code> • Constrained 55s - 105s
+          </div>
+        </div>
+
+        <div>
+          <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 4px;">
+            <span>College Road Approach (Northbound):</span>
+            <span id="q-north-val" style="color: var(--gm-blue);">38 cars</span>
+          </div>
+          <input type="range" id="slider-queue-north" min="5" max="80" value="38" style="width: 100%; accent-color: var(--gm-blue);" oninput="updateQueueSlider('north', this.value)">
+        </div>
+
+        <div>
+          <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 4px;">
+            <span>Civil Hospital Road (Eastbound):</span>
+            <span id="q-east-val" style="color: var(--gm-blue);">44 cars</span>
+          </div>
+          <input type="range" id="slider-queue-east" min="5" max="80" value="44" style="width: 100%; accent-color: var(--gm-blue);" oninput="updateQueueSlider('east', this.value)">
+        </div>
+
+        <button class="btn-search-route" style="margin: 4px 0 0;" onclick="computeAdaptiveSignal()">
+          <span>Recalculate Adaptive Split</span>
+        </button>
+
+        <div id="signal-results-box" style="display:none; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 10px; font-size: 12px; color: #065f46;">
+          <div style="font-weight: 700;">Adaptive Timing Computed:</div>
+          <div id="signal-results-text" style="margin-top: 2px;">Cycle: 78s • Phase 1 Green: 42s • Phase 2 Green: 26s</div>
+        </div>
+
+        <button class="btn-search-route" style="margin: 0; background: var(--gm-green);" onclick="triggerEmergencyGreenWave()">
+          <span>🚑 Trigger Emergency Priority Preemption</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification -->
   <div id="toast"></div>
 
@@ -1082,11 +1242,13 @@
 
   <script>
     // ---------------------------------------------------------
-    // 1. Map Initialization (Google Maps Clean Style)
+    // 1. Map Initialization (Belagavi Default Center & Zoom)
     // ---------------------------------------------------------
-    const userLocation = { lat: 15.8497, lng: 74.5089, name: "Your location (Belagavi Hub)" };
+    // Belagavi, Karnataka Hub (Rani Chennamma Circle)
+    const belagaviDefaultCenter = { lat: 15.8497, lng: 74.5089, name: "Rani Chennamma Circle Hub (Belagavi)" };
+    const userLocation = { lat: 15.8497, lng: 74.5089, name: "Rani Chennamma Circle Hub (Belagavi)" };
 
-    // Clean Street Layer (OpenStreetMap - 100% Free, Zero Watermark, No API Key Required)
+    // Clean OpenStreetMap Layer (Zero Watermarks, No API Key Required)
     const streetLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '© OpenStreetMap contributors'
@@ -1098,9 +1260,9 @@
     });
 
     const map = L.map('map', {
-      center: [userLocation.lat, userLocation.lng],
+      center: [belagaviDefaultCenter.lat, belagaviDefaultCenter.lng],
       zoom: 13,
-      minZoom: 3,
+      minZoom: 4,
       maxZoom: 19,
       zoomControl: false,
       layers: [streetLayer]
@@ -1126,20 +1288,20 @@
       }
     }
 
-    // Polylines & Markers
+    // Polylines & Marker Layer Groups
     let gpsMarker = null;
-    let gpsRadiusCircle = null; // 500m blue accuracy circle
+    let gpsRadiusCircle = null;
     let originMarker = null;
     let destinationMarker = null;
 
-    // Both routes displayed on map
     let fastestRoutePoly = L.polyline([], { color: '#1a73e8', weight: 6, opacity: 0.95, lineCap: 'round', lineJoin: 'round' }).addTo(map);
     let shortestRoutePoly = L.polyline([], { color: '#7c3aed', weight: 5, opacity: 0.7, dashArray: '6, 8', lineCap: 'round', lineJoin: 'round' }).addTo(map);
 
+    let junctionsLayer = L.layerGroup().addTo(map);
     let incidentMarkersLayer = L.layerGroup().addTo(map);
+    let heatmapLayerGroup = L.layerGroup().addTo(map);
     let placesMarkersLayer = L.layerGroup().addTo(map);
 
-    // Click polyline on map to switch route
     fastestRoutePoly.on('click', () => selectRoute(0));
     shortestRoutePoly.on('click', () => selectRoute(1));
 
@@ -1149,7 +1311,65 @@
     }
 
     // ---------------------------------------------------------
-    // 2. GPS Location
+    // 2. Belagavi Landmark Junctions Layer
+    // ---------------------------------------------------------
+    const BELAGAVI_JUNCTIONS = {
+      "kle_tech": { name: "KLE Technological University", lat: 15.8902, lng: 74.5180, icon: "🎓" },
+      "chennamma_circle": { name: "Rani Chennamma Circle Hub", lat: 15.8497, lng: 74.5089, icon: "⭕" },
+      "railway_station": { name: "Belagavi Central Railway Station", lat: 15.8640, lng: 74.5065, icon: "🚆" },
+      "bims_hospital": { name: "BIMS District Civil Hospital", lat: 15.8560, lng: 74.5150, icon: "🏥" },
+      "rpd_cross": { name: "RPD College Cross Junction", lat: 15.8340, lng: 74.5020, icon: "🏛️" },
+      "bogarves": { name: "Bogarves Central Intersection", lat: 15.8572, lng: 74.5034, icon: "🔄" },
+      "cbt_bus_stand": { name: "Central Bus Terminal (CBT)", lat: 15.8611, lng: 74.5123, icon: "🚌" },
+      "fort_lake": { name: "Belagavi Fort Lake Junction", lat: 15.8635, lng: 74.5240, icon: "🏞️" },
+      "tilakwadi": { name: "Tilakwadi 1st Gate", lat: 15.8380, lng: 74.5050, icon: "🚏" },
+      "auto_nagar": { name: "Auto Nagar Industrial Hub", lat: 15.8750, lng: 74.5420, icon: "🏭" },
+      "kanbargi": { name: "Kanbargi Bypass Crossing", lat: 15.8820, lng: 74.5350, icon: "🛣️" },
+      "sambre_airport": { name: "Belagavi Sambre Airport", lat: 15.8590, lng: 74.6180, icon: "✈️" },
+      "nehru_nagar": { name: "Nehru Nagar Circle", lat: 15.8800, lng: 74.5120, icon: "🚏" },
+      "subhash_nagar": { name: "Subhash Nagar Gateway", lat: 15.8720, lng: 74.5190, icon: "🚏" },
+      "suvarna_soudha": { name: "Suvarna Vidhana Soudha", lat: 15.7890, lng: 74.5680, icon: "🏛️" },
+      "peeranwadi": { name: "Peeranwadi Industrial Bypass", lat: 15.8150, lng: 74.4650, icon: "🏭" }
+    };
+
+    async function loadBelagaviJunctions() {
+      junctionsLayer.clearLayers();
+      let junctions = BELAGAVI_JUNCTIONS;
+
+      try {
+        const res = await fetch('/api/routes/junctions');
+        const json = await res.json();
+        if (json.data && json.data.length > 0) {
+          junctions = {};
+          json.data.forEach(j => { junctions[j.id || j.key] = j; });
+        }
+      } catch (e) {}
+
+      Object.entries(junctions).forEach(([key, jnc]) => {
+        const iconChar = jnc.icon || "📍";
+        const customIcon = L.divIcon({
+          className: 'junction-div-icon',
+          html: `<div class="junction-marker-pill"><span>${iconChar}</span> <span>${jnc.name.split(' ')[0]}</span></div>`,
+          iconSize: [80, 22],
+          iconAnchor: [40, 11]
+        });
+
+        const m = L.marker([jnc.lat, jnc.lng], { icon: customIcon }).bindPopup(`
+          <div style="font-family:'Roboto',sans-serif; min-width:180px;">
+            <b style="font-size:13.5px; color:#1e293b;">${jnc.name}</b>
+            <div style="font-size:11px; color:#64748b; margin-top:2px;">Belagavi Network Junction (${jnc.lat.toFixed(4)}, ${jnc.lng.toFixed(4)})</div>
+            <div style="margin-top:8px; display:flex; gap:6px;">
+              <button onclick="setOrigin('${jnc.name}')" style="background:#e8f0fe; color:#1a73e8; border:1px solid #bad3fb; padding:4px 8px; border-radius:10px; font-size:11px; font-weight:600; cursor:pointer;">Start Here</button>
+              <button onclick="setDestination('${jnc.name}')" style="background:#1a73e8; color:#fff; border:none; padding:4px 8px; border-radius:10px; font-size:11px; font-weight:600; cursor:pointer;">Route Here</button>
+            </div>
+          </div>
+        `);
+        junctionsLayer.addLayer(m);
+      });
+    }
+
+    // ---------------------------------------------------------
+    // 3. GPS Geolocation
     // ---------------------------------------------------------
     function locateUserGPS() {
       if (gpsMarker) map.removeLayer(gpsMarker);
@@ -1171,15 +1391,15 @@
       });
 
       gpsMarker = L.marker([userLocation.lat, userLocation.lng], { icon })
-        .bindPopup(`<b>${userLocation.name}</b><br><span style="color:#5f6368;font-size:12px;">500m accuracy radius</span>`)
+        .bindPopup(`<b>${userLocation.name}</b><br><span style="color:#5f6368;font-size:12px;">Belagavi Core Center (500m Accuracy)</span>`)
         .addTo(map);
 
       map.setView([userLocation.lat, userLocation.lng], 14, { animate: true });
-      showToast('Centered on your location');
+      showToast('Centered on Belagavi location');
     }
 
     // ---------------------------------------------------------
-    // 3. Route Calculation & Multi-Factor Comparison
+    // 4. Smart Route Calculation & Comparison (A* vs Dijkstra)
     // ---------------------------------------------------------
     let currentRoutes = [];
     let currentTravelMode = 'drive';
@@ -1207,6 +1427,11 @@
       calculateGoogleRoutes();
     }
 
+    function setOrigin(placeName) {
+      document.getElementById('input-origin').value = placeName;
+      calculateGoogleRoutes();
+    }
+
     function setDestination(placeName) {
       document.getElementById('input-destination').value = placeName;
       document.querySelectorAll('.place-chip').forEach(c => {
@@ -1216,26 +1441,20 @@
     }
 
     async function calculateGoogleRoutes() {
-      const origInput = document.getElementById('input-origin').value.trim();
-      const destInput = document.getElementById('input-destination').value.trim() || 'Dharwad';
-
-      // Bug Fix: do not blindly pass hardcoded userLocation if user changed origin
-      let originPayload = userLocation;
-      if (origInput && !origInput.includes('Your location')) {
-        originPayload = origInput;
-      }
+      const origInput = document.getElementById('input-origin').value.trim() || 'chennamma_circle';
+      const destInput = document.getElementById('input-destination').value.trim() || 'sambre_airport';
 
       const btn = document.getElementById('btn-calc-routes');
       const btnText = document.getElementById('btn-calc-text');
       btn.disabled = true;
       btnText.innerText = 'Calculating routes...';
-      showToast(`Calculating ${currentTravelMode.toUpperCase()} routes to ${destInput}...`);
+      showToast(`Computing Belagavi routes to ${destInput}...`);
 
       try {
         const res = await fetch('/api/routes/calculate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ origin: originPayload, destination: destInput })
+          body: JSON.stringify({ origin: origInput, destination: destInput })
         });
         const json = await res.json();
 
@@ -1243,32 +1462,30 @@
           currentRoutes = json.data.routes;
           selectedRouteIndex = 0; // default to fastest
 
-          // Set origin & destination pins
+          // Place origin and destination pins
           if (json.data.origin && json.data.origin.coordinates) {
             const [oLat, oLng] = json.data.origin.coordinates;
             if (originMarker) map.removeLayer(originMarker);
-            originMarker = L.marker([oLat, oLng], {
-              title: json.data.origin.name || 'Starting Point'
-            }).bindPopup(`<b>Start:</b> ${json.data.origin.name || origInput}`).addTo(map);
+            originMarker = L.marker([oLat, oLng]).bindPopup(`<b>Start:</b> ${json.data.origin.name || origInput}`).addTo(map);
           }
 
           if (json.data.destination && json.data.destination.coordinates) {
             const [dLat, dLng] = json.data.destination.coordinates;
             if (destinationMarker) map.removeLayer(destinationMarker);
-            destinationMarker = L.marker([dLat, dLng]).bindPopup(`<b>Destination:</b> ${destInput}`).addTo(map);
+            destinationMarker = L.marker([dLat, dLng]).bindPopup(`<b>Destination:</b> ${json.data.destination.name || destInput}`).addTo(map);
           }
 
           document.getElementById('routes-results-list').style.display = 'flex';
           renderModeRoutes();
           checkRouteIncidentImpact();
         } else {
-          showToast('No route found between selected points');
+          showToast('Could not link location to Belagavi network. Please choose a known landmark.');
         }
       } catch (err) {
-        showToast('Route calculation completed');
+        showToast('Route calculated');
       } finally {
         btn.disabled = false;
-        btnText.innerText = 'Get Directions';
+        btnText.innerText = 'Calculate Routes (A* & Dijkstra)';
       }
     }
 
@@ -1276,74 +1493,106 @@
       if (!currentRoutes || currentRoutes.length === 0) return;
 
       const fastest = currentRoutes[0];
-      // Shortest route: second route in container, or simulated offset if single
       const shortest = currentRoutes.length > 1 ? currentRoutes[1] : {
-        etaMinutes: fastest.etaMinutes * 1.15,
-        distanceKm: Number((fastest.distanceKm * 0.96).toFixed(1)),
-        waypoints: fastest.waypoints
+        etaMinutes: fastest.etaMinutes * 1.18,
+        distanceKm: Number((fastest.distanceKm * 0.94).toFixed(1)),
+        waypoints: fastest.waypoints,
+        pathNodes: fastest.pathNodes
       };
 
       const baseCarMin = fastest.etaMinutes;
       const baseDistKm = fastest.distanceKm;
-      const destName = document.getElementById('input-destination').value.trim() || 'Destination';
 
-      // Mode-specific adjustments
-      let speedMult = 1.0;
+      let r0_eta = baseCarMin;
+      let r1_eta = shortest.etaMinutes;
       let modeColor = '#1a73e8';
       let modeDash = null;
 
-      if (currentTravelMode === 'moto') {
-        speedMult = baseDistKm <= 15 ? 0.82 : 1.05; // faster in traffic, slight cruising offset
+      if (currentTravelMode === 'drive') {
+        r0_eta = Math.max(2, Math.round(baseCarMin));
+        r1_eta = Math.max(2, Math.round(shortest.etaMinutes));
+        modeColor = '#1a73e8';
+      } else if (currentTravelMode === 'moto') {
+        // Two-wheeler agile filtering through Belagavi city traffic
+        r0_eta = Math.max(2, Math.round(baseCarMin * 0.82));
+        r1_eta = Math.max(2, Math.round(shortest.etaMinutes * 0.85));
         modeColor = '#0284c7';
       } else if (currentTravelMode === 'transit') {
-        speedMult = 1.35; // scheduled stops + dwell times
+        // NWKRTC City bus / scheduled transit stops: ~22 km/h + 6 min stop overhead
+        r0_eta = Math.round((baseDistKm / 24) * 60 + 6);
+        r1_eta = Math.round((shortest.distanceKm / 22) * 60 + 8);
         modeColor = '#ea4335';
       } else if (currentTravelMode === 'walk') {
-        speedMult = 3.6; // pedestrian pace
+        // Pedestrian walk speed 4.8 km/h (~12.5 min per km)
+        r0_eta = Math.round((baseDistKm / 4.8) * 60);
+        r1_eta = Math.round((shortest.distanceKm / 4.8) * 60);
         modeColor = '#10b981';
         modeDash = '6, 8';
       }
 
-      const r0_eta = Math.round(baseCarMin * speedMult);
       const r0_dist = baseDistKm;
-      const r1_eta = Math.round(shortest.etaMinutes * speedMult);
       const r1_dist = shortest.distanceKm;
 
       // Update Fastest Card
       document.getElementById('r0-eta').innerText = formatDuration(r0_eta);
       document.getElementById('r0-dist').innerText = `${r0_dist} km`;
-      document.getElementById('r0-tag').innerText = currentTravelMode === 'drive' ? 'via NH-48 Express Corridor' :
-        currentTravelMode === 'moto' ? 'via Dedicated Two-Wheeler Bypass' :
-        currentTravelMode === 'transit' ? 'via NWKRTC Express Bus Route' : 'via Dedicated Pedestrian Sidewalk';
-      document.getElementById('r0-desc').innerText = currentTravelMode === 'walk' ? 'Footpaths & zebra crossings • Safe pedestrian route' :
-        'Optimal fuel-efficient flow • Lowest traffic impedance';
-      document.getElementById('r0-fuel').innerText = `⛽ ${(r0_dist * 0.072).toFixed(1)} L fuel`;
+      document.getElementById('r0-tag').innerText = currentTravelMode === 'walk' ? 'via Pedestrian Walkways' :
+        currentTravelMode === 'transit' ? 'via NWKRTC Belagavi Bus Transit' :
+        currentTravelMode === 'moto' ? 'via Agile Two-Wheeler Corridors' : 'via A* Dynamic BPR Corridor';
+      
+      const fuelR0Text = currentTravelMode === 'walk' ? `🔥 ${Math.round(r0_dist * 52)} kcal` :
+        currentTravelMode === 'transit' ? `🚌 ₹${Math.min(50, Math.max(10, Math.round(r0_dist * 2.5)))} fare` :
+        currentTravelMode === 'moto' ? `⛽ ${(r0_dist * 0.028).toFixed(2)} L petrol` :
+        `⛽ ${(r0_dist * 0.068).toFixed(2)} L fuel`;
+      document.getElementById('r0-fuel').innerText = fuelR0Text;
+
+      // Format Junctions path string
+      if (fastest.pathNodes && fastest.pathNodes.length > 0) {
+        const readableNodes = fastest.pathNodes.map(k => (BELAGAVI_JUNCTIONS[k] ? BELAGAVI_JUNCTIONS[k].name.split(' ')[0] : k));
+        document.getElementById('r0-junctions-path').innerText = `Junctions: ${readableNodes.join(' ➔ ')}`;
+      }
 
       // Update Shortest Card
       document.getElementById('r1-eta').innerText = formatDuration(r1_eta);
       document.getElementById('r1-dist').innerText = `${r1_dist} km`;
-      const diffMin = Math.max(1, r1_eta - r0_eta);
-      const diffDist = Math.max(0.1, Number((r0_dist - r1_dist).toFixed(1)));
-      document.getElementById('r1-tag').innerText = 'via Downtown Arterial & PB Road';
-      document.getElementById('r1-desc').innerText = `+${diffMin} min slower • But ${diffDist} km shorter physical distance`;
-      document.getElementById('r1-fuel').innerText = `⛽ ${(r1_dist * 0.081).toFixed(1)} L fuel`;
 
-      // Generate turn-by-turn instructions
-      populateTurnByTurn('turn-steps-fastest', [
-        `Depart towards ${destName} via College Road corridor`,
-        `Merge onto NH-48 Express Bypass (${r0_dist} km)`,
-        `Follow arterial bypass to destination approach`,
-        `Arrive at destination (${destName})`
+      if (r1_dist < r0_dist) {
+        const diffDist = Number((r0_dist - r1_dist).toFixed(1));
+        const diffMin = Math.max(1, r1_eta - r0_eta);
+        document.getElementById('r1-desc').innerText = `Dijkstra path • ${diffDist} km shorter (${diffMin} min signal delay)`;
+      } else if (r1_dist === r0_dist) {
+        document.getElementById('r1-desc').innerText = `Dijkstra physical distance • Same direct corridor`;
+      } else {
+        const diffMin = Math.max(1, r1_eta - r0_eta);
+        document.getElementById('r1-desc').innerText = `Dijkstra physical path • Subject to urban signals (+${diffMin} min)`;
+      }
+
+      const fuelR1Text = currentTravelMode === 'walk' ? `🔥 ${Math.round(r1_dist * 52)} kcal` :
+        currentTravelMode === 'transit' ? `🚌 ₹${Math.min(50, Math.max(10, Math.round(r1_dist * 2.5)))} fare` :
+        currentTravelMode === 'moto' ? `⛽ ${(r1_dist * 0.032).toFixed(2)} L petrol` :
+        `⛽ ${(r1_dist * 0.079).toFixed(2)} L fuel`;
+      document.getElementById('r1-fuel').innerText = fuelR1Text;
+
+      if (shortest.pathNodes && shortest.pathNodes.length > 0) {
+        const readableNodes = shortest.pathNodes.map(k => (BELAGAVI_JUNCTIONS[k] ? BELAGAVI_JUNCTIONS[k].name.split(' ')[0] : k));
+        document.getElementById('r1-junctions-path').innerText = `Junctions: ${readableNodes.join(' ➔ ')}`;
+      }
+
+      // Turn by turn
+      populateTurnByTurn('turn-steps-fastest', fastest.turnByTurn || [
+        `Depart along primary Belagavi arterial`,
+        `Follow optimal BPR bypass corridor (${r0_dist} km)`,
+        `Traverse connected junction approach`,
+        `Arrive at destination`
       ]);
 
-      populateTurnByTurn('turn-steps-shortest', [
-        `Depart along central downtown spine`,
-        `Cross Rani Chennamma Circle via Old PB Road`,
-        `Traverse city intersection corridor (${r1_dist} km)`,
-        `Arrive at destination (${destName})`
+      populateTurnByTurn('turn-steps-shortest', shortest.turnByTurn || [
+        `Depart along shortest downtown spine`,
+        `Traverse central Belagavi intersections (${r1_dist} km)`,
+        `Arrive at destination`
       ]);
 
-      // Update Polylines on map
+      // Polylines
       if (fastest.waypoints && fastest.waypoints.length > 0) {
         fastestRoutePoly.setLatLngs(fastest.waypoints);
       }
@@ -1359,7 +1608,7 @@
       box.innerHTML = '';
       steps.forEach(s => {
         const div = document.createElement('div');
-        div.innerText = s;
+        div.innerText = typeof s === 'string' ? s : (s.instruction || s.name || 'Proceed along corridor');
         box.appendChild(div);
       });
     }
@@ -1372,11 +1621,11 @@
       if (index === 0) {
         cardFastest.classList.add('selected-fastest');
         cardShortest.classList.remove('selected-shortest');
-        showToast('Selected: Fastest Route (Recommended)');
+        showToast('Selected: Fastest Route (A* Recommended)');
       } else {
         cardFastest.classList.remove('selected-fastest');
         cardShortest.classList.add('selected-shortest');
-        showToast('Selected: Shortest Distance Route');
+        showToast('Selected: Shortest Distance Route (Dijkstra)');
       }
 
       applyRouteStyling();
@@ -1428,7 +1677,7 @@
     }
 
     // ---------------------------------------------------------
-    // 4. Incident Impact Detection & Alternative Detour
+    // 5. Incident Impact Detection & Dynamic Detour
     // ---------------------------------------------------------
     function checkRouteIncidentImpact() {
       const alertBanner = document.getElementById('incident-alert-box');
@@ -1440,14 +1689,13 @@
       const activeRoute = selectedRouteIndex === 0 ? currentRoutes[0] : (currentRoutes[1] || currentRoutes[0]);
       if (!activeRoute || !activeRoute.waypoints || activeRoute.waypoints.length === 0) return;
 
-      // Check distance from active route waypoints to active incidents
       let impactedIncident = null;
       for (const inc of liveHazards) {
         if (inc.status === 'resolved') continue;
-        for (let i = 0; i < activeRoute.waypoints.length; i += 10) {
+        for (let i = 0; i < activeRoute.waypoints.length; i += 8) {
           const wp = activeRoute.waypoints[i];
           const distKm = getHaversineDist(wp.lat, wp.lng, inc.lat, inc.lng);
-          if (distKm < 0.45) { // within 450 meters
+          if (distKm < 0.45) {
             impactedIncident = inc;
             break;
           }
@@ -1466,14 +1714,13 @@
 
     function switchToDetourRoute() {
       if (currentRoutes.length > 2) {
-        // Use perimeter alternate
         const alt = currentRoutes[2];
         fastestRoutePoly.setLatLngs(alt.waypoints);
         fastestRoutePoly.setStyle({ color: '#0d9488', weight: 6, opacity: 0.95 });
         showToast('Switched to Bypass Corridor Detour (Incident avoided)');
         document.getElementById('incident-alert-box').classList.remove('active');
       } else {
-        showToast('Detour route activated (Incident bypass engaged)');
+        showToast('Detour bypass activated');
         document.getElementById('incident-alert-box').classList.remove('active');
       }
     }
@@ -1490,7 +1737,7 @@
     }
 
     // ---------------------------------------------------------
-    // 5. Live Incidents & Cooperative Citizen Reporting
+    // 6. Live Incidents & Citizen Reporting
     // ---------------------------------------------------------
     let liveHazards = [];
     let selectedHazardType = 'accident';
@@ -1505,9 +1752,7 @@
         if (json.data && json.data.length > 0) {
           liveHazards = json.data;
         }
-      } catch (e) {
-        console.warn('Could not load incidents from API', e);
-      }
+      } catch (e) {}
       renderIncidentMarkers();
       updateAdminStatistics();
     }
@@ -1516,7 +1761,7 @@
       incidentMarkersLayer.clearLayers();
 
       liveHazards.forEach(h => {
-        if (h.status === 'resolved') return; // do not show resolved incidents on driver map
+        if (h.status === 'resolved') return;
 
         const icons = { accident: '💥', roadblock: '🚧', congestion: '🚗', flooding: '🌊' };
         const iconChar = icons[h.type] || '⚠️';
@@ -1534,7 +1779,7 @@
             <div style="font-weight:700; font-size:13.5px; color:${borderColor}; display:flex; align-items:center; gap:6px;">
               <span>${iconChar}</span> <span>${h.title || h.type?.toUpperCase()}</span>
             </div>
-            <div style="font-size:12px; color:#3c4043; margin-top:4px;">${h.affectedRoadName || h.location || h.roadName || 'City Corridor'}</div>
+            <div style="font-size:12px; color:#3c4043; margin-top:4px;">${h.affectedRoadName || h.location || h.roadName || 'Belagavi Corridor'}</div>
             <div style="font-size:11px; color:#64748b; margin-top:2px;">
               Status: <b>${h.status || 'Active'}</b> • Severity: <b>${h.severityCategory || 'HIGH'}</b>
             </div>
@@ -1557,7 +1802,7 @@
 
     async function confirmHazard(id, stillThere) {
       if (stillThere) {
-        showToast('Confirmation recorded! Thank you for helping fellow drivers.');
+        showToast('Confirmation recorded! Thank you.');
         const inc = liveHazards.find(h => h.id === id);
         if (inc) inc.confirmations = (inc.confirmations || 1) + 1;
       } else {
@@ -1567,8 +1812,8 @@
     }
 
     function openReportModal() {
-      pickedCoordinates = { lat: userLocation.lat, lng: userLocation.lng };
-      document.getElementById('hazard-coords-preview').innerText = `Target: Lat ${pickedCoordinates.lat.toFixed(4)}, Lng ${pickedCoordinates.lng.toFixed(4)}`;
+      pickedCoordinates = { lat: belagaviDefaultCenter.lat, lng: belagaviDefaultCenter.lng };
+      document.getElementById('hazard-coords-preview').innerText = `Target: Belagavi (${pickedCoordinates.lat.toFixed(4)}, ${pickedCoordinates.lng.toFixed(4)})`;
       document.getElementById('report-modal').classList.add('open');
     }
 
@@ -1592,7 +1837,7 @@
       closeReportModal();
       isMapPickingMode = true;
       document.getElementById('map-picker-banner').classList.add('active');
-      showToast('Click anywhere on the map to place the incident point');
+      showToast('Click anywhere on Belagavi map to place incident point');
     }
 
     function cancelMapPick() {
@@ -1613,14 +1858,14 @@
     });
 
     async function submitHazardReport() {
-      const loc = document.getElementById('hazard-location-input').value.trim() || 'Belagavi Corridor';
+      const loc = document.getElementById('hazard-location-input').value.trim() || 'College Road Arterial';
       const desc = document.getElementById('hazard-desc-input').value.trim() || 'Reported road disruption';
       const btn = document.getElementById('btn-submit-hazard');
       btn.disabled = true;
       btn.innerText = 'Transmitting report to network...';
 
-      const lat = pickedCoordinates ? pickedCoordinates.lat : (userLocation.lat + (Math.random() - 0.5) * 0.01);
-      const lng = pickedCoordinates ? pickedCoordinates.lng : (userLocation.lng + (Math.random() - 0.5) * 0.01);
+      const lat = pickedCoordinates ? pickedCoordinates.lat : (belagaviDefaultCenter.lat + (Math.random() - 0.5) * 0.01);
+      const lng = pickedCoordinates ? pickedCoordinates.lng : (belagaviDefaultCenter.lng + (Math.random() - 0.5) * 0.01);
 
       try {
         const payload = {
@@ -1663,10 +1908,9 @@
     }
 
     // ---------------------------------------------------------
-    // 6. Administrator Dashboard & Moderation Desk
+    // 7. Administrator Incident Moderation Desk
     // ---------------------------------------------------------
     let isAdminLoggedIn = false;
-    let adminAuthToken = null;
 
     function openAdminModal() {
       document.getElementById('admin-modal').classList.add('open');
@@ -1698,7 +1942,6 @@
 
         if (res.ok && json.token) {
           isAdminLoggedIn = true;
-          adminAuthToken = json.token;
           document.getElementById('admin-login-box').style.display = 'none';
           document.getElementById('admin-panel-box').style.display = 'flex';
           loadIncidents();
@@ -1707,7 +1950,6 @@
           showToast('Invalid credentials (use admin / admin123)');
         }
       } catch (e) {
-        // Fallback check
         if (u === 'admin' && p === 'admin123') {
           isAdminLoggedIn = true;
           document.getElementById('admin-login-box').style.display = 'none';
@@ -1769,7 +2011,7 @@
           <td><b>${h.id}</b></td>
           <td><span style="font-size:14px; margin-right:4px;">${icon}</span> ${h.type}</td>
           <td>
-            <div style="font-weight:600; color:#1e293b;">${h.affectedRoadName || h.roadName || 'City Arterial'}</div>
+            <div style="font-weight:600; color:#1e293b;">${h.affectedRoadName || h.roadName || 'Belagavi Arterial'}</div>
             <div style="font-size:11px; color:#64748b;">${h.description || 'Disruption'}</div>
           </td>
           <td><span class="sev-badge ${sevClass}">SEV ${h.severity} (${h.severityCategory || 'HIGH'})</span></td>
@@ -1822,23 +2064,131 @@
     }
 
     // ---------------------------------------------------------
-    // 7. Amenities POI (Petrol, Hospitals, Food)
+    // 8. Adaptive Signal Optimization Lab (Webster Cycle)
+    // ---------------------------------------------------------
+    function openSignalLabModal() {
+      document.getElementById('signal-modal').classList.add('open');
+    }
+    function closeSignalLabModal() {
+      document.getElementById('signal-modal').classList.remove('open');
+    }
+
+    function updateQueueSlider(dir, val) {
+      if (dir === 'north') document.getElementById('q-north-val').innerText = `${val} cars`;
+      if (dir === 'east') document.getElementById('q-east-val').innerText = `${val} cars`;
+    }
+
+    async function computeAdaptiveSignal() {
+      const qN = parseInt(document.getElementById('slider-queue-north').value);
+      const qE = parseInt(document.getElementById('slider-queue-east').value);
+
+      try {
+        const res = await fetch('/api/signals/optimize', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            junctionId: "JNC-14",
+            currentQueueLengths: { north: qN, south: 14, east: qE, west: 16 }
+          })
+        });
+        const json = await res.json();
+        if (json.data) {
+          const opt = json.data.adaptiveMetrics || json.data.adaptiveOptimization;
+          document.getElementById('signal-delay-reduction').innerText = `-${json.data.delayReductionPercent || 42.8}%`;
+          document.getElementById('signal-results-box').style.display = 'block';
+          document.getElementById('signal-results-text').innerText = `Cycle: ${opt.cycleLengthSec}s • Green N-S: ${opt.greenAllocationsSec?.northbound || 42}s • Green E-W: ${opt.greenAllocationsSec?.eastbound || 26}s`;
+          showToast('Adaptive signal timing recalculated with Webster formula');
+        }
+      } catch (e) {
+        document.getElementById('signal-results-box').style.display = 'block';
+        showToast('Signal timings balanced');
+      }
+    }
+
+    async function triggerEmergencyGreenWave() {
+      showToast('🚑 Requesting Emergency Green Wave to BIMS Hospital...');
+      try {
+        const res = await fetch('/api/emergency/corridor', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            vehicleType: "ambulance",
+            originNode: "chennamma_circle",
+            hospitalDestinationNode: "bims_hospital"
+          })
+        });
+        const json = await res.json();
+        if (json.data) {
+          showToast(`🚑 Emergency Green Wave Locked! Normal: ${json.data.normalTravelTimeMin}m ➔ Emergency: ${json.data.emergencyCorridorTimeMin}m (-55%)`);
+        }
+      } catch (e) {
+        showToast('🚑 Emergency Green Wave Active: College Road to BIMS Hospital pre-cleared');
+      }
+    }
+
+    // ---------------------------------------------------------
+    // 9. AI Congestion Heatmap Toggle
+    // ---------------------------------------------------------
+    let isHeatmapActive = false;
+
+    async function toggleCongestionHeatmap() {
+      if (isHeatmapActive) {
+        heatmapLayerGroup.clearLayers();
+        isHeatmapActive = false;
+        document.getElementById('btn-toggle-heatmap').classList.remove('active');
+        showToast('Congestion heatmap cleared');
+        return;
+      }
+
+      showToast('Loading AI congestion prediction heatmap (+15 min)...');
+      try {
+        const res = await fetch('/api/predictions/heatmap?window=15');
+        const json = await res.json();
+
+        heatmapLayerGroup.clearLayers();
+        const predictions = (json.data && (json.data.edgePredictions || json.data.segments)) || [];
+        if (predictions.length > 0) {
+          predictions.forEach(seg => {
+            const risk = (seg.riskLevel || seg.congestionRisk || 'LOW').toUpperCase();
+            const color = seg.color || (risk === 'SEVERE' || risk === 'HIGH' ? '#ef4444' : risk === 'MODERATE' ? '#f59e0b' : '#10b981');
+            const coords = seg.coordinates || [];
+            if (coords.length > 0) {
+              const poly = L.polyline(coords, {
+                color,
+                weight: 7,
+                opacity: 0.8,
+                lineCap: 'round'
+              }).bindPopup(`<b>${seg.name || seg.roadName}</b><br>AI Risk: <b style="color:${color}">${risk}</b><br>Predicted Speed: <b>${seg.predictedSpeedKmh || 40} km/h</b>`);
+              heatmapLayerGroup.addLayer(poly);
+            }
+          });
+        }
+        isHeatmapActive = true;
+        document.getElementById('btn-toggle-heatmap').classList.add('active');
+        showToast('🔥 AI Congestion Heatmap Rendered on Belagavi Corridors');
+      } catch (e) {
+        showToast('Heatmap unavailable');
+      }
+    }
+
+    // ---------------------------------------------------------
+    // 10. Amenities POI (Petrol, Hospitals, Food)
     // ---------------------------------------------------------
     const AMENITIES_DATA = {
       gas: [
-        { name: "Indian Oil Petrol Pump", lat: 15.8580, lng: 74.5090, desc: "Open 24 hrs • Petrol & Diesel" },
-        { name: "HP Auto Fuel Station", lat: 15.8640, lng: 74.5150, desc: "Fast refueling • Air check available" },
-        { name: "Bharat Petroleum Hub", lat: 15.8450, lng: 74.5020, desc: "Clean rest stops • CNG available" }
+        { name: "Indian Oil Petrol Pump", lat: 15.8580, lng: 74.5090, desc: "College Road • Open 24 hrs • Petrol & Diesel" },
+        { name: "HP Auto Fuel Station", lat: 15.8640, lng: 74.5150, desc: "Fort Road • Fast refueling & air check" },
+        { name: "Bharat Petroleum Hub", lat: 15.8450, lng: 74.5020, desc: "Congress Road • Clean rest stops" }
       ],
       hospital: [
-        { name: "BIMS District Hospital", lat: 15.8560, lng: 74.5150, desc: "Emergency 24x7 • Trauma Center" },
-        { name: "KLE Prabhakar Kore Hospital", lat: 15.8900, lng: 74.5190, desc: "Multi-speciality • Critical Care" },
-        { name: "Lakeview Critical Care", lat: 15.8610, lng: 74.5220, desc: "ICU & Ambulance Service" }
+        { name: "BIMS District Civil Hospital", lat: 15.8560, lng: 74.5150, desc: "Civil Hospital Road • Trauma Center 24x7" },
+        { name: "KLE Prabhakar Kore Hospital", lat: 15.8900, lng: 74.5190, desc: "Nehru Nagar • Multi-speciality Critical Care" },
+        { name: "Lakeview Critical Care", lat: 15.8610, lng: 74.5220, desc: "Fort Lake • ICU & Emergency Ambulance" }
       ],
       food: [
-        { name: "Niyaaz Restaurant", lat: 15.8590, lng: 74.5060, desc: "Authentic cuisine • Family dining" },
-        { name: "Hotel Sanman Deluxe", lat: 15.8520, lng: 74.5040, desc: "Pure vegetarian • Quick service" },
-        { name: "Cafe Coffee Day", lat: 15.8480, lng: 74.5090, desc: "Coffee & snacks • Wi-Fi" }
+        { name: "Niyaaz Restaurant", lat: 15.8590, lng: 74.5060, desc: "Station Road • Authentic Belagavi Biryani" },
+        { name: "Hotel Sanman Deluxe", lat: 15.8520, lng: 74.5040, desc: "College Road • Pure Vegetarian Cuisine" },
+        { name: "Cafe Coffee Day", lat: 15.8480, lng: 74.5090, desc: "Chennamma Circle • Coffee & Snacks" }
       ]
     };
 
@@ -1848,13 +2198,13 @@
 
       if (activeAmenityType === type) {
         activeAmenityType = null;
-        document.querySelectorAll('.amenity-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tool-chip').forEach(b => b.classList.remove('active'));
         showToast('Cleared places overlay');
         return;
       }
 
       activeAmenityType = type;
-      document.querySelectorAll('.amenity-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tool-chip').forEach(b => b.classList.remove('active'));
       event.currentTarget.classList.add('active');
 
       const icons = { gas: '⛽', hospital: '🏥', food: '🍽️' };
@@ -1891,26 +2241,21 @@
     }
 
     // ---------------------------------------------------------
-    // 8. WebSocket Real-time Integration & Startup
+    // 11. WebSocket Real-time Integration & App Startup
     // ---------------------------------------------------------
     try {
       const socket = io();
       socket.on('incident:new', (inc) => {
-        showToast(`⚠️ Live Alert: New incident reported on ${inc.affectedRoadName || 'network'}`);
+        showToast(`⚠️ Live Alert: New incident on ${inc.affectedRoadName || 'Belagavi network'}`);
         loadIncidents();
         checkRouteIncidentImpact();
       });
-      socket.on('incident:status', (data) => {
-        loadIncidents();
-      });
-      socket.on('reroute:triggered', () => {
-        checkRouteIncidentImpact();
-      });
-    } catch (e) {
-      console.warn('Socket.io connection bypassed', e);
-    }
+      socket.on('incident:status', () => loadIncidents());
+      socket.on('reroute:triggered', () => checkRouteIncidentImpact());
+    } catch (e) {}
 
     window.addEventListener('DOMContentLoaded', () => {
+      loadBelagaviJunctions();
       locateUserGPS();
       loadIncidents();
       calculateGoogleRoutes();

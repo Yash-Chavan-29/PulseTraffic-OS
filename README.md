@@ -1,7 +1,7 @@
-# PulseTraffic - City Traffic Management & Route Optimization System
+# Smart_Routes - Intelligent Traffic Management & Route Optimization System
 > **Hackathon Track:** Domain 1 — Full Stack Web Development (PS 01)
 
-PulseTraffic is a high-performance smart city traffic operating system featuring dynamic graph routing (A* & Dijkstra), AI-based congestion forecasting, dynamic road incident impact analysis, adaptive traffic signal optimization, and emergency vehicle green-wave priority corridors.
+**Smart_Routes** is a high-performance Belagavi smart city traffic operating system featuring dynamic junction-based graph routing (A* & Dijkstra), AI-based congestion forecasting, dynamic road incident impact analysis, adaptive traffic signal optimization, and emergency vehicle green-wave priority corridors.
 
 ---
 
