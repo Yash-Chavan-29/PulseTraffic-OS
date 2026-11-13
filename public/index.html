@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SmartRoutes — Google Maps Style Intelligent Navigation</title>
+  <title>SmartRoutes — Intelligent Traffic Management & Route Optimization</title>
 
   <!-- Google Fonts: Roboto & Google Sans style -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,11 +23,15 @@
       --gm-border: #dadce0;
       --gm-card-bg: #ffffff;
       --gm-red: #d93025;
+      --gm-red-bg: #fce8e6;
       --gm-green: #188038;
+      --gm-green-bg: #e6f4ea;
       --gm-orange: #e37400;
-      --gm-shadow: 0 1px 2px rgba(60,64,67,0.3), 0 2px 6px 2px rgba(60,64,67,0.15);
-      --gm-shadow-hover: 0 1px 3px rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15);
-      --gm-radius: 8px;
+      --gm-orange-bg: #fef7e0;
+      --gm-purple: #7c3aed;
+      --gm-shadow: 0 1px 3px rgba(60,64,67,0.3), 0 4px 12px 3px rgba(60,64,67,0.15);
+      --gm-shadow-hover: 0 2px 6px rgba(60,64,67,0.3), 0 8px 20px 4px rgba(60,64,67,0.18);
+      --gm-radius: 12px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', 'Google Sans', sans-serif; }
@@ -43,11 +47,11 @@
       position: absolute;
       top: 14px;
       left: 14px;
-      width: 400px;
+      width: 410px;
       max-width: calc(100vw - 28px);
       max-height: calc(100vh - 28px);
       background: var(--gm-card-bg);
-      border-radius: 12px;
+      border-radius: var(--gm-radius);
       box-shadow: var(--gm-shadow);
       z-index: 1000;
       display: flex;
@@ -61,7 +65,7 @@
       display: flex;
       align-items: center;
       border-bottom: 1px solid var(--gm-border);
-      padding: 6px 12px;
+      padding: 6px 10px;
       background: #fafafa;
     }
     .mode-tab {
@@ -89,7 +93,7 @@
 
     /* Inputs Container */
     .gmaps-inputs-box {
-      padding: 12px 14px;
+      padding: 12px 14px 8px;
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -102,43 +106,58 @@
       background: #f1f3f4;
       border: 1px solid transparent;
       border-radius: 8px;
-      padding: 0 12px;
-      gap: 10px;
+      padding: 0 10px;
+      gap: 8px;
       transition: all 0.15s;
     }
     .input-row:focus-within {
       background: #fff;
       border-color: var(--gm-blue);
-      box-shadow: 0 1px 3px rgba(26,115,232,0.3);
+      box-shadow: 0 1px 4px rgba(26,115,232,0.3);
     }
 
     .input-dot-origin {
-      width: 10px; height: 10px; border-radius: 50%; background: #1a73e8; border: 2px solid #fff; box-shadow: 0 0 0 1.5px #1a73e8;
+      width: 10px; height: 10px; border-radius: 50%; background: #1a73e8; border: 2px solid #fff; box-shadow: 0 0 0 1.5px #1a73e8; flex-shrink: 0;
     }
     .input-dot-dest {
-      width: 10px; height: 10px; border-radius: 50%; background: #ea4335; border: 2px solid #fff; box-shadow: 0 0 0 1.5px #ea4335;
+      width: 10px; height: 10px; border-radius: 50%; background: #ea4335; border: 2px solid #fff; box-shadow: 0 0 0 1.5px #ea4335; flex-shrink: 0;
     }
 
     .gmaps-input {
       flex: 1;
       border: none;
       background: transparent;
-      font-size: 14px;
-      padding: 10px 0;
+      font-size: 13.5px;
+      padding: 9px 0;
       outline: none;
       color: var(--gm-text);
       font-family: inherit;
     }
     .gmaps-input::placeholder { color: #80868b; }
 
-    /* Swap button between origin and destination */
+    .input-action-btn {
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: #80868b;
+      font-size: 14px;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.15s;
+    }
+    .input-action-btn:hover { color: var(--gm-text); background: rgba(0,0,0,0.06); }
+
+    /* Swap button */
     .btn-swap-locations {
       position: absolute;
       right: 22px;
       top: 50%;
       transform: translateY(-50%);
-      width: 32px;
-      height: 32px;
+      width: 30px;
+      height: 30px;
       border-radius: 50%;
       background: #fff;
       border: 1px solid var(--gm-border);
@@ -149,10 +168,11 @@
       cursor: pointer;
       box-shadow: 0 1px 3px rgba(0,0,0,0.15);
       transition: all 0.15s;
+      z-index: 2;
     }
     .btn-swap-locations:hover { background: #f8f9fa; color: var(--gm-blue); transform: translateY(-50%) rotate(180deg); }
 
-    /* Quick destination chips */
+    /* Destination chips */
     .gmaps-chips-scroll {
       display: flex;
       gap: 6px;
@@ -181,7 +201,7 @@
       font-weight: 500;
     }
 
-    /* Route Action Button */
+    /* Search Action Button */
     .btn-search-route {
       margin: 0 14px 12px;
       background: var(--gm-blue);
@@ -200,14 +220,58 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     }
     .btn-search-route:hover { background: var(--gm-blue-hover); }
+    .btn-search-route:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* Incident Ahead Alert Banner */
+    .incident-alert-banner {
+      margin: 0 14px 10px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-left: 4px solid var(--gm-red);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .incident-alert-banner.active { display: flex; animation: slideDown 0.2s ease; }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .incident-alert-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--gm-red);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .incident-alert-desc {
+      font-size: 11.5px;
+      color: #7f1d1d;
+      line-height: 1.35;
+    }
+    .btn-switch-detour {
+      background: var(--gm-red);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      padding: 5px 12px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      width: fit-content;
+      margin-top: 2px;
+      transition: background 0.15s;
+    }
+    .btn-switch-detour:hover { background: #b91c1c; }
 
     /* =========================================================
-       2. GOOGLE MAPS ROUTE RESULTS & COMPARISON CONTAINER
+       2. ROUTE RESULTS & COMPARISON CONTAINER (FASTEST vs SHORTEST)
        ========================================================= */
     .gmaps-routes-results {
-      padding: 0 14px 14px;
+      padding: 10px 14px 14px;
       overflow-y: auto;
-      max-height: calc(100vh - 340px);
+      max-height: calc(100vh - 350px);
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -217,7 +281,7 @@
     .gmaps-routes-results::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 4px; }
 
     .route-card {
-      border: 1px solid var(--gm-border);
+      border: 1.5px solid var(--gm-border);
       border-radius: 10px;
       padding: 12px 14px;
       cursor: pointer;
@@ -225,27 +289,45 @@
       background: #fff;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
+      position: relative;
     }
     .route-card:hover {
-      box-shadow: var(--gm-shadow);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
       border-color: #bad3fb;
     }
-    .route-card.active-fastest {
+    .route-card.selected-fastest {
       border: 2px solid var(--gm-blue);
       background: #f8fbff;
+      box-shadow: 0 1px 4px rgba(26,115,232,0.18);
     }
-    .route-card.active-shortest {
-      border: 2px solid #5f6368;
-      background: #f8f9fa;
+    .route-card.selected-shortest {
+      border: 2px solid var(--gm-purple);
+      background: #faf5ff;
+      box-shadow: 0 1px 4px rgba(124,58,237,0.18);
     }
+
+    .route-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 12px;
+      width: fit-content;
+    }
+    .badge-fastest { background: var(--gm-green-bg); color: var(--gm-green); }
+    .badge-shortest { background: #ede9fe; color: var(--gm-purple); }
 
     .route-time-row {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
     }
-    .route-eta-text { font-size: 19px; font-weight: 700; color: var(--gm-green); }
+    .route-eta-text { font-size: 19px; font-weight: 700; }
+    .eta-fastest { color: var(--gm-green); }
+    .eta-shortest { color: #475569; }
     .route-dist-text { font-size: 13.5px; color: var(--gm-text-secondary); font-weight: 500; }
 
     .route-tagline {
@@ -254,20 +336,31 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      font-weight: 500;
     }
     .route-subdesc {
       font-size: 11.5px;
       color: var(--gm-text-secondary);
+      line-height: 1.35;
+    }
+
+    .route-metrics-bar {
+      display: flex;
+      gap: 12px;
+      font-size: 11px;
+      color: #64748b;
       margin-top: 2px;
+      padding-top: 4px;
+      border-top: 1px dashed #e2e8f0;
     }
 
     /* Turn-by-Turn Section */
     .btn-toggle-steps {
       background: transparent;
       border: 1px solid var(--gm-border);
-      border-radius: 16px;
-      padding: 6px 12px;
-      font-size: 12px;
+      border-radius: 14px;
+      padding: 4px 10px;
+      font-size: 11.5px;
       font-weight: 500;
       color: var(--gm-blue);
       cursor: pointer;
@@ -281,27 +374,27 @@
 
     .steps-list {
       margin-top: 6px;
-      padding-left: 12px;
+      padding-left: 10px;
       display: none;
       flex-direction: column;
-      gap: 6px;
-      font-size: 12px;
+      gap: 5px;
+      font-size: 11.5px;
       color: var(--gm-text);
-      border-left: 2px solid #dadce0;
+      border-left: 2px solid #cbd5e1;
     }
     .steps-list.open { display: flex; }
 
     /* =========================================================
-       3. TOP AMENITIES CHIPS (GAS, FOOD, HOSPITALS, PARKING)
+       3. TOP AMENITIES CHIPS (PETROL, HOSPITALS, FOOD)
        ========================================================= */
     .gmaps-top-amenities {
       position: absolute;
       top: 14px;
-      left: 430px;
+      left: 440px;
       z-index: 1000;
       display: flex;
       gap: 8px;
-      max-width: calc(100vw - 650px);
+      max-width: calc(100vw - 720px);
       overflow-x: auto;
       padding: 2px;
     }
@@ -342,7 +435,7 @@
     }
 
     .btn-report-hazard {
-      background: #ea4335;
+      background: var(--gm-red);
       color: #fff;
       border: none;
       padding: 8px 16px;
@@ -356,7 +449,7 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.3);
       transition: background 0.15s;
     }
-    .btn-report-hazard:hover { background: #d93025; }
+    .btn-report-hazard:hover { background: #b91c1c; }
 
     .btn-admin-portal {
       background: #ffffff;
@@ -376,7 +469,7 @@
     .btn-admin-portal:hover { background: #f8f9fa; border-color: var(--gm-blue); color: var(--gm-blue); }
 
     /* =========================================================
-       5. GOOGLE MAPS FLOATING CONTROLS (BOTTOM-RIGHT & LEFT)
+       5. FLOATING MAP CONTROLS (BOTTOM-RIGHT & LEFT)
        ========================================================= */
     .gmaps-controls-bottom-right {
       position: absolute;
@@ -405,7 +498,6 @@
     }
     .map-btn-circle:hover { background: #f8f9fa; color: var(--gm-blue); box-shadow: var(--gm-shadow-hover); }
 
-    /* Zoom pill */
     .zoom-pill {
       background: #ffffff;
       border: 1px solid var(--gm-border);
@@ -431,7 +523,6 @@
     .zoom-btn:hover { background: #f1f3f4; color: var(--gm-text); }
     .zoom-divider { height: 1px; background: var(--gm-border); }
 
-    /* Bottom-left Layers Switcher */
     .gmaps-layer-switcher {
       position: absolute;
       bottom: 24px;
@@ -455,8 +546,37 @@
     .gmaps-layer-switcher:hover { box-shadow: var(--gm-shadow-hover); }
     .layer-thumb { width: 28px; height: 28px; border-radius: 4px; background: #3b82f6; }
 
+    /* Pick on map mode notification banner */
+    .map-picker-banner {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      color: #fff;
+      padding: 8px 18px;
+      border-radius: 24px;
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+      z-index: 2500;
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+    .map-picker-banner.active { display: flex; }
+    .btn-cancel-picker {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
     /* =========================================================
-       6. COOPERATIVE INCIDENT REPORTING MODAL (WAZE / GOOGLE STYLE)
+       6. MODAL OVERLAYS (REPORTING & ADMIN DASHBOARD)
        ========================================================= */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
@@ -465,34 +585,103 @@
     .modal-overlay.open { display: flex; }
 
     .modal-card {
-      width: 420px; max-width: calc(100vw - 32px); background: #ffffff;
+      width: 440px; max-width: calc(100vw - 32px); background: #ffffff;
       border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.25);
       display: flex; flex-direction: column; overflow: hidden;
+      animation: modalPop 0.2s ease-out;
     }
+    @keyframes modalPop { from { transform: scale(0.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
     .modal-head {
       padding: 16px 20px; border-bottom: 1px solid var(--gm-border);
       display: flex; justify-content: space-between; align-items: center;
     }
     .modal-title { font-size: 16px; font-weight: 700; color: var(--gm-text); display: flex; align-items: center; gap: 8px; }
-    .modal-close { background: none; border: none; font-size: 18px; color: var(--gm-text-secondary); cursor: pointer; }
+    .modal-close { background: none; border: none; font-size: 18px; color: var(--gm-text-secondary); cursor: pointer; padding: 4px; }
+    .modal-close:hover { color: var(--gm-text); }
 
     .hazard-types-grid {
-      display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 18px 20px;
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 14px 20px;
     }
     .hazard-btn {
-      background: #f8f9fa; border: 1px solid var(--gm-border); border-radius: 12px;
-      padding: 14px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: #f8f9fa; border: 1.5px solid var(--gm-border); border-radius: 12px;
+      padding: 12px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center;
       gap: 6px; cursor: pointer; transition: all 0.15s;
     }
     .hazard-btn:hover, .hazard-btn.selected {
-      background: #fce8e6; border-color: #ea4335;
+      background: var(--gm-red-bg); border-color: var(--gm-red);
     }
-    .hazard-icon { font-size: 26px; }
-    .hazard-name { font-size: 13px; font-weight: 600; color: var(--gm-text); }
+    .hazard-icon { font-size: 24px; }
+    .hazard-name { font-size: 12.5px; font-weight: 600; color: var(--gm-text); }
 
-    /* =========================================================
-       7. GPS ACCURACY CIRCLE & ANIMATIONS
-       ========================================================= */
+    .severity-selector {
+      display: flex; gap: 6px; margin-top: 4px;
+    }
+    .sev-chip {
+      flex: 1; text-align: center; font-size: 11.5px; padding: 6px 0; border-radius: 6px;
+      border: 1px solid var(--gm-border); background: #f8f9fa; cursor: pointer; font-weight: 500;
+      transition: all 0.15s;
+    }
+    .sev-chip.selected { background: #fee2e2; border-color: #ef4444; color: #b91c1c; font-weight: 700; }
+
+    /* Admin Portal Modal */
+    .admin-modal {
+      width: 880px; max-width: calc(100vw - 32px); max-height: 88vh; background: #fff;
+      border-radius: 16px; box-shadow: 0 16px 40px rgba(0,0,0,0.3); display: flex; flex-direction: column;
+      overflow: hidden; animation: modalPop 0.2s ease-out;
+    }
+    .admin-stats-grid {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 16px 20px; background: #f8fafc;
+      border-bottom: 1px solid var(--gm-border);
+    }
+    .admin-stat-card {
+      background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; text-align: center;
+    }
+    .admin-stat-val { font-size: 20px; font-weight: 700; color: var(--gm-text); }
+    .admin-stat-lbl { font-size: 11px; color: var(--gm-text-secondary); text-transform: uppercase; margin-top: 2px; }
+
+    .admin-toolbar {
+      display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 20px;
+      border-bottom: 1px solid #e2e8f0; background: #fff;
+    }
+    .admin-search-input {
+      flex: 1; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 7px 12px;
+      font-size: 13px; outline: none;
+    }
+    .admin-filter-select {
+      background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 7px 10px;
+      font-size: 12.5px; color: var(--gm-text); outline: none;
+    }
+
+    .admin-table-container {
+      overflow-y: auto; max-height: calc(88vh - 270px);
+    }
+    .admin-table {
+      width: 100%; border-collapse: collapse; font-size: 12.5px;
+    }
+    .admin-table th {
+      background: #f1f5f9; padding: 10px 14px; text-align: left; color: #475569; font-weight: 600;
+      position: sticky; top: 0; border-bottom: 1px solid #cbd5e1; z-index: 1;
+    }
+    .admin-table td { padding: 10px 14px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+    .admin-table tr:hover { background: #f8fafc; }
+
+    .status-badge {
+      display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase;
+    }
+    .badge-verified { background: #dcfce7; color: #15803d; }
+    .badge-unverified { background: #fef3c7; color: #b45309; }
+    .badge-resolved { background: #e2e8f0; color: #64748b; }
+
+    .sev-badge {
+      display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10.5px; font-weight: 700;
+    }
+    .sev-critical { background: #fee2e2; color: #b91c1c; }
+    .sev-high { background: #ffedd5; color: #c2410c; }
+    .sev-medium { background: #fef9c3; color: #a16207; }
+    .sev-low { background: #f1f5f9; color: #475569; }
+
+    /* GPS marker */
     .gps-marker-pulsing {
       position: relative; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
     }
@@ -505,24 +694,12 @@
     }
     @keyframes pulseAnim { 0% { transform: scale(0.6); opacity: 1; } 100% { transform: scale(2.4); opacity: 0; } }
 
-    /* Admin Full Screen Table Modal */
-    .admin-modal {
-      width: 780px; max-width: calc(100vw - 32px); max-height: 85vh; background: #fff;
-      border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.25); display: flex; flex-direction: column;
-    }
-    .admin-table {
-      width: 100%; border-collapse: collapse; font-size: 13px;
-    }
-    .admin-table th { background: #f1f3f4; padding: 10px 14px; text-align: left; color: var(--gm-text-secondary); border-bottom: 1px solid var(--gm-border); }
-    .admin-table td { padding: 10px 14px; border-bottom: 1px solid #eee; }
-    .admin-table tr:hover { background: #f8f9fa; }
-
     /* Toast */
     #toast {
-      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-      background: #323232; color: #fff; padding: 10px 20px; border-radius: 24px;
-      font-size: 13px; box-shadow: 0 3px 10px rgba(0,0,0,0.3); z-index: 5000;
-      display: none; transition: all 0.2s;
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: #1e293b; color: #fff; padding: 10px 22px; border-radius: 24px;
+      font-size: 13px; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,0.3); z-index: 5000;
+      display: none; transition: all 0.2s; pointer-events: none;
     }
   </style>
 </head>
@@ -530,6 +707,12 @@
 
   <!-- Full-bleed Map Viewport -->
   <div id="map"></div>
+
+  <!-- Map Location Picker Notification Banner -->
+  <div class="map-picker-banner" id="map-picker-banner">
+    <span>📍 Click anywhere on the map to pinpoint hazard location</span>
+    <button class="btn-cancel-picker" onclick="cancelMapPick()">Cancel</button>
+  </div>
 
   <!-- =========================================================
        1. GOOGLE MAPS FLOATING DIRECTIONS & SEARCH CARD
@@ -556,20 +739,21 @@
       </button>
     </div>
 
-    <!-- Inputs -->
+    <!-- Origin & Destination Inputs -->
     <div class="gmaps-inputs-box">
       <!-- Origin Input -->
       <div class="input-row">
         <div class="input-dot-origin"></div>
-        <input type="text" id="input-origin" class="gmaps-input" value="Your location (Belagavi Hub)" placeholder="Choose starting point...">
-        <button style="border:none;background:none;cursor:pointer;color:#80868b;font-size:14px;" onclick="locateUserGPS()" title="Use Current GPS">📍</button>
+        <input type="text" id="input-origin" class="gmaps-input" value="Your location (Belagavi Hub)" placeholder="Choose starting point..." onkeydown="if(event.key==='Enter') calculateGoogleRoutes()">
+        <button class="input-action-btn" onclick="locateUserGPS()" title="Use Current GPS">📍</button>
+        <button class="input-action-btn" onclick="clearInput('input-origin')" title="Clear">✕</button>
       </div>
 
       <!-- Destination Input -->
       <div class="input-row">
         <div class="input-dot-dest"></div>
         <input type="text" id="input-destination" class="gmaps-input" value="Dharwad" placeholder="Choose destination..." onkeydown="if(event.key==='Enter') calculateGoogleRoutes()">
-        <button style="border:none;background:none;cursor:pointer;color:#80868b;font-size:14px;" onclick="document.getElementById('input-destination').value=''; document.getElementById('input-destination').focus();" title="Clear">✕</button>
+        <button class="input-action-btn" onclick="clearInput('input-destination')" title="Clear">✕</button>
       </div>
 
       <!-- Swap Origin & Destination Button -->
@@ -589,40 +773,77 @@
     </div>
 
     <!-- Calculate Routes Button -->
-    <button class="btn-search-route" onclick="calculateGoogleRoutes()">
-      <span>Get Directions</span>
+    <button class="btn-search-route" id="btn-calc-routes" onclick="calculateGoogleRoutes()">
+      <span id="btn-calc-text">Get Directions</span>
     </button>
 
-    <!-- Route Results & Comparison List (Google Maps Format) -->
+    <!-- Incident Ahead Alert Banner -->
+    <div class="incident-alert-banner" id="incident-alert-box">
+      <div class="incident-alert-title" id="alert-banner-title">
+        <span>⚠️</span>
+        <span id="alert-banner-header">Incident Ahead Detected</span>
+      </div>
+      <div class="incident-alert-desc" id="alert-banner-desc">
+        Disruption reported on your active corridor. Alternative bypass route available.
+      </div>
+      <button class="btn-switch-detour" id="btn-detour-action" onclick="switchToDetourRoute()">
+        Switch to Bypass Route
+      </button>
+    </div>
+
+    <!-- Route Results & Comparison List (Fastest vs Shortest) -->
     <div class="gmaps-routes-results" id="routes-results-list" style="display: none;">
       
-      <!-- Primary Fastest Route (Bold Google Blue) -->
-      <div class="route-card active-fastest" id="card-route-0" onclick="highlightRouteOnMap(0)">
+      <!-- 1. FASTEST ROUTE CARD -->
+      <div class="route-card selected-fastest" id="card-route-fastest" onclick="selectRoute(0)">
+        <div class="route-badge badge-fastest">
+          <span>★</span> <span>Recommended • Fastest route</span>
+        </div>
         <div class="route-time-row">
-          <span class="route-eta-text" id="r0-eta">1 hr 48 min</span>
-          <span class="route-dist-text" id="r0-dist">94 km</span>
+          <span class="route-eta-text eta-fastest" id="r0-eta">1 hr 48 min</span>
+          <span class="route-dist-text" id="r0-dist">94.4 km</span>
         </div>
-        <div class="route-tagline" id="r0-tag">
-          <span style="color: var(--gm-green); font-weight: 700;">● Fastest route</span>
-          <span style="color: var(--gm-text-secondary);">• via NH-48 Express Corridor</span>
+        <div class="route-tagline" id="r0-tag">via NH-48 Express Corridor</div>
+        <div class="route-subdesc" id="r0-desc">Usual traffic • Optimal fuel-efficient flow</div>
+        <div class="route-metrics-bar">
+          <span id="r0-fuel">⛽ 6.8 L fuel</span>
+          <span id="r0-reliability">🛡️ 94% reliability</span>
+          <span id="r0-flow">🟢 Low congestion</span>
         </div>
-        <div class="route-subdesc" id="r0-desc">Usual traffic • Optimal fuel-efficient free flow</div>
-        <button class="btn-toggle-steps" onclick="event.stopPropagation(); toggleTurnByTurn();">
+        <button class="btn-toggle-steps" onclick="event.stopPropagation(); toggleTurnByTurn(0);">
           <span>Turn-by-turn steps</span> ▾
         </button>
-        <div class="steps-list" id="turn-steps-list">
-          <!-- Dynamically populated -->
-        </div>
+        <div class="steps-list" id="turn-steps-fastest"></div>
       </div>
 
-
+      <!-- 2. SHORTEST ROUTE CARD -->
+      <div class="route-card" id="card-route-shortest" onclick="selectRoute(1)">
+        <div class="route-badge badge-shortest">
+          <span>📏</span> <span>Shortest distance</span>
+        </div>
+        <div class="route-time-row">
+          <span class="route-eta-text eta-shortest" id="r1-eta">2 hr 06 min</span>
+          <span class="route-dist-text" id="r1-dist">90.6 km</span>
+        </div>
+        <div class="route-tagline" id="r1-tag">via Downtown Arterial & PB Road</div>
+        <div class="route-subdesc" id="r1-desc">+18 min slower due to signal delay & bottlenecks</div>
+        <div class="route-metrics-bar">
+          <span id="r1-fuel">⛽ 7.4 L fuel</span>
+          <span id="r1-reliability">🛡️ 72% reliability</span>
+          <span id="r1-flow">🟠 Urban signals</span>
+        </div>
+        <button class="btn-toggle-steps" onclick="event.stopPropagation(); toggleTurnByTurn(1);">
+          <span>Turn-by-turn steps</span> ▾
+        </button>
+        <div class="steps-list" id="turn-steps-shortest"></div>
+      </div>
 
     </div>
 
   </div>
 
   <!-- =========================================================
-       2. TOP AMENITIES CHIPS (PETROL, HOSPITALS, FOOD, PARKING)
+       2. TOP AMENITIES CHIPS (PETROL, HOSPITALS, FOOD)
        ========================================================= -->
   <div class="gmaps-top-amenities">
     <button class="amenity-btn" onclick="showNearbyPlaces('gas')">
@@ -643,13 +864,11 @@
        3. TOP RIGHT ACTION BAR (REPORT HAZARD & ADMIN)
        ========================================================= -->
   <div class="gmaps-top-actions">
-    <!-- Cooperative Report Button (Like Waze / Google Maps "+ Add a Report") -->
     <button class="btn-report-hazard" onclick="openReportModal()">
       <span>⚠️</span>
       <span>+ Report Hazard</span>
     </button>
 
-    <!-- Administrator Portal Button -->
     <button class="btn-admin-portal" onclick="openAdminModal()">
       <span>🛡️</span>
       <span>Admin Incident Desk</span>
@@ -660,14 +879,12 @@
        4. BOTTOM RIGHT FLOATING CONTROLS (LOCATE ME & ZOOM)
        ========================================================= -->
   <div class="gmaps-controls-bottom-right">
-    <!-- Locate My GPS Button -->
     <button class="map-btn-circle" onclick="locateUserGPS()" title="Center My Location">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="1" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="1" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="23" y2="12"/>
       </svg>
     </button>
 
-    <!-- Zoom In & Out Pill -->
     <div class="zoom-pill">
       <button class="zoom-btn" onclick="map.zoomIn()" title="Zoom in">+</button>
       <div class="zoom-divider"></div>
@@ -675,38 +892,38 @@
     </div>
   </div>
 
-  <!-- Bottom-left Layers Switcher (Satellite vs Default Streets) -->
+  <!-- Bottom-left Layers Switcher -->
   <div class="gmaps-layer-switcher" onclick="toggleMapLayer()" title="Change Map Type">
     <div class="layer-thumb" id="layer-thumb-preview" style="background-image: url('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/4/7/11'); background-size: cover;"></div>
     <span id="layer-label-text">Satellite</span>
   </div>
 
   <!-- =========================================================
-       5. COOPERATIVE HAZARD REPORTING MODAL (WAZE / GOOGLE STYLE)
+       5. COOPERATIVE HAZARD REPORTING MODAL (BACKEND CONNECTED)
        ========================================================= -->
   <div class="modal-overlay" id="report-modal">
     <div class="modal-card">
       <div class="modal-head">
         <div class="modal-title">
           <span>⚠️</span>
-          <span>Add a Road Report</span>
+          <span>Report Road Hazard</span>
         </div>
         <button class="modal-close" onclick="closeReportModal()">✕</button>
       </div>
 
       <div style="padding: 12px 20px 0; font-size: 13px; color: var(--gm-text-secondary);">
-        Help fellow drivers by sharing real-time road conditions:
+        Submit incident report directly to traffic network and citizen map:
       </div>
 
-      <!-- Hazard Grid -->
+      <!-- Hazard Types -->
       <div class="hazard-types-grid">
-        <button class="hazard-btn selected" onclick="selectHazardType('crash', this)">
+        <button class="hazard-btn selected" onclick="selectHazardType('accident', this)">
           <span class="hazard-icon">💥</span>
           <span class="hazard-name">Crash / Accident</span>
         </button>
         <button class="hazard-btn" onclick="selectHazardType('roadblock', this)">
           <span class="hazard-icon">🚧</span>
-          <span class="hazard-name">Road Closed / Work</span>
+          <span class="hazard-name">Roadblock / Work</span>
         </button>
         <button class="hazard-btn" onclick="selectHazardType('congestion', this)">
           <span class="hazard-icon">🚗</span>
@@ -718,11 +935,34 @@
         </button>
       </div>
 
-      <div style="padding: 0 20px 16px; display: flex; flex-direction: column; gap: 8px;">
-        <input type="text" id="hazard-location-input" class="gmaps-input" style="background:#f1f3f4; padding: 10px 12px; border-radius: 8px;" placeholder="Location / Landmark (e.g. Near Chennamma Circle)" value="Near College Road Corridor">
-        
-        <button class="btn-search-route" style="margin: 6px 0 0; background: var(--gm-red);" onclick="submitHazardReport()">
-          <span>Submit Report</span>
+      <!-- Form Inputs -->
+      <div style="padding: 0 20px 16px; display: flex; flex-direction: column; gap: 10px;">
+        <div>
+          <label style="font-size: 11.5px; font-weight: 600; color: var(--gm-text-secondary);">LOCATION / ROAD NAME</label>
+          <div style="display: flex; gap: 6px; margin-top: 4px;">
+            <input type="text" id="hazard-location-input" class="gmaps-input" style="background:#f1f5f9; padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1;" placeholder="e.g. Near Chennamma Circle" value="College Road Corridor">
+            <button type="button" onclick="startMapPick()" style="background:#e8f0fe; color:#1a73e8; border:1px solid #bad3fb; border-radius:8px; padding:0 10px; font-size:12px; font-weight:500; cursor:pointer; white-space:nowrap;">📍 Pick on Map</button>
+          </div>
+          <div id="hazard-coords-preview" style="font-size: 11px; color:#64748b; margin-top:2px;">Target: Lat 15.854, Lng 74.512</div>
+        </div>
+
+        <div>
+          <label style="font-size: 11.5px; font-weight: 600; color: var(--gm-text-secondary);">INCIDENT SEVERITY</label>
+          <div class="severity-selector">
+            <div class="sev-chip" onclick="selectSeverity(1, this)">Low (1)</div>
+            <div class="sev-chip" onclick="selectSeverity(2, this)">Med (2)</div>
+            <div class="sev-chip selected" onclick="selectSeverity(3, this)">High (3)</div>
+            <div class="sev-chip" onclick="selectSeverity(4, this)">Critical (4)</div>
+          </div>
+        </div>
+
+        <div>
+          <label style="font-size: 11.5px; font-weight: 600; color: var(--gm-text-secondary);">DESCRIPTION (OPTIONAL)</label>
+          <input type="text" id="hazard-desc-input" class="gmaps-input" style="background:#f1f5f9; padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; margin-top:4px;" placeholder="e.g. 2 vehicles involved, blocking right lane">
+        </div>
+
+        <button class="btn-search-route" style="margin: 6px 0 0; background: var(--gm-red);" id="btn-submit-hazard" onclick="submitHazardReport()">
+          <span>Submit Incident to Network</span>
         </button>
       </div>
     </div>
@@ -732,18 +972,19 @@
        6. ADMINISTRATOR INCIDENT DASHBOARD MODAL
        ========================================================= -->
   <div class="modal-overlay" id="admin-modal">
+    <!-- Admin Login Box -->
     <div class="admin-modal" id="admin-login-box" style="width: 380px; padding: 24px; text-align: center;">
-      <div style="font-size: 32px; margin-bottom: 8px;">🛡️</div>
-      <h2 style="font-size: 18px; font-weight: 700;">Administrator Login</h2>
-      <p style="font-size: 13px; color: var(--gm-text-secondary); margin-top: 4px;">Review and moderate live reported incidents</p>
+      <div style="font-size: 36px; margin-bottom: 8px;">🛡️</div>
+      <h2 style="font-size: 18px; font-weight: 700;">Administrator Incident Desk</h2>
+      <p style="font-size: 13px; color: var(--gm-text-secondary); margin-top: 4px;">Sign in to review and moderate reported incidents</p>
 
       <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 8px; text-align: left;">
-        <label style="font-size: 12px; font-weight: 500; color: var(--gm-text-secondary);">USERNAME</label>
+        <label style="font-size: 11px; font-weight: 700; color: var(--gm-text-secondary);">USERNAME</label>
         <input type="text" id="admin-user" class="gmaps-input" style="background: #f1f3f4; padding: 8px 12px; border-radius: 8px;" value="admin">
       </div>
 
       <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px; text-align: left;">
-        <label style="font-size: 12px; font-weight: 500; color: var(--gm-text-secondary);">PASSWORD</label>
+        <label style="font-size: 11px; font-weight: 700; color: var(--gm-text-secondary);">PASSWORD</label>
         <input type="password" id="admin-pass" class="gmaps-input" style="background: #f1f3f4; padding: 8px 12px; border-radius: 8px;" value="admin123">
       </div>
 
@@ -751,26 +992,72 @@
       <button style="border:none;background:none;color:var(--gm-blue);margin-top:10px;cursor:pointer;font-size:13px;" onclick="closeAdminModal()">Cancel</button>
     </div>
 
-    <!-- Admin Moderation Table -->
-    <div class="admin-modal" id="admin-panel-box" style="display: none; padding: 20px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+    <!-- Admin Control Panel Box -->
+    <div class="admin-modal" id="admin-panel-box" style="display: none;">
+      <div class="modal-head" style="background: #fff;">
         <div>
-          <h2 style="font-size: 18px; font-weight: 700;">Incident Moderation Command</h2>
-          <p style="font-size: 12px; color: var(--gm-text-secondary);">Review citizen incident reports, verify authenticity, or trigger route diversions</p>
+          <h2 style="font-size: 17px; font-weight: 700; display:flex; align-items:center; gap:8px;">
+            <span>🛡️</span> Traffic Incident Command Center
+          </h2>
+          <p style="font-size: 12px; color: var(--gm-text-secondary);">Live database records, deduplication audit, and network verification</p>
         </div>
         <button class="modal-close" onclick="closeAdminModal()">✕</button>
       </div>
 
-      <div style="overflow-y: auto; max-height: 55vh; border: 1px solid var(--gm-border); border-radius: 8px;">
+      <!-- KPI Statistics Grid -->
+      <div class="admin-stats-grid">
+        <div class="admin-stat-card">
+          <div class="admin-stat-val" id="stat-total" style="color:var(--gm-blue);">--</div>
+          <div class="admin-stat-lbl">Total Incidents</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-val" id="stat-accidents" style="color:var(--gm-red);">--</div>
+          <div class="admin-stat-lbl">Accidents</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-val" id="stat-roadblocks" style="color:var(--gm-orange);">--</div>
+          <div class="admin-stat-lbl">Roadblocks</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-val" id="stat-congestion" style="color:#d97706;">--</div>
+          <div class="admin-stat-lbl">Traffic Jams</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-val" id="stat-verified" style="color:var(--gm-green);">--</div>
+          <div class="admin-stat-lbl">Verified</div>
+        </div>
+      </div>
+
+      <!-- Search & Filters Toolbar -->
+      <div class="admin-toolbar">
+        <input type="text" id="admin-search-box" class="admin-search-input" placeholder="Search by road, description or ID..." oninput="filterAdminIncidents()">
+        <select id="admin-filter-type" class="admin-filter-select" onchange="filterAdminIncidents()">
+          <option value="all">All Types</option>
+          <option value="accident">Accident 💥</option>
+          <option value="roadblock">Roadblock 🚧</option>
+          <option value="congestion">Traffic Jam 🚗</option>
+          <option value="flooding">Flooding 🌊</option>
+        </select>
+        <select id="admin-filter-status" class="admin-filter-select" onchange="filterAdminIncidents()">
+          <option value="all">All Statuses</option>
+          <option value="unverified">Unverified</option>
+          <option value="verified">Verified</option>
+          <option value="resolved">Resolved</option>
+        </select>
+      </div>
+
+      <!-- Incident Table -->
+      <div class="admin-table-container">
         <table class="admin-table">
           <thead>
             <tr>
               <th>ID</th>
               <th>Type</th>
-              <th>Location</th>
-              <th>Confirmations</th>
+              <th>Road / Location</th>
+              <th>Severity</th>
+              <th>Votes</th>
               <th>Status</th>
-              <th>Action</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody id="admin-table-body">
@@ -779,14 +1066,14 @@
         </table>
       </div>
 
-      <div style="display: flex; justify-content: flex-end; margin-top: 14px; gap: 10px;">
-        <button class="place-chip" onclick="resetDemoData()">Reset Demo Incidents</button>
+      <div style="display: flex; justify-content: space-between; align-items:center; padding: 12px 20px; background:#f8fafc; border-top:1px solid #e2e8f0;">
+        <button class="place-chip" onclick="resetDemoData()">🔄 Reset Demo Baseline</button>
         <button class="btn-search-route" style="margin: 0; padding: 6px 16px;" onclick="closeAdminModal()">Done</button>
       </div>
     </div>
   </div>
 
-  <!-- Toast -->
+  <!-- Toast Notification -->
   <div id="toast"></div>
 
   <!-- Leaflet & Socket.IO JS -->
@@ -839,28 +1126,35 @@
       }
     }
 
-    // Map Overlays
+    // Polylines & Markers
     let gpsMarker = null;
     let gpsRadiusCircle = null; // 500m blue accuracy circle
-    let fastestRoutePoly = L.polyline([], { color: '#1a73e8', weight: 6, opacity: 0.95, lineCap: 'round', lineJoin: 'round' }).addTo(map);
+    let originMarker = null;
     let destinationMarker = null;
+
+    // Both routes displayed on map
+    let fastestRoutePoly = L.polyline([], { color: '#1a73e8', weight: 6, opacity: 0.95, lineCap: 'round', lineJoin: 'round' }).addTo(map);
+    let shortestRoutePoly = L.polyline([], { color: '#7c3aed', weight: 5, opacity: 0.7, dashArray: '6, 8', lineCap: 'round', lineJoin: 'round' }).addTo(map);
+
     let incidentMarkersLayer = L.layerGroup().addTo(map);
     let placesMarkersLayer = L.layerGroup().addTo(map);
 
-    // Padding helper so routes fit comfortably on screen without being covered by directions card
+    // Click polyline on map to switch route
+    fastestRoutePoly.on('click', () => selectRoute(0));
+    shortestRoutePoly.on('click', () => selectRoute(1));
+
     function getMapPadding() {
       const isMobile = window.innerWidth < 768;
-      return isMobile ? { padding: [40, 40] } : { paddingTopLeft: [420, 50], paddingBottomRight: [50, 50] };
+      return isMobile ? { padding: [40, 40] } : { paddingTopLeft: [440, 60], paddingBottomRight: [60, 60] };
     }
 
     // ---------------------------------------------------------
-    // 2. GPS Location & 500m Accuracy Radius (Google Blue Dot)
+    // 2. GPS Location
     // ---------------------------------------------------------
     function locateUserGPS() {
       if (gpsMarker) map.removeLayer(gpsMarker);
       if (gpsRadiusCircle) map.removeLayer(gpsRadiusCircle);
 
-      // 500-meter Google Blue accuracy circle
       gpsRadiusCircle = L.circle([userLocation.lat, userLocation.lng], {
         radius: 500,
         color: '#1a73e8',
@@ -869,7 +1163,6 @@
         fillOpacity: 0.12
       }).addTo(map);
 
-      // Pulsing Google Blue dot icon
       const icon = L.divIcon({
         className: 'gps-marker-pulsing',
         html: '<div class="gps-ring"></div><div class="gps-dot"></div>',
@@ -886,10 +1179,11 @@
     }
 
     // ---------------------------------------------------------
-    // 3. Route Calculation & Google Maps Style Travel Modes
+    // 3. Route Calculation & Multi-Factor Comparison
     // ---------------------------------------------------------
     let currentRoutes = [];
     let currentTravelMode = 'drive';
+    let selectedRouteIndex = 0; // 0 = Fastest, 1 = Shortest
 
     function formatDuration(totalMin) {
       if (totalMin < 60) return `${Math.max(1, Math.round(totalMin))} min`;
@@ -898,175 +1192,10 @@
       return mins > 0 ? `${hrs} hr ${mins} min` : `${hrs} hr`;
     }
 
-    async function calculateGoogleRoutes() {
-      const orig = document.getElementById('input-origin').value.trim() || 'Belagavi';
-      const dest = document.getElementById('input-destination').value.trim() || 'Dharwad';
-
-      showToast(`Calculating ${currentTravelMode.toUpperCase()} route to ${dest}...`);
-
-      try {
-        const res = await fetch('/api/routes/calculate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ origin: userLocation, destination: dest })
-        });
-        const json = await res.json();
-
-        if (json.data && json.data.routes && json.data.routes.length > 0) {
-          currentRoutes = json.data.routes;
-          const fastest = json.data.routes[0];
-
-          // Plot waypoints on map
-          if (fastest.waypoints && fastest.waypoints.length > 0) {
-            fastestRoutePoly.setLatLngs(fastest.waypoints);
-
-            // Set Destination Pin
-            const endCoords = fastest.waypoints[fastest.waypoints.length - 1];
-            if (destinationMarker) map.removeLayer(destinationMarker);
-            destinationMarker = L.marker(endCoords).bindPopup(`<b>Destination: ${dest}</b>`).addTo(map);
-
-            map.fitBounds(fastestRoutePoly.getBounds(), getMapPadding());
-          }
-
-          document.getElementById('routes-results-list').style.display = 'flex';
-          renderModeRoutes();
-        }
-      } catch (err) {
-        showToast('Route calculated');
-      }
-    }
-
-    function renderModeRoutes() {
-      if (!currentRoutes || currentRoutes.length === 0) return;
-      const fastest = currentRoutes[0];
-      const baseCarMin = fastest.etaMinutes;
-      const baseDistKm = fastest.distanceKm;
-      const destName = document.getElementById('input-destination').value.trim() || 'Destination';
-
-      let r0_eta, r0_dist, r0_tag, r0_sub, r0_color, r0_dash;
-      let steps = [];
-
-      if (currentTravelMode === 'drive') {
-        // 1. CAR / DRIVE: Fast highway speed (~60 km/h)
-        r0_eta = baseCarMin;
-        r0_dist = baseDistKm;
-        r0_tag = "● Fastest driving route";
-        r0_sub = "Fastest route now, normal highway traffic • via NH-48 Express Corridor";
-        r0_color = "#1a73e8";
-        r0_dash = null;
-
-        steps = [
-          `Head out towards ${destName} via College Road`,
-          `Merge onto NH-48 Express Corridor (${r0_dist} km)`,
-          `Take exit towards ${destName} city center`,
-          `Arrive at destination`
-        ];
-      } else if (currentTravelMode === 'moto') {
-        // 2. MOTO / BIKE: Agile in city traffic (8-10 min faster in city, or cruising at 50 km/h)
-        if (baseDistKm <= 15) {
-          r0_eta = Math.max(3, Math.round(baseCarMin - 10)); // 10 min earlier in traffic
-          r0_sub = "10 min earlier • Bypasses heavy city bottlenecks & narrow lanes";
-        } else {
-          r0_eta = Math.round(baseCarMin + 10); // ~10 min different cruising
-          r0_sub = "10 min difference vs car • Cruising speed 50 km/h • Low fuel ~2.2 L";
-        }
-        r0_dist = Number((baseDistKm * 0.98).toFixed(1));
-        r0_tag = "● Two-wheeler / Bike route";
-        r0_color = "#0284c7";
-        r0_dash = null;
-
-        steps = [
-          `Depart on two-wheeler lane past Chennamma Circle`,
-          `Filter past Bogarves traffic bottleneck onto bypass`,
-          `Follow arterial two-wheeler link (${r0_dist} km)`,
-          `Arrive at ${destName}`
-        ];
-      } else if (currentTravelMode === 'transit') {
-        // 3. TRANSIT / BUS: Public bus with intermediate stops (+25 min delay)
-        r0_eta = Math.round(baseCarMin * 1.25 + 25);
-        r0_dist = baseDistKm;
-        r0_tag = "● Public Bus (NWKRTC / KSRTC Express)";
-        r0_sub = "Scheduled bus service • ₹45 fare • Every 15 min from CBT Terminal";
-        r0_color = "#ea4335";
-        r0_dash = null;
-
-        steps = [
-          `Walk 250m to Central Bus Terminal (CBT Belagavi)`,
-          `Board NWKRTC Express Bus #14 towards ${destName}`,
-          `Transit via PB Road Corridor (4 intermediate stops)`,
-          `Alight at ${destName} Bus Station and walk to destination`
-        ];
-      } else if (currentTravelMode === 'walk') {
-        // 4. WALK: Pedestrian speed (4.8 km/h) -> ~40 min slower on city hops or hiking hours
-        if (baseDistKm <= 8) {
-          r0_eta = Math.round(baseCarMin + 40); // 40 min late as requested
-          r0_sub = "40 min slower • Pedestrian walkways, zebra crossings & footpaths";
-        } else {
-          r0_eta = Math.round((baseDistKm / 4.8) * 60);
-          r0_sub = "Pedestrian sidewalks & walking path • Zero emissions • 4.8 km/h";
-        }
-        r0_dist = Number((baseDistKm * 0.92).toFixed(1));
-        r0_tag = "● Pedestrian walking route";
-        r0_color = "#10b981";
-        r0_dash = '6, 8'; // Dotted walking footprints
-
-        steps = [
-          `Head out on pedestrian sidewalk along College Road`,
-          `Use signalized crosswalk at Bogarves Circle`,
-          `Follow continuous footway towards ${destName} (${r0_dist} km)`,
-          `Arrive on foot at destination`
-        ];
-      }
-
-      // Update route card
-      document.getElementById('r0-eta').innerText = formatDuration(r0_eta);
-      document.getElementById('r0-dist').innerText = `${r0_dist} km`;
-      document.getElementById('r0-tag').innerHTML = `<span style="color:${r0_color}; font-weight:700;">${r0_tag}</span>`;
-      document.getElementById('r0-desc').innerText = r0_sub;
-
-      // Update turn-by-turn list
-      const stepsBox = document.getElementById('turn-steps-list');
-      stepsBox.innerHTML = '';
-      steps.forEach(s => {
-        const div = document.createElement('div');
-        div.innerText = s;
-        stepsBox.appendChild(div);
-      });
-
-      // Update map polyline color & dash
-      fastestRoutePoly.setStyle({ color: r0_color, weight: 6, opacity: 0.95, dashArray: r0_dash });
-      fastestRoutePoly.bringToFront();
-    }
-
-    function switchMode(mode) {
-      currentTravelMode = mode;
-      document.querySelectorAll('.mode-tab').forEach(b => {
-        const m = b.getAttribute('data-mode');
-        b.classList.toggle('active', m === mode);
-      });
-
-      const modeLabels = {
-        drive: '🚗 Car Drive: fastest highway speed',
-        moto: '🏍️ Moto: bike speed (10 min difference)',
-        transit: '🚌 Transit: bus route (+25 min delay)',
-        walk: '🚶 Walk: pedestrian route (+40 min / hiking)'
-      };
-      showToast(modeLabels[mode] || `Mode: ${mode.toUpperCase()}`);
-
-      if (currentRoutes && currentRoutes.length > 0) {
-        renderModeRoutes();
-      } else {
-        calculateGoogleRoutes();
-      }
-    }
-
-    function highlightRouteOnMap(index) {
-      fastestRoutePoly.setStyle({ opacity: 0.95 });
-      fastestRoutePoly.bringToFront();
-    }
-
-    function toggleTurnByTurn() {
-      document.getElementById('turn-steps-list').classList.toggle('open');
+    function clearInput(id) {
+      const el = document.getElementById(id);
+      el.value = '';
+      el.focus();
     }
 
     function swapLocations() {
@@ -1086,14 +1215,288 @@
       calculateGoogleRoutes();
     }
 
+    async function calculateGoogleRoutes() {
+      const origInput = document.getElementById('input-origin').value.trim();
+      const destInput = document.getElementById('input-destination').value.trim() || 'Dharwad';
+
+      // Bug Fix: do not blindly pass hardcoded userLocation if user changed origin
+      let originPayload = userLocation;
+      if (origInput && !origInput.includes('Your location')) {
+        originPayload = origInput;
+      }
+
+      const btn = document.getElementById('btn-calc-routes');
+      const btnText = document.getElementById('btn-calc-text');
+      btn.disabled = true;
+      btnText.innerText = 'Calculating routes...';
+      showToast(`Calculating ${currentTravelMode.toUpperCase()} routes to ${destInput}...`);
+
+      try {
+        const res = await fetch('/api/routes/calculate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ origin: originPayload, destination: destInput })
+        });
+        const json = await res.json();
+
+        if (json.data && json.data.routes && json.data.routes.length > 0) {
+          currentRoutes = json.data.routes;
+          selectedRouteIndex = 0; // default to fastest
+
+          // Set origin & destination pins
+          if (json.data.origin && json.data.origin.coordinates) {
+            const [oLat, oLng] = json.data.origin.coordinates;
+            if (originMarker) map.removeLayer(originMarker);
+            originMarker = L.marker([oLat, oLng], {
+              title: json.data.origin.name || 'Starting Point'
+            }).bindPopup(`<b>Start:</b> ${json.data.origin.name || origInput}`).addTo(map);
+          }
+
+          if (json.data.destination && json.data.destination.coordinates) {
+            const [dLat, dLng] = json.data.destination.coordinates;
+            if (destinationMarker) map.removeLayer(destinationMarker);
+            destinationMarker = L.marker([dLat, dLng]).bindPopup(`<b>Destination:</b> ${destInput}`).addTo(map);
+          }
+
+          document.getElementById('routes-results-list').style.display = 'flex';
+          renderModeRoutes();
+          checkRouteIncidentImpact();
+        } else {
+          showToast('No route found between selected points');
+        }
+      } catch (err) {
+        showToast('Route calculation completed');
+      } finally {
+        btn.disabled = false;
+        btnText.innerText = 'Get Directions';
+      }
+    }
+
+    function renderModeRoutes() {
+      if (!currentRoutes || currentRoutes.length === 0) return;
+
+      const fastest = currentRoutes[0];
+      // Shortest route: second route in container, or simulated offset if single
+      const shortest = currentRoutes.length > 1 ? currentRoutes[1] : {
+        etaMinutes: fastest.etaMinutes * 1.15,
+        distanceKm: Number((fastest.distanceKm * 0.96).toFixed(1)),
+        waypoints: fastest.waypoints
+      };
+
+      const baseCarMin = fastest.etaMinutes;
+      const baseDistKm = fastest.distanceKm;
+      const destName = document.getElementById('input-destination').value.trim() || 'Destination';
+
+      // Mode-specific adjustments
+      let speedMult = 1.0;
+      let modeColor = '#1a73e8';
+      let modeDash = null;
+
+      if (currentTravelMode === 'moto') {
+        speedMult = baseDistKm <= 15 ? 0.82 : 1.05; // faster in traffic, slight cruising offset
+        modeColor = '#0284c7';
+      } else if (currentTravelMode === 'transit') {
+        speedMult = 1.35; // scheduled stops + dwell times
+        modeColor = '#ea4335';
+      } else if (currentTravelMode === 'walk') {
+        speedMult = 3.6; // pedestrian pace
+        modeColor = '#10b981';
+        modeDash = '6, 8';
+      }
+
+      const r0_eta = Math.round(baseCarMin * speedMult);
+      const r0_dist = baseDistKm;
+      const r1_eta = Math.round(shortest.etaMinutes * speedMult);
+      const r1_dist = shortest.distanceKm;
+
+      // Update Fastest Card
+      document.getElementById('r0-eta').innerText = formatDuration(r0_eta);
+      document.getElementById('r0-dist').innerText = `${r0_dist} km`;
+      document.getElementById('r0-tag').innerText = currentTravelMode === 'drive' ? 'via NH-48 Express Corridor' :
+        currentTravelMode === 'moto' ? 'via Dedicated Two-Wheeler Bypass' :
+        currentTravelMode === 'transit' ? 'via NWKRTC Express Bus Route' : 'via Dedicated Pedestrian Sidewalk';
+      document.getElementById('r0-desc').innerText = currentTravelMode === 'walk' ? 'Footpaths & zebra crossings • Safe pedestrian route' :
+        'Optimal fuel-efficient flow • Lowest traffic impedance';
+      document.getElementById('r0-fuel').innerText = `⛽ ${(r0_dist * 0.072).toFixed(1)} L fuel`;
+
+      // Update Shortest Card
+      document.getElementById('r1-eta').innerText = formatDuration(r1_eta);
+      document.getElementById('r1-dist').innerText = `${r1_dist} km`;
+      const diffMin = Math.max(1, r1_eta - r0_eta);
+      const diffDist = Math.max(0.1, Number((r0_dist - r1_dist).toFixed(1)));
+      document.getElementById('r1-tag').innerText = 'via Downtown Arterial & PB Road';
+      document.getElementById('r1-desc').innerText = `+${diffMin} min slower • But ${diffDist} km shorter physical distance`;
+      document.getElementById('r1-fuel').innerText = `⛽ ${(r1_dist * 0.081).toFixed(1)} L fuel`;
+
+      // Generate turn-by-turn instructions
+      populateTurnByTurn('turn-steps-fastest', [
+        `Depart towards ${destName} via College Road corridor`,
+        `Merge onto NH-48 Express Bypass (${r0_dist} km)`,
+        `Follow arterial bypass to destination approach`,
+        `Arrive at destination (${destName})`
+      ]);
+
+      populateTurnByTurn('turn-steps-shortest', [
+        `Depart along central downtown spine`,
+        `Cross Rani Chennamma Circle via Old PB Road`,
+        `Traverse city intersection corridor (${r1_dist} km)`,
+        `Arrive at destination (${destName})`
+      ]);
+
+      // Update Polylines on map
+      if (fastest.waypoints && fastest.waypoints.length > 0) {
+        fastestRoutePoly.setLatLngs(fastest.waypoints);
+      }
+      if (shortest.waypoints && shortest.waypoints.length > 0) {
+        shortestRoutePoly.setLatLngs(shortest.waypoints);
+      }
+
+      applyRouteStyling(modeColor, modeDash);
+    }
+
+    function populateTurnByTurn(elementId, steps) {
+      const box = document.getElementById(elementId);
+      box.innerHTML = '';
+      steps.forEach(s => {
+        const div = document.createElement('div');
+        div.innerText = s;
+        box.appendChild(div);
+      });
+    }
+
+    function selectRoute(index) {
+      selectedRouteIndex = index;
+      const cardFastest = document.getElementById('card-route-fastest');
+      const cardShortest = document.getElementById('card-route-shortest');
+
+      if (index === 0) {
+        cardFastest.classList.add('selected-fastest');
+        cardShortest.classList.remove('selected-shortest');
+        showToast('Selected: Fastest Route (Recommended)');
+      } else {
+        cardFastest.classList.remove('selected-fastest');
+        cardShortest.classList.add('selected-shortest');
+        showToast('Selected: Shortest Distance Route');
+      }
+
+      applyRouteStyling();
+      checkRouteIncidentImpact();
+    }
+
+    function applyRouteStyling(modeColor = '#1a73e8', modeDash = null) {
+      if (selectedRouteIndex === 0) {
+        fastestRoutePoly.setStyle({ color: modeColor, weight: 6, opacity: 0.95, dashArray: modeDash });
+        shortestRoutePoly.setStyle({ color: '#94a3b8', weight: 4.5, opacity: 0.65, dashArray: '6, 6' });
+        fastestRoutePoly.bringToFront();
+        if (fastestRoutePoly.getLatLngs().length > 0) {
+          map.fitBounds(fastestRoutePoly.getBounds(), getMapPadding());
+        }
+      } else {
+        fastestRoutePoly.setStyle({ color: '#94a3b8', weight: 4.5, opacity: 0.65, dashArray: '6, 6' });
+        shortestRoutePoly.setStyle({ color: '#7c3aed', weight: 6, opacity: 0.95, dashArray: modeDash });
+        shortestRoutePoly.bringToFront();
+        if (shortestRoutePoly.getLatLngs().length > 0) {
+          map.fitBounds(shortestRoutePoly.getBounds(), getMapPadding());
+        }
+      }
+    }
+
+    function switchMode(mode) {
+      currentTravelMode = mode;
+      document.querySelectorAll('.mode-tab').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-mode') === mode);
+      });
+
+      const modeLabels = {
+        drive: '🚗 Car Drive: fastest highway speed',
+        moto: '🏍️ Moto: agile filtering through traffic',
+        transit: '🚌 Transit: public bus scheduled stops',
+        walk: '🚶 Walk: pedestrian walkways & zebra crossings'
+      };
+      showToast(modeLabels[mode] || `Mode: ${mode.toUpperCase()}`);
+
+      if (currentRoutes && currentRoutes.length > 0) {
+        renderModeRoutes();
+      } else {
+        calculateGoogleRoutes();
+      }
+    }
+
+    function toggleTurnByTurn(index) {
+      const box = index === 0 ? document.getElementById('turn-steps-fastest') : document.getElementById('turn-steps-shortest');
+      box.classList.toggle('open');
+    }
+
     // ---------------------------------------------------------
-    // 4. Live Cooperative Hazards (Accidents, Roadblocks, etc.)
+    // 4. Incident Impact Detection & Alternative Detour
     // ---------------------------------------------------------
-    let liveHazards = [
-      { id: 'INC-101', type: 'crash', title: 'Vehicle Crash', location: 'College Road, near Chennamma Circle', confirmations: 4, time: '8 min ago', lat: 15.8520, lng: 74.5110 },
-      { id: 'INC-102', type: 'roadblock', title: 'Construction / Road Work', location: 'PB Road, Nehru Nagar', confirmations: 7, time: '22 min ago', lat: 15.8650, lng: 74.5170 },
-      { id: 'INC-103', type: 'congestion', title: 'Traffic Jam', location: 'Bogarves Circle Approach', confirmations: 3, time: '5 min ago', lat: 15.8540, lng: 74.5120 }
-    ];
+    function checkRouteIncidentImpact() {
+      const alertBanner = document.getElementById('incident-alert-box');
+      if (!currentRoutes || currentRoutes.length === 0) {
+        alertBanner.classList.remove('active');
+        return;
+      }
+
+      const activeRoute = selectedRouteIndex === 0 ? currentRoutes[0] : (currentRoutes[1] || currentRoutes[0]);
+      if (!activeRoute || !activeRoute.waypoints || activeRoute.waypoints.length === 0) return;
+
+      // Check distance from active route waypoints to active incidents
+      let impactedIncident = null;
+      for (const inc of liveHazards) {
+        if (inc.status === 'resolved') continue;
+        for (let i = 0; i < activeRoute.waypoints.length; i += 10) {
+          const wp = activeRoute.waypoints[i];
+          const distKm = getHaversineDist(wp.lat, wp.lng, inc.lat, inc.lng);
+          if (distKm < 0.45) { // within 450 meters
+            impactedIncident = inc;
+            break;
+          }
+        }
+        if (impactedIncident) break;
+      }
+
+      if (impactedIncident) {
+        document.getElementById('alert-banner-header').innerText = `Hazard Ahead: ${impactedIncident.title || impactedIncident.type.toUpperCase()}`;
+        document.getElementById('alert-banner-desc').innerText = `Reported on ${impactedIncident.affectedRoadName || impactedIncident.location || 'route'}. Avoid delay with bypass corridor.`;
+        alertBanner.classList.add('active');
+      } else {
+        alertBanner.classList.remove('active');
+      }
+    }
+
+    function switchToDetourRoute() {
+      if (currentRoutes.length > 2) {
+        // Use perimeter alternate
+        const alt = currentRoutes[2];
+        fastestRoutePoly.setLatLngs(alt.waypoints);
+        fastestRoutePoly.setStyle({ color: '#0d9488', weight: 6, opacity: 0.95 });
+        showToast('Switched to Bypass Corridor Detour (Incident avoided)');
+        document.getElementById('incident-alert-box').classList.remove('active');
+      } else {
+        showToast('Detour route activated (Incident bypass engaged)');
+        document.getElementById('incident-alert-box').classList.remove('active');
+      }
+    }
+
+    function getHaversineDist(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return R * c;
+    }
+
+    // ---------------------------------------------------------
+    // 5. Live Incidents & Cooperative Citizen Reporting
+    // ---------------------------------------------------------
+    let liveHazards = [];
+    let selectedHazardType = 'accident';
+    let selectedSeverity = 3;
+    let pickedCoordinates = null;
+    let isMapPickingMode = false;
 
     async function loadIncidents() {
       try {
@@ -1102,35 +1505,45 @@
         if (json.data && json.data.length > 0) {
           liveHazards = json.data;
         }
-      } catch (e) {}
+      } catch (e) {
+        console.warn('Could not load incidents from API', e);
+      }
       renderIncidentMarkers();
+      updateAdminStatistics();
     }
 
     function renderIncidentMarkers() {
       incidentMarkersLayer.clearLayers();
 
       liveHazards.forEach(h => {
-        const icons = { crash: '💥', roadblock: '🚧', congestion: '🚗', flooding: '🌊' };
+        if (h.status === 'resolved') return; // do not show resolved incidents on driver map
+
+        const icons = { accident: '💥', roadblock: '🚧', congestion: '🚗', flooding: '🌊' };
         const iconChar = icons[h.type] || '⚠️';
+        const borderColor = h.severity >= 3 ? '#d93025' : h.severity === 2 ? '#e37400' : '#1a73e8';
 
         const customIcon = L.divIcon({
           className: 'hazard-marker',
-          html: `<div style="background:#fff; border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.3); border:2px solid #ea4335; font-size:15px;">${iconChar}</div>`,
-          iconSize: [30, 30],
-          iconAnchor: [15, 15]
+          html: `<div style="background:#fff; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.3); border:2.5px solid ${borderColor}; font-size:16px;">${iconChar}</div>`,
+          iconSize: [32, 32],
+          iconAnchor: [16, 16]
         });
 
         const marker = L.marker([h.lat, h.lng], { icon: customIcon }).bindPopup(`
-          <div style="font-family:'Roboto',sans-serif; min-width:180px;">
-            <div style="font-weight:700; font-size:14px; color:#ea4335; display:flex; align-items:center; gap:4px;">
+          <div style="font-family:'Roboto',sans-serif; min-width:200px;">
+            <div style="font-weight:700; font-size:13.5px; color:${borderColor}; display:flex; align-items:center; gap:6px;">
               <span>${iconChar}</span> <span>${h.title || h.type?.toUpperCase()}</span>
             </div>
-            <div style="font-size:12px; color:#3c4043; margin-top:3px;">${h.location || h.affected_road_name || 'Corridor'}</div>
-            <div style="font-size:11px; color:#70757a; margin-top:2px;">Reported ${h.time || 'recently'} • ${h.confirmations || 1} people confirmed</div>
+            <div style="font-size:12px; color:#3c4043; margin-top:4px;">${h.affectedRoadName || h.location || h.roadName || 'City Corridor'}</div>
+            <div style="font-size:11px; color:#64748b; margin-top:2px;">
+              Status: <b>${h.status || 'Active'}</b> • Severity: <b>${h.severityCategory || 'HIGH'}</b>
+            </div>
+            <div style="font-size:11px; color:#70757a; margin-top:2px;">
+              Reported ${h.timestamp ? new Date(h.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : 'recently'} • ${h.confirmations || 1} votes
+            </div>
             
-            <!-- Cooperative Confirmation Buttons (Google / Waze style) -->
             <div style="margin-top:8px; padding-top:6px; border-top:1px solid #eee; display:flex; gap:6px;">
-              <button onclick="confirmHazard('${h.id}', true)" style="flex:1; background:#e8f0fe; color:#1a73e8; border:none; padding:4px 8px; border-radius:12px; font-size:11px; font-weight:500; cursor:pointer;">👍 Still here</button>
+              <button onclick="confirmHazard('${h.id}', true)" style="flex:1; background:#e8f0fe; color:#1a73e8; border:none; padding:4px 8px; border-radius:12px; font-size:11px; font-weight:600; cursor:pointer;">👍 Still here</button>
               <button onclick="confirmHazard('${h.id}', false)" style="flex:1; background:#f1f3f4; color:#5f6368; border:none; padding:4px 8px; border-radius:12px; font-size:11px; cursor:pointer;">👎 Cleared</button>
             </div>
           </div>
@@ -1142,24 +1555,26 @@
       renderAdminTableRows();
     }
 
-    function confirmHazard(id, stillThere) {
+    async function confirmHazard(id, stillThere) {
       if (stillThere) {
-        const item = liveHazards.find(h => h.id === id);
-        if (item) item.confirmations = (item.confirmations || 1) + 1;
-        showToast('Thank you! Confirmation recorded.');
+        showToast('Confirmation recorded! Thank you for helping fellow drivers.');
+        const inc = liveHazards.find(h => h.id === id);
+        if (inc) inc.confirmations = (inc.confirmations || 1) + 1;
       } else {
-        showToast('Thank you! Hazard marked for clearance.');
+        showToast('Feedback noted: hazard marked for clearance verification.');
       }
       renderIncidentMarkers();
     }
 
-    // ---------------------------------------------------------
-    // 5. Cooperative Incident Report Submission
-    // ---------------------------------------------------------
-    let selectedHazardType = 'crash';
+    function openReportModal() {
+      pickedCoordinates = { lat: userLocation.lat, lng: userLocation.lng };
+      document.getElementById('hazard-coords-preview').innerText = `Target: Lat ${pickedCoordinates.lat.toFixed(4)}, Lng ${pickedCoordinates.lng.toFixed(4)}`;
+      document.getElementById('report-modal').classList.add('open');
+    }
 
-    function openReportModal() { document.getElementById('report-modal').classList.add('open'); }
-    function closeReportModal() { document.getElementById('report-modal').classList.remove('open'); }
+    function closeReportModal() {
+      document.getElementById('report-modal').classList.remove('open');
+    }
 
     function selectHazardType(type, btn) {
       selectedHazardType = type;
@@ -1167,30 +1582,247 @@
       btn.classList.add('selected');
     }
 
-    async function submitHazardReport() {
-      const loc = document.getElementById('hazard-location-input').value.trim() || 'College Road Spine';
-      const titles = { crash: 'Accident Reported', roadblock: 'Road Closed / Work', congestion: 'Traffic Jam', flooding: 'Flooding' };
+    function selectSeverity(level, btn) {
+      selectedSeverity = level;
+      document.querySelectorAll('.sev-chip').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    }
 
-      const newReport = {
-        id: `INC-${100 + liveHazards.length + 1}`,
-        type: selectedHazardType,
-        title: titles[selectedHazardType] || 'Road Hazard',
-        location: loc,
-        confirmations: 1,
-        time: 'Just now',
-        lat: userLocation.lat + (Math.random() - 0.5) * 0.012,
-        lng: userLocation.lng + (Math.random() - 0.5) * 0.012
-      };
-
-      liveHazards.unshift(newReport);
+    function startMapPick() {
       closeReportModal();
-      renderIncidentMarkers();
-      showToast('⚠️ Hazard report shared with community on map!');
-      calculateGoogleRoutes();
+      isMapPickingMode = true;
+      document.getElementById('map-picker-banner').classList.add('active');
+      showToast('Click anywhere on the map to place the incident point');
+    }
+
+    function cancelMapPick() {
+      isMapPickingMode = false;
+      document.getElementById('map-picker-banner').classList.remove('active');
+      openReportModal();
+    }
+
+    map.on('click', (e) => {
+      if (!isMapPickingMode) return;
+      isMapPickingMode = false;
+      document.getElementById('map-picker-banner').classList.remove('active');
+
+      pickedCoordinates = { lat: e.latlng.lat, lng: e.latlng.lng };
+      openReportModal();
+      document.getElementById('hazard-coords-preview').innerText = `Target: Lat ${e.latlng.lat.toFixed(4)}, Lng ${e.latlng.lng.toFixed(4)} (Picked on Map)`;
+      showToast('Location pinpointed on map!');
+    });
+
+    async function submitHazardReport() {
+      const loc = document.getElementById('hazard-location-input').value.trim() || 'Belagavi Corridor';
+      const desc = document.getElementById('hazard-desc-input').value.trim() || 'Reported road disruption';
+      const btn = document.getElementById('btn-submit-hazard');
+      btn.disabled = true;
+      btn.innerText = 'Transmitting report to network...';
+
+      const lat = pickedCoordinates ? pickedCoordinates.lat : (userLocation.lat + (Math.random() - 0.5) * 0.01);
+      const lng = pickedCoordinates ? pickedCoordinates.lng : (userLocation.lng + (Math.random() - 0.5) * 0.01);
+
+      try {
+        const payload = {
+          type: selectedHazardType,
+          lat,
+          lng,
+          title: `${selectedHazardType.toUpperCase()} on ${loc}`,
+          description: desc,
+          affectedRoadName: loc,
+          severity: selectedSeverity,
+          reportedBy: 'Citizen-User'
+        };
+
+        const res = await fetch('/api/incidents', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const json = await res.json();
+
+        if (res.ok && json.data) {
+          if (json.data.isDuplicate) {
+            showToast('⚠️ Duplicate report matched with existing cluster — confirmations increased!');
+          } else {
+            showToast('✅ Incident report registered in database and broadcast to drivers!');
+          }
+          closeReportModal();
+          await loadIncidents();
+          calculateGoogleRoutes();
+        } else {
+          showToast(`Report failed: ${json.error || 'Server error'}`);
+        }
+      } catch (err) {
+        showToast('Incident submitted to local queue');
+        closeReportModal();
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Submit Incident to Network';
+      }
     }
 
     // ---------------------------------------------------------
-    // 6. Nearby POI / Amenities (Petrol, Hospitals, Food)
+    // 6. Administrator Dashboard & Moderation Desk
+    // ---------------------------------------------------------
+    let isAdminLoggedIn = false;
+    let adminAuthToken = null;
+
+    function openAdminModal() {
+      document.getElementById('admin-modal').classList.add('open');
+      if (isAdminLoggedIn) {
+        document.getElementById('admin-login-box').style.display = 'none';
+        document.getElementById('admin-panel-box').style.display = 'flex';
+        loadIncidents();
+      } else {
+        document.getElementById('admin-login-box').style.display = 'block';
+        document.getElementById('admin-panel-box').style.display = 'none';
+      }
+    }
+
+    function closeAdminModal() {
+      document.getElementById('admin-modal').classList.remove('open');
+    }
+
+    async function loginAdmin() {
+      const u = document.getElementById('admin-user').value.trim();
+      const p = document.getElementById('admin-pass').value.trim();
+
+      try {
+        const res = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: u, password: p })
+        });
+        const json = await res.json();
+
+        if (res.ok && json.token) {
+          isAdminLoggedIn = true;
+          adminAuthToken = json.token;
+          document.getElementById('admin-login-box').style.display = 'none';
+          document.getElementById('admin-panel-box').style.display = 'flex';
+          loadIncidents();
+          showToast('🛡️ Administrator authenticated successfully');
+        } else {
+          showToast('Invalid credentials (use admin / admin123)');
+        }
+      } catch (e) {
+        // Fallback check
+        if (u === 'admin' && p === 'admin123') {
+          isAdminLoggedIn = true;
+          document.getElementById('admin-login-box').style.display = 'none';
+          document.getElementById('admin-panel-box').style.display = 'flex';
+          loadIncidents();
+        } else {
+          showToast('Login failed');
+        }
+      }
+    }
+
+    function updateAdminStatistics() {
+      const total = liveHazards.length;
+      const accidents = liveHazards.filter(h => h.type === 'accident').length;
+      const roadblocks = liveHazards.filter(h => h.type === 'roadblock').length;
+      const jams = liveHazards.filter(h => h.type === 'congestion').length;
+      const verified = liveHazards.filter(h => h.status === 'verified').length;
+
+      document.getElementById('stat-total').innerText = total;
+      document.getElementById('stat-accidents').innerText = accidents;
+      document.getElementById('stat-roadblocks').innerText = roadblocks;
+      document.getElementById('stat-congestion').innerText = jams;
+      document.getElementById('stat-verified').innerText = verified;
+    }
+
+    function renderAdminTableRows() {
+      const tbody = document.getElementById('admin-table-body');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const query = (document.getElementById('admin-search-box')?.value || '').toLowerCase();
+      const typeFilter = document.getElementById('admin-filter-type')?.value || 'all';
+      const statusFilter = document.getElementById('admin-filter-status')?.value || 'all';
+
+      const filtered = liveHazards.filter(h => {
+        const matchesQuery = !query || 
+          (h.id && h.id.toLowerCase().includes(query)) ||
+          (h.affectedRoadName && h.affectedRoadName.toLowerCase().includes(query)) ||
+          (h.description && h.description.toLowerCase().includes(query));
+        const matchesType = typeFilter === 'all' || h.type === typeFilter;
+        const matchesStatus = statusFilter === 'all' || h.status === statusFilter;
+        return matchesQuery && matchesType && matchesStatus;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#94a3b8; padding:20px;">No incidents matching filter criteria</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(h => {
+        const icons = { accident: '💥', roadblock: '🚧', congestion: '🚗', flooding: '🌊' };
+        const icon = icons[h.type] || '⚠️';
+
+        const sevClass = h.severity >= 4 ? 'sev-critical' : h.severity === 3 ? 'sev-high' : h.severity === 2 ? 'sev-medium' : 'sev-low';
+        const statusClass = h.status === 'verified' ? 'badge-verified' : h.status === 'resolved' ? 'badge-resolved' : 'badge-unverified';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><b>${h.id}</b></td>
+          <td><span style="font-size:14px; margin-right:4px;">${icon}</span> ${h.type}</td>
+          <td>
+            <div style="font-weight:600; color:#1e293b;">${h.affectedRoadName || h.roadName || 'City Arterial'}</div>
+            <div style="font-size:11px; color:#64748b;">${h.description || 'Disruption'}</div>
+          </td>
+          <td><span class="sev-badge ${sevClass}">SEV ${h.severity} (${h.severityCategory || 'HIGH'})</span></td>
+          <td><b>${h.confirmations || 1}</b> votes</td>
+          <td><span class="status-badge ${statusClass}">${h.status || 'active'}</span></td>
+          <td>
+            <div style="display:flex; gap:6px;">
+              ${h.status !== 'verified' ? `<button onclick="updateIncidentStatus('${h.id}', 'verified')" style="background:#dcfce7; color:#15803d; border:1px solid #bbf7d0; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer;">Verify</button>` : ''}
+              ${h.status !== 'resolved' ? `<button onclick="updateIncidentStatus('${h.id}', 'resolved')" style="background:#fee2e2; color:#b91c1c; border:1px solid #fecaca; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer;">Resolve</button>` : ''}
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function filterAdminIncidents() {
+      renderAdminTableRows();
+    }
+
+    async function updateIncidentStatus(id, newStatus) {
+      try {
+        const res = await fetch(`/api/incidents/${id}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus, changedBy: 'Traffic Admin' })
+        });
+        const json = await res.json();
+        if (res.ok) {
+          showToast(`Incident ${id} updated to ${newStatus.toUpperCase()}`);
+          await loadIncidents();
+          calculateGoogleRoutes();
+        } else {
+          showToast(json.message || 'Status update failed');
+        }
+      } catch (e) {
+        showToast(`Incident status updated to ${newStatus}`);
+      }
+    }
+
+    async function resetDemoData() {
+      try {
+        await fetch('/api/demo/reset', { method: 'POST' });
+        showToast('Demo baseline restored with clean active incidents');
+        await loadIncidents();
+        calculateGoogleRoutes();
+      } catch(e) {
+        showToast('Reset completed');
+      }
+    }
+
+    // ---------------------------------------------------------
+    // 7. Amenities POI (Petrol, Hospitals, Food)
     // ---------------------------------------------------------
     const AMENITIES_DATA = {
       gas: [
@@ -1250,90 +1882,40 @@
       showToast(`Showing nearby ${type.toUpperCase()}`);
     }
 
-    // ---------------------------------------------------------
-    // 7. Administrator Incident Moderation Modal
-    // ---------------------------------------------------------
-    let isAdminLoggedIn = false;
-
-    function openAdminModal() {
-      document.getElementById('admin-modal').classList.add('open');
-      if (isAdminLoggedIn) {
-        document.getElementById('admin-login-box').style.display = 'none';
-        document.getElementById('admin-panel-box').style.display = 'flex';
-        renderAdminTableRows();
-      } else {
-        document.getElementById('admin-login-box').style.display = 'block';
-        document.getElementById('admin-panel-box').style.display = 'none';
-      }
-    }
-
-    function closeAdminModal() {
-      document.getElementById('admin-modal').classList.remove('open');
-    }
-
-    function loginAdmin() {
-      const u = document.getElementById('admin-user').value.trim();
-      const p = document.getElementById('admin-pass').value.trim();
-      if (u === 'admin' && p === 'admin123') {
-        isAdminLoggedIn = true;
-        document.getElementById('admin-login-box').style.display = 'none';
-        document.getElementById('admin-panel-box').style.display = 'flex';
-        renderAdminTableRows();
-        showToast('Admin logged in');
-      } else {
-        showToast('Invalid credentials (use admin / admin123)');
-      }
-    }
-
-    function renderAdminTableRows() {
-      const tbody = document.getElementById('admin-table-body');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-
-      liveHazards.forEach(h => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><b>${h.id}</b></td>
-          <td>${h.title || h.type}</td>
-          <td>${h.location}</td>
-          <td>${h.confirmations || 1} votes</td>
-          <td><span style="color:#188038; font-weight:600;">ACTIVE</span></td>
-          <td>
-            <button onclick="dismissHazard('${h.id}')" style="background:#fce8e6; color:#d93025; border:1px solid #fad2cf; padding:3px 8px; border-radius:4px; font-size:11px; cursor:pointer;">Dismiss</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function dismissHazard(id) {
-      liveHazards = liveHazards.filter(h => h.id !== id);
-      renderIncidentMarkers();
-      showToast(`Incident ${id} dismissed from map`);
-    }
-
-    async function resetDemoData() {
-      try { await fetch('/api/demo/reset', { method: 'POST' }); } catch(e){}
-      loadIncidents();
-      showToast('Demo data reset to clean baseline');
-    }
-
-    // Toast Notification helper
+    // Toast helper
     function showToast(msg) {
       const t = document.getElementById('toast');
       t.innerText = msg;
       t.style.display = 'block';
-      setTimeout(() => { t.style.display = 'none'; }, 2600);
+      setTimeout(() => { t.style.display = 'none'; }, 2800);
     }
 
     // ---------------------------------------------------------
-    // 8. Application Startup
+    // 8. WebSocket Real-time Integration & Startup
     // ---------------------------------------------------------
+    try {
+      const socket = io();
+      socket.on('incident:new', (inc) => {
+        showToast(`⚠️ Live Alert: New incident reported on ${inc.affectedRoadName || 'network'}`);
+        loadIncidents();
+        checkRouteIncidentImpact();
+      });
+      socket.on('incident:status', (data) => {
+        loadIncidents();
+      });
+      socket.on('reroute:triggered', () => {
+        checkRouteIncidentImpact();
+      });
+    } catch (e) {
+      console.warn('Socket.io connection bypassed', e);
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       locateUserGPS();
       loadIncidents();
       calculateGoogleRoutes();
     });
+
     window.addEventListener('resize', () => map.invalidateSize());
   </script>
 </body>

@@ -91,6 +91,28 @@ app.get('/api/config', (req, res) => {
   });
 });
 
+// Admin Authentication endpoint
+app.post('/api/admin/login', (req, res) => {
+  const { username, password } = req.body || {};
+  const validUser = process.env.ADMIN_USER || 'admin';
+  const validPass = process.env.ADMIN_PASS || 'admin123';
+
+  if (username === validUser && password === validPass) {
+    const token = 'admin_session_' + Buffer.from(`${username}:${Date.now()}`).toString('base64');
+    return res.status(200).json({
+      status: 200,
+      message: 'Admin authentication successful',
+      token,
+      user: { username, role: 'traffic_controller' }
+    });
+  } else {
+    return res.status(401).json({
+      status: 401,
+      error: 'Invalid administrator credentials'
+    });
+  }
+});
+
 // API Routes
 app.use('/api/routes', routesRouter);
 app.use('/api/predictions', routesRouter);
