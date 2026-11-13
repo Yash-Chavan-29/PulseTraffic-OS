@@ -42,24 +42,200 @@
     #map { width: 100%; height: 100%; position: absolute; inset: 0; z-index: 1; }
 
     /* =========================================================
-       1. FLOATING GOOGLE MAPS DIRECTIONS & SEARCH CARD (TOP-LEFT)
+       1. REACT BITS "APP SIDEBAR 2" — ICON RAIL & COMPONENT FLYOUT
        ========================================================= */
-    .gmaps-directions-card {
+    .app-icon-rail {
       position: absolute;
-      top: 14px;
-      left: 14px;
-      width: 410px;
-      max-width: calc(100vw - 28px);
-      max-height: calc(100vh - 28px);
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 60px;
+      background: #090d16;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.35);
+      z-index: 1200;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+    }
+
+    .rail-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .rail-brand-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 12px rgba(26, 115, 232, 0.4);
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      margin-bottom: 6px;
+      transition: all 0.2s ease;
+    }
+    .rail-brand-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 18px rgba(26, 115, 232, 0.6);
+    }
+
+    .rail-icon-btn {
+      position: relative;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .rail-icon-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2.1;
+      transition: transform 0.18s ease;
+    }
+    .rail-icon-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #f8fafc;
+    }
+    .rail-icon-btn:hover svg {
+      transform: scale(1.08);
+    }
+    .rail-icon-btn.active {
+      background: rgba(26, 115, 232, 0.2);
+      color: #38bdf8;
+    }
+    .rail-icon-btn.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 9px;
+      bottom: 9px;
+      width: 3.5px;
+      background: #38bdf8;
+      border-radius: 0 3px 3px 0;
+      box-shadow: 0 0 8px #38bdf8;
+    }
+
+    .rail-tooltip {
+      position: absolute;
+      left: 66px;
+      background: #0f172a;
+      color: #f8fafc;
+      font-size: 11.5px;
+      font-weight: 500;
+      padding: 5px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateX(-6px);
+      transition: all 0.15s ease;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 2000;
+    }
+    .rail-icon-btn:hover .rail-tooltip {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* Flyout Component Popup Card */
+    .app-flyout-card {
+      position: absolute;
+      top: 12px;
+      left: 70px;
+      width: 418px;
+      max-width: calc(100vw - 82px);
+      max-height: calc(100vh - 24px);
       background: var(--gm-card-bg);
-      border-radius: var(--gm-radius);
-      box-shadow: var(--gm-shadow);
-      z-index: 1000;
+      border-radius: 14px;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.22), 0 2px 8px rgba(0, 0, 0, 0.08);
+      z-index: 1100;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      transition: all 0.2s ease;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+      border: 1px solid rgba(0, 0, 0, 0.06);
     }
+
+    .app-flyout-card.closed {
+      transform: translateX(-16px);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .flyout-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 14px;
+      background: #ffffff;
+      border-bottom: 1px solid #f1f3f4;
+    }
+    .flyout-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .flyout-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--gm-text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .flyout-subtitle {
+      font-size: 11px;
+      color: var(--gm-text-secondary);
+      font-weight: 500;
+    }
+    .flyout-close-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: none;
+      background: #f1f3f4;
+      color: var(--gm-text-secondary);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .flyout-close-btn:hover {
+      background: #e2e8f0;
+      color: var(--gm-text);
+    }
+
+    .flyout-content {
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .flyout-content::-webkit-scrollbar { width: 5px; }
+    .flyout-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 
     /* Brand Header */
     .gmaps-brand-header {
@@ -440,11 +616,12 @@
     .gmaps-top-toolbar {
       position: absolute;
       top: 14px;
-      left: 435px;
+      left: 50%;
+      transform: translateX(-50%);
       z-index: 1000;
       display: flex;
       gap: 8px;
-      max-width: calc(100vw - 720px);
+      max-width: calc(100vw - 520px);
       overflow-x: auto;
       padding: 2px;
     }
@@ -779,161 +956,512 @@
   </div>
 
   <!-- =========================================================
-       1. SMART_ROUTES FLOATING DIRECTIONS & SEARCH CARD
+       1. REACT BITS "APP SIDEBAR 2" — ICON RAIL (LEFT)
        ========================================================= -->
-  <div class="gmaps-directions-card" id="directions-card">
-    
-    <!-- Brand Header -->
-    <div class="gmaps-brand-header">
-      <div class="brand-title-wrap">
-        <span class="brand-badge">SMART</span>
-        <span class="brand-name">Smart_Routes</span>
-      </div>
-      <span class="brand-tag">Belagavi Traffic Network</span>
-    </div>
-
-    <!-- Travel Mode Switcher -->
-    <div class="gmaps-mode-bar">
-      <button class="mode-tab active" data-mode="drive" onclick="switchMode('drive')">
-        <span>🚗</span>
-        <span>Drive</span>
-      </button>
-      <button class="mode-tab" data-mode="moto" onclick="switchMode('moto')">
-        <span>🏍️</span>
-        <span>Moto</span>
-      </button>
-      <button class="mode-tab" data-mode="transit" onclick="switchMode('transit')">
-        <span>🚌</span>
-        <span>Transit</span>
-      </button>
-      <button class="mode-tab" data-mode="walk" onclick="switchMode('walk')">
-        <span>🚶</span>
-        <span>Walk</span>
+  <nav class="app-icon-rail" id="app-rail">
+    <!-- Top Brand -->
+    <div class="rail-group">
+      <button class="rail-brand-btn" onclick="switchFlyoutPanel('directions')" title="Smart_Routes Home">
+        SR
       </button>
     </div>
 
-    <!-- Origin & Destination Inputs -->
-    <div class="gmaps-inputs-box">
-      <!-- Origin Input -->
-      <div class="input-row">
-        <div class="input-dot-origin"></div>
-        <input type="text" id="input-origin" class="gmaps-input" value="Rani Chennamma Circle Hub (Belagavi)" placeholder="Choose starting point or junction..." onkeydown="if(event.key==='Enter') calculateGoogleRoutes()">
-        <button class="input-action-btn" onclick="locateUserGPS()" title="Use Current GPS">📍</button>
-        <button class="input-action-btn" onclick="clearInput('input-origin')" title="Clear">✕</button>
-      </div>
+    <!-- Middle Menu Navigation -->
+    <div class="rail-group">
+      <!-- 1. Directions & Route Optimizer -->
+      <button class="rail-icon-btn active" data-panel="directions" onclick="switchFlyoutPanel('directions')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+        </svg>
+        <div class="rail-tooltip">Smart Route Finder</div>
+      </button>
 
-      <!-- Destination Input -->
-      <div class="input-row">
-        <div class="input-dot-dest"></div>
-        <input type="text" id="input-destination" class="gmaps-input" value="Belagavi Sambre Airport" placeholder="Choose destination or junction..." onkeydown="if(event.key==='Enter') calculateGoogleRoutes()">
-        <button class="input-action-btn" onclick="clearInput('input-destination')" title="Clear">✕</button>
-      </div>
+      <!-- 2. Hazard & Incident Reporter -->
+      <button class="rail-icon-btn" data-panel="report" onclick="switchFlyoutPanel('report')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        <div class="rail-tooltip">Report Road Hazard</div>
+      </button>
 
-      <!-- Swap Origin & Destination Button -->
-      <button class="btn-swap-locations" onclick="swapLocations()" title="Reverse start and destination">
-        ⇅
+      <!-- 3. Adaptive Signal Lab -->
+      <button class="rail-icon-btn" data-panel="signals" onclick="switchFlyoutPanel('signals')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <rect x="6" y="2" width="12" height="20" rx="5"/>
+          <circle cx="12" cy="7" r="2" fill="currentColor"/>
+          <circle cx="12" cy="12" r="2" fill="currentColor"/>
+          <circle cx="12" cy="17" r="2" fill="currentColor"/>
+        </svg>
+        <div class="rail-tooltip">Adaptive Signal Lab</div>
+      </button>
+
+      <!-- 4. AI Congestion Heatmap -->
+      <button class="rail-icon-btn" data-panel="heatmap" onclick="switchFlyoutPanel('heatmap')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+        </svg>
+        <div class="rail-tooltip">AI Congestion Heatmap</div>
+      </button>
+
+      <!-- 5. Emergency Priority Corridor -->
+      <button class="rail-icon-btn" data-panel="emergency" onclick="switchFlyoutPanel('emergency')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <rect x="1" y="4" width="15" height="13" rx="2"/>
+          <polygon points="16 8 20 8 23 11 23 17 16 17 16 8"/>
+          <circle cx="5.5" cy="18.5" r="2.5"/>
+          <circle cx="18.5" cy="18.5" r="2.5"/>
+          <line x1="6" y1="10" x2="10" y2="10"/>
+          <line x1="8" y1="8" x2="8" y2="12"/>
+        </svg>
+        <div class="rail-tooltip">Emergency Green Wave</div>
+      </button>
+
+      <!-- 6. Admin Portal Desk -->
+      <button class="rail-icon-btn" data-panel="admin" onclick="switchFlyoutPanel('admin')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <div class="rail-tooltip">Admin Incident Desk</div>
       </button>
     </div>
 
-    <!-- Belagavi Landmark Destination Chips -->
-    <div class="gmaps-chips-scroll">
-      <span class="place-chip active" onclick="setDestination('Belagavi Sambre Airport')">✈️ Airport</span>
-      <span class="place-chip" onclick="setDestination('KLE Technological University')">🎓 KLE Tech</span>
-      <span class="place-chip" onclick="setDestination('BIMS District Civil Hospital')">🏥 BIMS Hospital</span>
-      <span class="place-chip" onclick="setDestination('Belagavi Central Railway Station')">🚆 Railway Station</span>
-      <span class="place-chip" onclick="setDestination('RPD College Cross Junction')">🏛️ RPD Cross</span>
-      <span class="place-chip" onclick="setDestination('Bogarves Central Intersection')">🔄 Bogarves</span>
-      <span class="place-chip" onclick="setDestination('Central Bus Terminal')">🚌 CBT Stand</span>
-      <span class="place-chip" onclick="setDestination('Suvarna Vidhana Soudha')">🏛️ Suvarna Soudha</span>
-    </div>
+    <!-- Bottom Quick Controls -->
+    <div class="rail-group">
+      <!-- Satellite Toggle -->
+      <button class="rail-icon-btn" onclick="toggleMapLayer()" title="Toggle Satellite / Street Map">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+          <polyline points="2 17 12 22 22 17"/>
+          <polyline points="2 12 12 17 22 12"/>
+        </svg>
+        <div class="rail-tooltip">Satellite / Streets</div>
+      </button>
 
-    <!-- Calculate Routes Button -->
-    <button class="btn-search-route" id="btn-calc-routes" onclick="calculateGoogleRoutes()">
-      <span id="btn-calc-text">Calculate Routes (A* & Dijkstra)</span>
-    </button>
-
-    <!-- Incident Ahead Alert Banner -->
-    <div class="incident-alert-banner" id="incident-alert-box">
-      <div class="incident-alert-title" id="alert-banner-title">
-        <span>⚠️</span>
-        <span id="alert-banner-header">Incident Ahead Detected</span>
-      </div>
-      <div class="incident-alert-desc" id="alert-banner-desc">
-        Disruption reported on active Belagavi corridor. Alternative bypass route available.
-      </div>
-      <button class="btn-switch-detour" id="btn-detour-action" onclick="switchToDetourRoute()">
-        Switch to Bypass Route
+      <!-- Locate GPS -->
+      <button class="rail-icon-btn" onclick="locateUserGPS()" title="Center My Location (Belagavi)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <circle cx="12" cy="12" r="7"/>
+          <circle cx="12" cy="12" r="2"/>
+          <line x1="12" y1="1" x2="12" y2="5"/>
+          <line x1="12" y1="19" x2="12" y2="23"/>
+          <line x1="1" y1="12" x2="5" y2="12"/>
+          <line x1="19" y1="12" x2="23" y2="12"/>
+        </svg>
+        <div class="rail-tooltip">Center on Belagavi</div>
       </button>
     </div>
-
-    <!-- Route Results & Comparison List (Fastest vs Shortest) -->
-    <div class="gmaps-routes-results" id="routes-results-list" style="display: none;">
-      
-      <!-- 1. FASTEST ROUTE CARD (A* Heuristic) -->
-      <div class="route-card selected-fastest" id="card-route-fastest" onclick="selectRoute(0)">
-        <div class="route-badge badge-fastest">
-          <span>★</span> <span>Recommended • Fastest route</span>
-        </div>
-        <div class="route-time-row">
-          <span class="route-eta-text eta-fastest" id="r0-eta">14 min</span>
-          <span class="route-dist-text" id="r0-dist">14.0 km</span>
-        </div>
-        <div class="route-tagline" id="r0-tag">via BPR Optimal Corridors</div>
-        <div class="route-subdesc" id="r0-desc">A* heuristic routing • Optimal fuel-efficient flow</div>
-        
-        <!-- Traversed Belagavi Junctions -->
-        <div class="route-junctions-path" id="r0-junctions-path">
-          Junctions: Chennamma Circle ➔ BIMS Hospital ➔ Fort Lake ➔ Auto Nagar ➔ Sambre Airport
-        </div>
-
-        <div class="route-metrics-bar">
-          <span id="r0-fuel">⛽ 0.95 L fuel</span>
-          <span id="r0-reliability">🛡️ 95% reliability</span>
-          <span id="r0-flow">🟢 Low congestion</span>
-        </div>
-        <button class="btn-toggle-steps" onclick="event.stopPropagation(); toggleTurnByTurn(0);">
-          <span>Turn-by-turn steps</span> ▾
-        </button>
-        <div class="steps-list" id="turn-steps-fastest"></div>
-      </div>
-
-      <!-- 2. SHORTEST ROUTE CARD (Dijkstra Minimum Distance) -->
-      <div class="route-card" id="card-route-shortest" onclick="selectRoute(1)">
-        <div class="route-badge badge-shortest">
-          <span>📏</span> <span>Shortest distance</span>
-        </div>
-        <div class="route-time-row">
-          <span class="route-eta-text eta-shortest" id="r1-eta">18 min</span>
-          <span class="route-dist-text" id="r1-dist">13.1 km</span>
-        </div>
-        <div class="route-tagline" id="r1-tag">via Downtown Arterials</div>
-        <div class="route-subdesc" id="r1-desc">Dijkstra physical distance • Subject to signal delay & bottlenecks</div>
-        
-        <!-- Traversed Belagavi Junctions -->
-        <div class="route-junctions-path" id="r1-junctions-path">
-          Junctions: Chennamma Circle ➔ Civil Hospital ➔ Station ➔ Subhash Nagar ➔ Airport
-        </div>
-
-        <div class="route-metrics-bar">
-          <span id="r1-fuel">⛽ 1.08 L fuel</span>
-          <span id="r1-reliability">🛡️ 82% reliability</span>
-          <span id="r1-flow">🟠 Urban signals</span>
-        </div>
-        <button class="btn-toggle-steps" onclick="event.stopPropagation(); toggleTurnByTurn(1);">
-          <span>Turn-by-turn steps</span> ▾
-        </button>
-        <div class="steps-list" id="turn-steps-shortest"></div>
-      </div>
-
-    </div>
-
-  </div>
+  </nav>
 
   <!-- =========================================================
-       2. TOP TOOLBAR & AMENITIES BAR
+       2. REACT BITS "APP SIDEBAR 2" — COMPONENT POPUP FLYOUT
+       ========================================================= -->
+  <aside class="app-flyout-card" id="app-flyout">
+    <!-- Flyout Header -->
+    <div class="flyout-header">
+      <div class="flyout-title-wrap">
+        <div class="flyout-title">
+          <span id="flyout-header-icon">🧭</span>
+          <span id="flyout-header-title">Smart Route Finder</span>
+        </div>
+        <span class="flyout-subtitle" id="flyout-header-sub">Belagavi A* & Dijkstra Junction Engine</span>
+      </div>
+      <button class="flyout-close-btn" onclick="closeFlyout()" title="Close flyout panel">✕</button>
+    </div>
+
+    <!-- Scrollable Panel Body -->
+    <div class="flyout-content">
+      
+      <!-- -------------------------------------------------------
+           PANEL 1: SMART DIRECTIONS & ROUTE OPTIMIZATION
+           ------------------------------------------------------- -->
+      <div id="panel-directions" class="flyout-panel-view">
+        <!-- Travel Mode Switcher -->
+        <div class="gmaps-mode-bar">
+          <button class="mode-tab active" data-mode="drive" onclick="switchMode('drive')">
+            <span>🚗</span>
+            <span>Drive</span>
+          </button>
+          <button class="mode-tab" data-mode="moto" onclick="switchMode('moto')">
+            <span>🏍️</span>
+            <span>Moto</span>
+          </button>
+          <button class="mode-tab" data-mode="transit" onclick="switchMode('transit')">
+            <span>🚌</span>
+            <span>Transit</span>
+          </button>
+          <button class="mode-tab" data-mode="walk" onclick="switchMode('walk')">
+            <span>🚶</span>
+            <span>Walk</span>
+          </button>
+        </div>
+
+        <!-- Origin & Destination Inputs -->
+        <div class="gmaps-inputs-box">
+          <div class="input-row">
+            <div class="input-dot-origin"></div>
+            <input type="text" id="input-origin" class="gmaps-input" value="Rani Chennamma Circle Hub (Belagavi)" placeholder="Choose starting point or junction..." onkeydown="if(event.key==='Enter') calculateGoogleRoutes()">
+            <button class="input-action-btn" onclick="locateUserGPS()" title="Use Current GPS">📍</button>
+            <button class="input-action-btn" onclick="clearInput('input-origin')" title="Clear">✕</button>
+          </div>
+
+          <div class="input-row">
+            <div class="input-dot-dest"></div>
+            <input type="text" id="input-destination" class="gmaps-input" value="Belagavi Sambre Airport" placeholder="Choose destination or junction..." onkeydown="if(event.key==='Enter') calculateGoogleRoutes()">
+            <button class="input-action-btn" onclick="clearInput('input-destination')" title="Clear">✕</button>
+          </div>
+
+          <button class="btn-swap-locations" onclick="swapLocations()" title="Reverse start and destination">
+            ⇅
+          </button>
+        </div>
+
+        <!-- Belagavi Landmark Destination Chips -->
+        <div class="gmaps-chips-scroll">
+          <span class="place-chip active" onclick="setDestination('Belagavi Sambre Airport')">✈️ Airport</span>
+          <span class="place-chip" onclick="setDestination('KLE Technological University')">🎓 KLE Tech</span>
+          <span class="place-chip" onclick="setDestination('BIMS District Civil Hospital')">🏥 BIMS Hospital</span>
+          <span class="place-chip" onclick="setDestination('Belagavi Central Railway Station')">🚆 Railway Station</span>
+          <span class="place-chip" onclick="setDestination('RPD College Cross Junction')">🏛️ RPD Cross</span>
+          <span class="place-chip" onclick="setDestination('Bogarves Central Intersection')">🔄 Bogarves</span>
+          <span class="place-chip" onclick="setDestination('Central Bus Terminal')">🚌 CBT Stand</span>
+          <span class="place-chip" onclick="setDestination('Suvarna Vidhana Soudha')">🏛️ Suvarna Soudha</span>
+        </div>
+
+        <!-- Calculate Routes Button -->
+        <button class="btn-search-route" id="btn-calc-routes" onclick="calculateGoogleRoutes()">
+          <span id="btn-calc-text">Calculate Routes (A* & Dijkstra)</span>
+        </button>
+
+        <!-- Incident Ahead Alert Banner -->
+        <div class="incident-alert-banner" id="incident-alert-box">
+          <div class="incident-alert-title" id="alert-banner-title">
+            <span>⚠️</span>
+            <span id="alert-banner-header">Incident Ahead Detected</span>
+          </div>
+          <div class="incident-alert-desc" id="alert-banner-desc">
+            Disruption reported on active Belagavi corridor. Alternative bypass route available.
+          </div>
+          <button class="btn-switch-detour" id="btn-detour-action" onclick="switchToDetourRoute()">
+            Switch to Bypass Route
+          </button>
+        </div>
+
+        <!-- Route Results & Comparison List (Fastest vs Shortest) -->
+        <div class="gmaps-routes-results" id="routes-results-list" style="display: none;">
+          <!-- 1. FASTEST ROUTE CARD (A* Heuristic) -->
+          <div class="route-card selected-fastest" id="card-route-fastest" onclick="selectRoute(0)">
+            <div class="route-badge badge-fastest">
+              <span>★</span> <span>Recommended • Fastest route</span>
+            </div>
+            <div class="route-time-row">
+              <span class="route-eta-text eta-fastest" id="r0-eta">14 min</span>
+              <span class="route-dist-text" id="r0-dist">14.0 km</span>
+            </div>
+            <div class="route-tagline" id="r0-tag">via BPR Optimal Corridors</div>
+            <div class="route-subdesc" id="r0-desc">A* heuristic routing • Optimal fuel-efficient flow</div>
+            
+            <div class="route-junctions-path" id="r0-junctions-path">
+              Junctions: Chennamma Circle ➔ BIMS Hospital ➔ Fort Lake ➔ Auto Nagar ➔ Sambre Airport
+            </div>
+
+            <div class="route-metrics-bar">
+              <span id="r0-fuel">⛽ 0.95 L fuel</span>
+              <span id="r0-reliability">🛡️ 95% reliability</span>
+              <span id="r0-flow">🟢 Low congestion</span>
+            </div>
+            <button class="btn-toggle-steps" onclick="event.stopPropagation(); toggleTurnByTurn(0);">
+              <span>Turn-by-turn steps</span> ▾
+            </button>
+            <div class="steps-list" id="turn-steps-fastest"></div>
+          </div>
+
+          <!-- 2. SHORTEST ROUTE CARD (Dijkstra Minimum Distance) -->
+          <div class="route-card" id="card-route-shortest" onclick="selectRoute(1)">
+            <div class="route-badge badge-shortest">
+              <span>📏</span> <span>Shortest distance</span>
+            </div>
+            <div class="route-time-row">
+              <span class="route-eta-text eta-shortest" id="r1-eta">18 min</span>
+              <span class="route-dist-text" id="r1-dist">13.1 km</span>
+            </div>
+            <div class="route-tagline" id="r1-tag">via Downtown Arterials</div>
+            <div class="route-subdesc" id="r1-desc">Dijkstra physical distance • Subject to signal delay & bottlenecks</div>
+            
+            <div class="route-junctions-path" id="r1-junctions-path">
+              Junctions: Chennamma Circle ➔ Civil Hospital ➔ Station ➔ Subhash Nagar ➔ Airport
+            </div>
+
+            <div class="route-metrics-bar">
+              <span id="r1-fuel">⛽ 1.08 L fuel</span>
+              <span id="r1-reliability">🛡️ 82% reliability</span>
+              <span id="r1-flow">🟠 Urban signals</span>
+            </div>
+            <button class="btn-toggle-steps" onclick="event.stopPropagation(); toggleTurnByTurn(1);">
+              <span>Turn-by-turn steps</span> ▾
+            </button>
+            <div class="steps-list" id="turn-steps-shortest"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- -------------------------------------------------------
+           PANEL 2: CITIZEN HAZARD REPORTING & LIVE INCIDENTS
+           ------------------------------------------------------- -->
+      <div id="panel-report" class="flyout-panel-view" style="display: none; padding: 14px 16px;">
+        <div style="font-size: 13px; color: var(--gm-text-secondary); margin-bottom: 12px;">
+          Report a traffic disruption directly to the Belagavi network graph:
+        </div>
+
+        <!-- Hazard Category Grid -->
+        <div class="hazard-types-grid" style="padding: 0 0 14px 0;">
+          <button class="hazard-btn selected" onclick="selectHazardType('accident', this)">
+            <span class="hazard-icon">💥</span>
+            <span class="hazard-name">Crash / Accident</span>
+          </button>
+          <button class="hazard-btn" onclick="selectHazardType('roadblock', this)">
+            <span class="hazard-icon">🚧</span>
+            <span class="hazard-name">Roadblock / Work</span>
+          </button>
+          <button class="hazard-btn" onclick="selectHazardType('congestion', this)">
+            <span class="hazard-icon">🚗</span>
+            <span class="hazard-name">Traffic Jam</span>
+          </button>
+          <button class="hazard-btn" onclick="selectHazardType('flooding', this)">
+            <span class="hazard-icon">🌊</span>
+            <span class="hazard-name">Flooding / Water</span>
+          </button>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: var(--gm-text-secondary);">LOCATION / ROAD NAME</label>
+            <div style="display: flex; gap: 6px; margin-top: 4px;">
+              <input type="text" id="hazard-location-input" class="gmaps-input" style="background:#f1f5f9; padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1;" placeholder="e.g. Near Chennamma Circle" value="College Road Arterial">
+              <button type="button" onclick="startMapPick()" style="background:#e8f0fe; color:#1a73e8; border:1px solid #bad3fb; border-radius:8px; padding:0 10px; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap;">📍 Pick on Map</button>
+            </div>
+            <div id="hazard-coords-preview" style="font-size: 11px; color:#64748b; margin-top:3px;">Target: Belagavi Center (15.8497, 74.5089)</div>
+          </div>
+
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: var(--gm-text-secondary);">SEVERITY LEVEL</label>
+            <div class="severity-selector">
+              <div class="sev-chip" onclick="selectSeverity(1, this)">Low (1)</div>
+              <div class="sev-chip" onclick="selectSeverity(2, this)">Med (2)</div>
+              <div class="sev-chip selected" onclick="selectSeverity(3, this)">High (3)</div>
+              <div class="sev-chip" onclick="selectSeverity(4, this)">Critical (4)</div>
+            </div>
+          </div>
+
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: var(--gm-text-secondary);">DESCRIPTION (OPTIONAL)</label>
+            <input type="text" id="hazard-desc-input" class="gmaps-input" style="background:#f1f5f9; padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; margin-top:4px;" placeholder="e.g. 2 vehicles involved, right lane blocked">
+          </div>
+
+          <button class="btn-search-route" style="margin: 6px 0 0; background: var(--gm-red);" id="btn-submit-hazard" onclick="submitHazardReport()">
+            <span>Submit Hazard to Network</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- -------------------------------------------------------
+           PANEL 3: ADAPTIVE SIGNAL OPTIMIZATION LAB
+           ------------------------------------------------------- -->
+      <div id="panel-signals" class="flyout-panel-view" style="display: none; padding: 14px 16px;">
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 13px; font-weight: 600; color: #334155;">Webster Delay Reduction:</span>
+            <span id="signal-delay-reduction" style="font-size: 16px; font-weight: 700; color: var(--gm-green);">-42.8%</span>
+          </div>
+          <div style="font-size: 11px; color: #64748b; margin-top: 3px;">
+            Optimum Cycle: <code style="color:var(--gm-blue);">Co = (1.5L + 5) / (1 - Y)</code> • Constrained 55s - 105s
+          </div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 4px;">
+            <span>College Road Approach (Northbound):</span>
+            <span id="q-north-val" style="color: var(--gm-blue);">38 cars</span>
+          </div>
+          <input type="range" id="slider-queue-north" min="5" max="80" value="38" style="width: 100%; accent-color: var(--gm-blue);" oninput="updateQueueSlider('north', this.value)">
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 4px;">
+            <span>Civil Hospital Road (Eastbound):</span>
+            <span id="q-east-val" style="color: var(--gm-blue);">44 cars</span>
+          </div>
+          <input type="range" id="slider-queue-east" min="5" max="80" value="44" style="width: 100%; accent-color: var(--gm-blue);" oninput="updateQueueSlider('east', this.value)">
+        </div>
+
+        <button class="btn-search-route" style="margin: 0 0 10px 0;" onclick="computeAdaptiveSignal()">
+          <span>Recalculate Adaptive Split</span>
+        </button>
+
+        <div id="signal-results-box" style="display:none; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 10px; font-size: 12px; color: #065f46; margin-bottom: 12px;">
+          <div style="font-weight: 700;">Adaptive Timing Computed:</div>
+          <div id="signal-results-text" style="margin-top: 2px;">Cycle: 78s • Phase 1 Green: 42s • Phase 2 Green: 26s</div>
+        </div>
+
+        <button class="btn-search-route" style="margin: 0; background: var(--gm-green);" onclick="triggerEmergencyGreenWave()">
+          <span>🚑 Trigger Priority Preemption</span>
+        </button>
+      </div>
+
+      <!-- -------------------------------------------------------
+           PANEL 4: AI CONGESTION FORECASTING & HEATMAP
+           ------------------------------------------------------- -->
+      <div id="panel-heatmap" class="flyout-panel-view" style="display: none; padding: 14px 16px;">
+        <div style="font-size: 12px; font-weight: 700; color: var(--gm-text-secondary); margin-bottom: 6px;">LOOKAHEAD TIME HORIZON</div>
+        <div style="display: flex; gap: 6px; margin-bottom: 14px;">
+          <button class="place-chip active" style="flex:1; text-align:center;" onclick="showToast('Prediction: +15 min horizon active')">+15 min</button>
+          <button class="place-chip" style="flex:1; text-align:center;" onclick="showToast('Prediction: +30 min horizon active')">+30 min</button>
+          <button class="place-chip" style="flex:1; text-align:center;" onclick="showToast('Prediction: +60 min horizon active')">+60 min</button>
+        </div>
+
+        <div style="font-size: 12px; font-weight: 700; color: var(--gm-text-secondary); margin-bottom: 6px;">WEATHER IMPACT FACTOR</div>
+        <select class="admin-filter-select" style="width: 100%; margin-bottom: 14px;" onchange="showToast('Weather factor applied: ' + this.value)">
+          <option value="clear">Clear Skies (Baseline Free Flow)</option>
+          <option value="rain">Light Rain (+18% arterial friction)</option>
+          <option value="storm">Monsoon Downpour (+42% urban delay)</option>
+        </select>
+
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-bottom: 14px; font-size: 12.5px;">
+          <div style="font-weight: 700; margin-bottom: 6px;">Belagavi Corridor Risk Breakdown:</div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:3px;"><span style="color:#10b981;">● Free Flow (&lt;40% capacity)</span> <b>72% network</b></div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:3px;"><span style="color:#f59e0b;">● Moderate (40-75% capacity)</span> <b>19% network</b></div>
+          <div style="display:flex; justify-content:space-between;"><span style="color:#ef4444;">● Severe Congestion (&gt;75%)</span> <b>9% (College Rd)</b></div>
+        </div>
+
+        <button class="btn-search-route" style="margin: 0; background: #e11d48;" onclick="toggleCongestionHeatmap()">
+          <span>🔥 Toggle Congestion Heatmap on Map</span>
+        </button>
+      </div>
+
+      <!-- -------------------------------------------------------
+           PANEL 5: EMERGENCY GREEN CORRIDOR PREEMPTION
+           ------------------------------------------------------- -->
+      <div id="panel-emergency" class="flyout-panel-view" style="display: none; padding: 14px 16px;">
+        <div style="font-size: 13px; color: var(--gm-text-secondary); margin-bottom: 12px;">
+          Clear critical transit corridors for emergency response vehicles:
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: var(--gm-text-secondary);">EMERGENCY VEHICLE TYPE</label>
+            <div style="display: flex; gap: 6px; margin-top: 4px;">
+              <span class="place-chip active" style="flex:1; text-align:center;">🚑 Ambulance</span>
+              <span class="place-chip" style="flex:1; text-align:center;">🚒 Fire Rescue</span>
+              <span class="place-chip" style="flex:1; text-align:center;">🫀 Organ Transit</span>
+            </div>
+          </div>
+
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: var(--gm-text-secondary);">ORIGIN DISPATCH POINT</label>
+            <select class="admin-filter-select" style="width: 100%; margin-top: 4px;">
+              <option value="chennamma_circle">Rani Chennamma Circle Hub</option>
+              <option value="railway_station">Belagavi Railway Station</option>
+              <option value="bogarves">Bogarves Intersection</option>
+              <option value="kle_tech">KLE Technological University</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: var(--gm-text-secondary);">DESIGNATED TRAUMA CENTER</label>
+            <select class="admin-filter-select" style="width: 100%; margin-top: 4px;">
+              <option value="bims_hospital">BIMS District Civil Hospital (24x7 Trauma)</option>
+              <option value="kle_hospital">KLE Prabhakar Kore Multi-Speciality</option>
+            </select>
+          </div>
+
+          <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 10px; padding: 12px; margin: 4px 0;">
+            <div style="font-size: 13px; font-weight: 700; color: #065f46;">Green-Wave Preemption Benefit:</div>
+            <div style="font-size: 12px; color: #047857; margin-top: 2px;">
+              Normal Corridor Time: <b>14.4 min</b> ➔ Emergency: <b>6.2 min (-57% faster)</b>
+            </div>
+          </div>
+
+          <button class="btn-search-route" style="margin: 0; background: var(--gm-green);" onclick="triggerEmergencyGreenWave()">
+            <span>🚑 Activate Locked Green Corridor</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- -------------------------------------------------------
+           PANEL 6: ADMINISTRATOR INCIDENT COMMAND DESK
+           ------------------------------------------------------- -->
+      <div id="panel-admin" class="flyout-panel-view" style="display: none;">
+        <!-- Admin Sign-in Box -->
+        <div id="admin-login-box" style="padding: 20px 18px; text-align: center;">
+          <div style="font-size: 32px; margin-bottom: 6px;">🛡️</div>
+          <h3 style="font-size: 16px; font-weight: 700;">Admin Incident Desk</h3>
+          <p style="font-size: 12px; color: var(--gm-text-secondary); margin-top: 2px;">Authenticate to moderate Belagavi network disruptions</p>
+
+          <div style="margin-top: 14px; text-align: left;">
+            <label style="font-size: 11px; font-weight: 700; color: var(--gm-text-secondary);">USERNAME</label>
+            <input type="text" id="admin-user" class="gmaps-input" style="background: #f1f5f9; padding: 8px 12px; border-radius: 8px; margin-top: 3px;" value="admin">
+          </div>
+
+          <div style="margin-top: 10px; text-align: left;">
+            <label style="font-size: 11px; font-weight: 700; color: var(--gm-text-secondary);">PASSWORD</label>
+            <input type="password" id="admin-pass" class="gmaps-input" style="background: #f1f5f9; padding: 8px 12px; border-radius: 8px; margin-top: 3px;" value="admin123">
+          </div>
+
+          <button class="btn-search-route" style="margin: 14px 0 0;" onclick="loginAdmin()">Sign In as Operator</button>
+        </div>
+
+        <!-- Admin Control Desk (Post Login) -->
+        <div id="admin-panel-box" style="display: none; padding: 12px;">
+          <!-- KPI Statistics Grid -->
+          <div class="admin-stats-grid" style="padding: 8px; gap: 6px; grid-template-columns: repeat(3, 1fr); margin-bottom: 10px; border-radius: 8px;">
+            <div class="admin-stat-card"><div class="admin-stat-val" id="stat-total" style="color:var(--gm-blue); font-size:16px;">--</div><div class="admin-stat-lbl">Total</div></div>
+            <div class="admin-stat-card"><div class="admin-stat-val" id="stat-accidents" style="color:var(--gm-red); font-size:16px;">--</div><div class="admin-stat-lbl">Crashes</div></div>
+            <div class="admin-stat-card"><div class="admin-stat-val" id="stat-roadblocks" style="color:var(--gm-orange); font-size:16px;">--</div><div class="admin-stat-lbl">Blocks</div></div>
+          </div>
+
+          <!-- Filter Toolbar -->
+          <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+            <input type="text" id="admin-search-box" class="admin-search-input" placeholder="Search road or ID..." oninput="filterAdminIncidents()">
+            <select id="admin-filter-status" class="admin-filter-select" onchange="filterAdminIncidents()">
+              <option value="all">All</option>
+              <option value="unverified">Unverified</option>
+              <option value="verified">Verified</option>
+              <option value="resolved">Resolved</option>
+            </select>
+          </div>
+
+          <!-- Incidents Table -->
+          <div class="admin-table-container" style="max-height: 280px; border: 1px solid #e2e8f0; border-radius: 8px;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Road</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="admin-table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items:center; margin-top: 10px;">
+            <button class="place-chip" style="font-size:11px;" onclick="resetDemoData()">🔄 Reset Demo Data</button>
+            <button class="place-chip" style="font-size:11px;" onclick="loadAdminIncidents()">Refresh</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- =========================================================
+       3. TOP TOOLBAR & AMENITIES BAR (CENTERED)
        ========================================================= -->
   <div class="gmaps-top-toolbar">
-    <!-- Amenities -->
     <button class="tool-chip" onclick="showNearbyPlaces('gas')">
       <span>⛽</span>
       <span>Petrol Pumps</span>
@@ -946,43 +1474,36 @@
       <span>🍽️</span>
       <span>Restaurants</span>
     </button>
-
-    <!-- Signal Lab & Optimization -->
-    <button class="tool-chip chip-signal" onclick="openSignalLabModal()">
+    <button class="tool-chip chip-signal" onclick="switchFlyoutPanel('signals')">
       <span>🚦</span>
       <span>Signal Lab</span>
     </button>
-
-    <!-- Traffic Heatmap Toggle -->
     <button class="tool-chip chip-heatmap" id="btn-toggle-heatmap" onclick="toggleCongestionHeatmap()">
       <span>🔥</span>
       <span>Congestion Heatmap</span>
     </button>
-
-    <!-- Emergency Preemption -->
-    <button class="tool-chip chip-emergency" onclick="triggerEmergencyGreenWave()">
+    <button class="tool-chip chip-emergency" onclick="switchFlyoutPanel('emergency')">
       <span>🚑</span>
       <span>Emergency Corridor</span>
     </button>
   </div>
 
   <!-- =========================================================
-       3. TOP RIGHT ACTION BAR (REPORT HAZARD & ADMIN)
+       4. TOP RIGHT ACTION BAR
        ========================================================= -->
   <div class="gmaps-top-actions">
-    <button class="btn-report-hazard" onclick="openReportModal()">
+    <button class="btn-report-hazard" onclick="switchFlyoutPanel('report')">
       <span>⚠️</span>
       <span>+ Report Hazard</span>
     </button>
-
-    <button class="btn-admin-portal" onclick="openAdminModal()">
+    <button class="btn-admin-portal" onclick="switchFlyoutPanel('admin')">
       <span>🛡️</span>
       <span>Admin Incident Desk</span>
     </button>
   </div>
 
   <!-- =========================================================
-       4. BOTTOM RIGHT FLOATING CONTROLS
+       5. BOTTOM RIGHT CONTROLS
        ========================================================= -->
   <div class="gmaps-controls-bottom-right">
     <button class="map-btn-circle" onclick="locateUserGPS()" title="Center My Location">
@@ -1002,235 +1523,6 @@
   <div class="gmaps-layer-switcher" onclick="toggleMapLayer()" title="Change Map Type">
     <div class="layer-thumb" id="layer-thumb-preview" style="background-image: url('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/4/7/11'); background-size: cover;"></div>
     <span id="layer-label-text">Satellite</span>
-  </div>
-
-  <!-- =========================================================
-       5. COOPERATIVE HAZARD REPORTING MODAL
-       ========================================================= -->
-  <div class="modal-overlay" id="report-modal">
-    <div class="modal-card">
-      <div class="modal-head">
-        <div class="modal-title">
-          <span>⚠️</span>
-          <span>Report Road Hazard</span>
-        </div>
-        <button class="modal-close" onclick="closeReportModal()">✕</button>
-      </div>
-
-      <div style="padding: 12px 20px 0; font-size: 13px; color: var(--gm-text-secondary);">
-        Submit incident report directly to Belagavi traffic network:
-      </div>
-
-      <div class="hazard-types-grid">
-        <button class="hazard-btn selected" onclick="selectHazardType('accident', this)">
-          <span class="hazard-icon">💥</span>
-          <span class="hazard-name">Crash / Accident</span>
-        </button>
-        <button class="hazard-btn" onclick="selectHazardType('roadblock', this)">
-          <span class="hazard-icon">🚧</span>
-          <span class="hazard-name">Roadblock / Work</span>
-        </button>
-        <button class="hazard-btn" onclick="selectHazardType('congestion', this)">
-          <span class="hazard-icon">🚗</span>
-          <span class="hazard-name">Traffic Jam</span>
-        </button>
-        <button class="hazard-btn" onclick="selectHazardType('flooding', this)">
-          <span class="hazard-icon">🌊</span>
-          <span class="hazard-name">Flooding / Water</span>
-        </button>
-      </div>
-
-      <div style="padding: 0 20px 16px; display: flex; flex-direction: column; gap: 10px;">
-        <div>
-          <label style="font-size: 11px; font-weight: 700; color: var(--gm-text-secondary);">LOCATION / ROAD NAME</label>
-          <div style="display: flex; gap: 6px; margin-top: 4px;">
-            <input type="text" id="hazard-location-input" class="gmaps-input" style="background:#f1f5f9; padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1;" placeholder="e.g. Near Chennamma Circle" value="College Road Arterial">
-            <button type="button" onclick="startMapPick()" style="background:#e8f0fe; color:#1a73e8; border:1px solid #bad3fb; border-radius:8px; padding:0 10px; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap;">📍 Pick on Map</button>
-          </div>
-          <div id="hazard-coords-preview" style="font-size: 11px; color:#64748b; margin-top:2px;">Target: Belagavi Center (15.8497, 74.5089)</div>
-        </div>
-
-        <div>
-          <label style="font-size: 11px; font-weight: 700; color: var(--gm-text-secondary);">SEVERITY LEVEL</label>
-          <div class="severity-selector">
-            <div class="sev-chip" onclick="selectSeverity(1, this)">Low (1)</div>
-            <div class="sev-chip" onclick="selectSeverity(2, this)">Med (2)</div>
-            <div class="sev-chip selected" onclick="selectSeverity(3, this)">High (3)</div>
-            <div class="sev-chip" onclick="selectSeverity(4, this)">Critical (4)</div>
-          </div>
-        </div>
-
-        <div>
-          <label style="font-size: 11px; font-weight: 700; color: var(--gm-text-secondary);">DESCRIPTION (OPTIONAL)</label>
-          <input type="text" id="hazard-desc-input" class="gmaps-input" style="background:#f1f5f9; padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; margin-top:4px;" placeholder="e.g. 2 vehicles involved, lane blocked">
-        </div>
-
-        <button class="btn-search-route" style="margin: 6px 0 0; background: var(--gm-red);" id="btn-submit-hazard" onclick="submitHazardReport()">
-          <span>Submit Incident to Network</span>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- =========================================================
-       6. ADMINISTRATOR INCIDENT DASHBOARD MODAL
-       ========================================================= -->
-  <div class="modal-overlay" id="admin-modal">
-    <!-- Admin Login -->
-    <div class="admin-modal" id="admin-login-box" style="width: 380px; padding: 24px; text-align: center;">
-      <div style="font-size: 36px; margin-bottom: 8px;">🛡️</div>
-      <h2 style="font-size: 18px; font-weight: 700;">Admin Incident Desk</h2>
-      <p style="font-size: 13px; color: var(--gm-text-secondary); margin-top: 4px;">Sign in to review and moderate Belagavi incidents</p>
-
-      <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 8px; text-align: left;">
-        <label style="font-size: 11px; font-weight: 700; color: var(--gm-text-secondary);">USERNAME</label>
-        <input type="text" id="admin-user" class="gmaps-input" style="background: #f1f3f4; padding: 8px 12px; border-radius: 8px;" value="admin">
-      </div>
-
-      <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px; text-align: left;">
-        <label style="font-size: 11px; font-weight: 700; color: var(--gm-text-secondary);">PASSWORD</label>
-        <input type="password" id="admin-pass" class="gmaps-input" style="background: #f1f3f4; padding: 8px 12px; border-radius: 8px;" value="admin123">
-      </div>
-
-      <button class="btn-search-route" style="margin: 16px 0 0;" onclick="loginAdmin()">Sign In</button>
-      <button style="border:none;background:none;color:var(--gm-blue);margin-top:10px;cursor:pointer;font-size:13px;" onclick="closeAdminModal()">Cancel</button>
-    </div>
-
-    <!-- Admin Control Panel -->
-    <div class="admin-modal" id="admin-panel-box" style="display: none;">
-      <div class="modal-head" style="background: #fff;">
-        <div>
-          <h2 style="font-size: 17px; font-weight: 700; display:flex; align-items:center; gap:8px;">
-            <span>🛡️</span> Smart_Routes Traffic Incident Command Center
-          </h2>
-          <p style="font-size: 12px; color: var(--gm-text-secondary);">Belagavi road network incidents, database persistence & spatial verification</p>
-        </div>
-        <button class="modal-close" onclick="closeAdminModal()">✕</button>
-      </div>
-
-      <!-- KPI Statistics Grid -->
-      <div class="admin-stats-grid">
-        <div class="admin-stat-card">
-          <div class="admin-stat-val" id="stat-total" style="color:var(--gm-blue);">--</div>
-          <div class="admin-stat-lbl">Total Incidents</div>
-        </div>
-        <div class="admin-stat-card">
-          <div class="admin-stat-val" id="stat-accidents" style="color:var(--gm-red);">--</div>
-          <div class="admin-stat-lbl">Accidents</div>
-        </div>
-        <div class="admin-stat-card">
-          <div class="admin-stat-val" id="stat-roadblocks" style="color:var(--gm-orange);">--</div>
-          <div class="admin-stat-lbl">Roadblocks</div>
-        </div>
-        <div class="admin-stat-card">
-          <div class="admin-stat-val" id="stat-congestion" style="color:#d97706;">--</div>
-          <div class="admin-stat-lbl">Traffic Jams</div>
-        </div>
-        <div class="admin-stat-card">
-          <div class="admin-stat-val" id="stat-verified" style="color:var(--gm-green);">--</div>
-          <div class="admin-stat-lbl">Verified</div>
-        </div>
-      </div>
-
-      <!-- Search & Filters Toolbar -->
-      <div class="admin-toolbar">
-        <input type="text" id="admin-search-box" class="admin-search-input" placeholder="Search by road name, description or ID..." oninput="filterAdminIncidents()">
-        <select id="admin-filter-type" class="admin-filter-select" onchange="filterAdminIncidents()">
-          <option value="all">All Disruption Types</option>
-          <option value="accident">Accident 💥</option>
-          <option value="roadblock">Roadblock 🚧</option>
-          <option value="congestion">Traffic Jam 🚗</option>
-          <option value="flooding">Flooding 🌊</option>
-        </select>
-        <select id="admin-filter-status" class="admin-filter-select" onchange="filterAdminIncidents()">
-          <option value="all">All Moderation Statuses</option>
-          <option value="unverified">Unverified</option>
-          <option value="verified">Verified</option>
-          <option value="resolved">Resolved</option>
-        </select>
-      </div>
-
-      <!-- Incident Table -->
-      <div class="admin-table-container">
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Type</th>
-              <th>Road / Location</th>
-              <th>Severity</th>
-              <th>Votes</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="admin-table-body">
-            <!-- Dynamically populated -->
-          </tbody>
-        </table>
-      </div>
-
-      <div style="display: flex; justify-content: space-between; align-items:center; padding: 12px 20px; background:#f8fafc; border-top:1px solid #e2e8f0;">
-        <button class="place-chip" onclick="resetDemoData()">🔄 Reset Demo Baseline</button>
-        <button class="btn-search-route" style="margin: 0; padding: 6px 16px;" onclick="closeAdminModal()">Done</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- =========================================================
-       7. ADAPTIVE SIGNAL OPTIMIZATION LAB MODAL
-       ========================================================= -->
-  <div class="modal-overlay" id="signal-modal">
-    <div class="modal-card" style="width: 480px;">
-      <div class="modal-head">
-        <div class="modal-title">
-          <span>🚦</span>
-          <span>Adaptive Signal Optimization Lab</span>
-        </div>
-        <button class="modal-close" onclick="closeSignalLabModal()">✕</button>
-      </div>
-
-      <div style="padding: 16px 20px; display: flex; flex-direction: column; gap: 14px;">
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px;">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 13px; font-weight: 600; color: #334155;">Webster Delay Reduction:</span>
-            <span id="signal-delay-reduction" style="font-size: 16px; font-weight: 700; color: var(--gm-green);">-42.8%</span>
-          </div>
-          <div style="font-size: 11px; color: #64748b; margin-top: 3px;">
-            Optimum Cycle: <code style="color:var(--gm-blue);">Co = (1.5L + 5) / (1 - Y)</code> • Constrained 55s - 105s
-          </div>
-        </div>
-
-        <div>
-          <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 4px;">
-            <span>College Road Approach (Northbound):</span>
-            <span id="q-north-val" style="color: var(--gm-blue);">38 cars</span>
-          </div>
-          <input type="range" id="slider-queue-north" min="5" max="80" value="38" style="width: 100%; accent-color: var(--gm-blue);" oninput="updateQueueSlider('north', this.value)">
-        </div>
-
-        <div>
-          <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 4px;">
-            <span>Civil Hospital Road (Eastbound):</span>
-            <span id="q-east-val" style="color: var(--gm-blue);">44 cars</span>
-          </div>
-          <input type="range" id="slider-queue-east" min="5" max="80" value="44" style="width: 100%; accent-color: var(--gm-blue);" oninput="updateQueueSlider('east', this.value)">
-        </div>
-
-        <button class="btn-search-route" style="margin: 4px 0 0;" onclick="computeAdaptiveSignal()">
-          <span>Recalculate Adaptive Split</span>
-        </button>
-
-        <div id="signal-results-box" style="display:none; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 10px; font-size: 12px; color: #065f46;">
-          <div style="font-weight: 700;">Adaptive Timing Computed:</div>
-          <div id="signal-results-text" style="margin-top: 2px;">Cycle: 78s • Phase 1 Green: 42s • Phase 2 Green: 26s</div>
-        </div>
-
-        <button class="btn-search-route" style="margin: 0; background: var(--gm-green);" onclick="triggerEmergencyGreenWave()">
-          <span>🚑 Trigger Emergency Priority Preemption</span>
-        </button>
-      </div>
-    </div>
   </div>
 
   <!-- Toast Notification -->
@@ -1305,9 +1597,82 @@
     fastestRoutePoly.on('click', () => selectRoute(0));
     shortestRoutePoly.on('click', () => selectRoute(1));
 
+    // ---------------------------------------------------------
+    // 1. REACT BITS "APP SIDEBAR 2" FLYOUT ENGINE
+    // ---------------------------------------------------------
+    let currentFlyoutPanel = 'directions';
+
+    function switchFlyoutPanel(panelKey) {
+      const flyout = document.getElementById('app-flyout');
+      const isCurrentlyOpen = flyout && !flyout.classList.contains('closed');
+
+      // If already open on the same panel, toggle it closed
+      if (isCurrentlyOpen && currentFlyoutPanel === panelKey) {
+        closeFlyout();
+        return;
+      }
+
+      currentFlyoutPanel = panelKey;
+      if (flyout) flyout.classList.remove('closed');
+
+      // Update Active Rail Buttons
+      document.querySelectorAll('.rail-icon-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-panel') === panelKey);
+      });
+
+      // Hide all panels
+      document.querySelectorAll('.flyout-panel-view').forEach(p => p.style.display = 'none');
+
+      // Metadata for Flyout Header
+      const panelMeta = {
+        directions: { icon: '🧭', title: 'Smart Route Finder', sub: 'Belagavi A* & Dijkstra Junction Routing' },
+        report: { icon: '⚠️', title: 'Report Road Hazard', sub: 'Submit live disruptions to Belagavi network' },
+        signals: { icon: '🚦', title: 'Adaptive Signal Lab', sub: 'Webster HCM delay minimization & queue balancing' },
+        heatmap: { icon: '🔥', title: 'AI Congestion Predictor', sub: 'Corridor risk forecasting & weather impact' },
+        emergency: { icon: '🚑', title: 'Emergency Green Corridor', sub: 'Trauma priority preemption & green-wave clearance' },
+        admin: { icon: '🛡️', title: 'Admin Incident Desk', sub: 'Moderation & spatial database verification' }
+      };
+
+      const meta = panelMeta[panelKey] || panelMeta.directions;
+      const headIcon = document.getElementById('flyout-header-icon');
+      const headTitle = document.getElementById('flyout-header-title');
+      const headSub = document.getElementById('flyout-header-sub');
+      if (headIcon) headIcon.innerText = meta.icon;
+      if (headTitle) headTitle.innerText = meta.title;
+      if (headSub) headSub.innerText = meta.sub;
+
+      const targetPanel = document.getElementById(`panel-${panelKey}`);
+      if (targetPanel) {
+        targetPanel.style.display = 'block';
+      }
+
+      if (panelKey === 'admin') {
+        if (isAdminLoggedIn) {
+          document.getElementById('admin-login-box').style.display = 'none';
+          document.getElementById('admin-panel-box').style.display = 'block';
+          loadIncidents();
+        } else {
+          document.getElementById('admin-login-box').style.display = 'block';
+          document.getElementById('admin-panel-box').style.display = 'none';
+        }
+      }
+
+      showToast(`${meta.icon} ${meta.title}`);
+    }
+
+    function closeFlyout() {
+      const flyout = document.getElementById('app-flyout');
+      if (flyout) flyout.classList.add('closed');
+      document.querySelectorAll('.rail-icon-btn').forEach(btn => btn.classList.remove('active'));
+      currentFlyoutPanel = null;
+    }
+
     function getMapPadding() {
+      const flyout = document.getElementById('app-flyout');
+      const isFlyoutOpen = flyout && !flyout.classList.contains('closed');
       const isMobile = window.innerWidth < 768;
-      return isMobile ? { padding: [40, 40] } : { paddingTopLeft: [440, 60], paddingBottomRight: [60, 60] };
+      if (isMobile) return { padding: [30, 30] };
+      return isFlyoutOpen ? { paddingTopLeft: [490, 40], paddingBottomRight: [40, 40] } : { paddingTopLeft: [90, 40], paddingBottomRight: [40, 40] };
     }
 
     // ---------------------------------------------------------
@@ -1812,13 +2177,11 @@
     }
 
     function openReportModal() {
-      pickedCoordinates = { lat: belagaviDefaultCenter.lat, lng: belagaviDefaultCenter.lng };
-      document.getElementById('hazard-coords-preview').innerText = `Target: Belagavi (${pickedCoordinates.lat.toFixed(4)}, ${pickedCoordinates.lng.toFixed(4)})`;
-      document.getElementById('report-modal').classList.add('open');
+      switchFlyoutPanel('report');
     }
 
     function closeReportModal() {
-      document.getElementById('report-modal').classList.remove('open');
+      closeFlyout();
     }
 
     function selectHazardType(type, btn) {
@@ -1834,16 +2197,16 @@
     }
 
     function startMapPick() {
-      closeReportModal();
+      closeFlyout();
       isMapPickingMode = true;
       document.getElementById('map-picker-banner').classList.add('active');
-      showToast('Click anywhere on Belagavi map to place incident point');
+      showToast('📍 Click anywhere on the Belagavi map to drop incident pin');
     }
 
     function cancelMapPick() {
       isMapPickingMode = false;
       document.getElementById('map-picker-banner').classList.remove('active');
-      openReportModal();
+      switchFlyoutPanel('report');
     }
 
     map.on('click', (e) => {
@@ -1852,9 +2215,10 @@
       document.getElementById('map-picker-banner').classList.remove('active');
 
       pickedCoordinates = { lat: e.latlng.lat, lng: e.latlng.lng };
-      openReportModal();
+      switchFlyoutPanel('report');
+      document.getElementById('hazard-location-input').value = `Map Point (${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)})`;
       document.getElementById('hazard-coords-preview').innerText = `Target: Lat ${e.latlng.lat.toFixed(4)}, Lng ${e.latlng.lng.toFixed(4)} (Picked on Map)`;
-      showToast('Location pinpointed on map!');
+      showToast('📍 Location pinpointed on map!');
     });
 
     async function submitHazardReport() {
@@ -1913,19 +2277,11 @@
     let isAdminLoggedIn = false;
 
     function openAdminModal() {
-      document.getElementById('admin-modal').classList.add('open');
-      if (isAdminLoggedIn) {
-        document.getElementById('admin-login-box').style.display = 'none';
-        document.getElementById('admin-panel-box').style.display = 'flex';
-        loadIncidents();
-      } else {
-        document.getElementById('admin-login-box').style.display = 'block';
-        document.getElementById('admin-panel-box').style.display = 'none';
-      }
+      switchFlyoutPanel('admin');
     }
 
     function closeAdminModal() {
-      document.getElementById('admin-modal').classList.remove('open');
+      closeFlyout();
     }
 
     async function loginAdmin() {
@@ -2067,10 +2423,10 @@
     // 8. Adaptive Signal Optimization Lab (Webster Cycle)
     // ---------------------------------------------------------
     function openSignalLabModal() {
-      document.getElementById('signal-modal').classList.add('open');
+      switchFlyoutPanel('signals');
     }
     function closeSignalLabModal() {
-      document.getElementById('signal-modal').classList.remove('open');
+      closeFlyout();
     }
 
     function updateQueueSlider(dir, val) {
