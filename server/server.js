@@ -203,13 +203,30 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('[Unhandled Rejection]', reason);
 });
 
-server.listen(PORT, () => {
-  console.log(`\n=================================================`);
-  console.log(`🚦 PulseTraffic OS Server listening on port ${PORT}`);
-  console.log(`🌐 Live Frontend: http://localhost:${PORT}/`);
-  console.log(`📡 WebSocket Engine active via Socket.IO`);
-  console.log(`📋 API Health: http://localhost:${PORT}/api/health`);
-  console.log(`=================================================\n`);
+let activePort = PORT;
+
+function startServer(portToTry) {
+  activePort = portToTry;
+  server.listen(portToTry, () => {
+    console.log(`\n=================================================`);
+    console.log(`🚦 PulseTraffic OS Server listening on port ${activePort}`);
+    console.log(`🌐 Live Frontend: http://localhost:${activePort}/`);
+    console.log(`📡 WebSocket Engine active via Socket.IO`);
+    console.log(`📋 API Health: http://localhost:${activePort}/api/health`);
+    console.log(`=================================================\n`);
+  });
+}
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    const nextPort = Number(activePort) === 5000 ? 5050 : Number(activePort) + 1;
+    console.warn(`[Port ${activePort} is in use] Automatically switching to port ${nextPort}...`);
+    setTimeout(() => startServer(nextPort), 500);
+  } else {
+    console.error('[Server Error]', err);
+  }
 });
+
+startServer(PORT);
 
 export { app, server, io };
