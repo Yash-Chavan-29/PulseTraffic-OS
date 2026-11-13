@@ -637,10 +637,6 @@
       <span>🍽️</span>
       <span>Restaurants</span>
     </button>
-    <button class="amenity-btn" onclick="showNearbyPlaces('parking')">
-      <span>🅿️</span>
-      <span>Parking</span>
-    </button>
   </div>
 
   <!-- =========================================================
@@ -1211,10 +1207,6 @@
         { name: "Niyaaz Restaurant", lat: 15.8590, lng: 74.5060, desc: "Authentic cuisine • Family dining" },
         { name: "Hotel Sanman Deluxe", lat: 15.8520, lng: 74.5040, desc: "Pure vegetarian • Quick service" },
         { name: "Cafe Coffee Day", lat: 15.8480, lng: 74.5090, desc: "Coffee & snacks • Wi-Fi" }
-      ],
-      parking: [
-        { name: "Central Railway Parking", lat: 15.8645, lng: 74.5070, desc: "2-wheeler & 4-wheeler covered parking" },
-        { name: "Bogarves Multi-Level Parking", lat: 15.8575, lng: 74.5030, desc: "150 spots available • ₹20/hr" }
       ]
     };
 
@@ -1233,7 +1225,7 @@
       document.querySelectorAll('.amenity-btn').forEach(b => b.classList.remove('active'));
       event.currentTarget.classList.add('active');
 
-      const icons = { gas: '⛽', hospital: '🏥', food: '🍽️', parking: '🅿️' };
+      const icons = { gas: '⛽', hospital: '🏥', food: '🍽️' };
       const items = AMENITIES_DATA[type] || [];
 
       items.forEach(item => {
