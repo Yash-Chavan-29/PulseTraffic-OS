@@ -259,7 +259,7 @@ hydrateGraphFromDB();
  * Resolve node key from string, numeric id, or alias
  */
 export function resolveNodeKey(query) {
-  if (!query) return "chennamma_circle";
+  if (!query) return null;
   const str = String(query).trim().toLowerCase();
   
   if (ROAD_NODES[str]) return str;
@@ -271,7 +271,41 @@ export function resolveNodeKey(query) {
     }
   }
 
-  return "chennamma_circle";
+  return null;
+}
+
+/**
+ * Universal Global Geocoder for arbitrary city-to-city or worldwide routing
+ */
+export async function geocodePlace(query) {
+  if (!query) return null;
+  if (typeof query === 'object' && query.lat && query.lng) return query;
+  const str = String(query).trim();
+  
+  // Coordinate regex match
+  const coordMatch = str.match(/([-+]?[0-9]*\.?[0-9]+)\s*,\s*([-+]?[0-9]*\.?[0-9]+)/);
+  if (coordMatch) {
+    return { lat: parseFloat(coordMatch[1]), lng: parseFloat(coordMatch[2]), name: str };
+  }
+
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(str)}&limit=1`, {
+      headers: { 'User-Agent': 'PulseTraffic-GlobalRouteEngine/1.0' }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.length > 0) {
+        return {
+          lat: parseFloat(data[0].lat),
+          lng: parseFloat(data[0].lon),
+          name: data[0].display_name
+        };
+      }
+    }
+  } catch (err) {
+    console.warn("Global geocode lookup warning:", err.message);
+  }
+  return null;
 }
 
 /**
@@ -644,41 +678,75 @@ export async function fetchExternalRoute(originCoords, destCoords) {
  */
 export async function calculateMultiFactorRoutes(originParam, destParam, departureOffsetMinutes = 0) {
   let isArbitraryCoordinates = false;
-  let originKey = "kle_tech";
-  let destKey = "sambre_airport";
+  let originKey = null;
+  let destKey = null;
   let rawOriginCoords = null;
   let rawDestCoords = null;
+  let originName = null;
+  let destName = null;
 
+  // 1. Resolve Origin (supports {lat, lng}, local node key, or arbitrary city/street string)
   if (typeof originParam === 'object' && originParam && originParam.lat && originParam.lng) {
     rawOriginCoords = [Number(originParam.lng), Number(originParam.lat)];
+    originName = originParam.name || `Location (${originParam.lat.toFixed(4)}, ${originParam.lng.toFixed(4)})`;
     const nearOrigin = findNearestGraphNode(originParam.lat, originParam.lng);
     if (nearOrigin && nearOrigin.distanceMeters < 12000) {
       originKey = nearOrigin.key;
     } else {
       isArbitraryCoordinates = true;
     }
-  } else {
+  } else if (originParam) {
     originKey = resolveNodeKey(originParam);
+    if (originKey && ROAD_NODES[originKey]) {
+      rawOriginCoords = [ROAD_NODES[originKey].lng, ROAD_NODES[originKey].lat];
+      originName = ROAD_NODES[originKey].name;
+    } else {
+      // Global geocode
+      const geo = await geocodePlace(originParam);
+      if (geo) {
+        rawOriginCoords = [geo.lng, geo.lat];
+        originName = geo.name || String(originParam);
+        isArbitraryCoordinates = true;
+      }
+    }
   }
 
+  // 2. Resolve Destination (supports {lat, lng}, local node key, or arbitrary city/street string)
   if (typeof destParam === 'object' && destParam && destParam.lat && destParam.lng) {
     rawDestCoords = [Number(destParam.lng), Number(destParam.lat)];
+    destName = destParam.name || `Location (${destParam.lat.toFixed(4)}, ${destParam.lng.toFixed(4)})`;
     const nearDest = findNearestGraphNode(destParam.lat, destParam.lng);
     if (nearDest && nearDest.distanceMeters < 12000) {
       destKey = nearDest.key;
     } else {
       isArbitraryCoordinates = true;
     }
-  } else {
+  } else if (destParam) {
     destKey = resolveNodeKey(destParam);
+    if (destKey && ROAD_NODES[destKey]) {
+      rawDestCoords = [ROAD_NODES[destKey].lng, ROAD_NODES[destKey].lat];
+      destName = ROAD_NODES[destKey].name;
+    } else {
+      // Global geocode
+      const geo = await geocodePlace(destParam);
+      if (geo) {
+        rawDestCoords = [geo.lng, geo.lat];
+        destName = geo.name || String(destParam);
+        isArbitraryCoordinates = true;
+      }
+    }
   }
 
-  // Populate coordinates if one or both are standard Belagavi nodes
-  if (!rawOriginCoords && ROAD_NODES[originKey]) {
+  // Fallbacks if not provided
+  if (!rawOriginCoords && !originKey) {
+    originKey = "chennamma_circle";
     rawOriginCoords = [ROAD_NODES[originKey].lng, ROAD_NODES[originKey].lat];
+    originName = ROAD_NODES[originKey].name;
   }
-  if (!rawDestCoords && ROAD_NODES[destKey]) {
+  if (!rawDestCoords && !destKey) {
+    destKey = "sambre_airport";
     rawDestCoords = [ROAD_NODES[destKey].lng, ROAD_NODES[destKey].lat];
+    destName = ROAD_NODES[destKey].name;
   }
 
   if (rawOriginCoords && rawDestCoords) {
@@ -743,14 +811,14 @@ export async function calculateMultiFactorRoutes(originParam, destParam, departu
       routesContainer.alternateRoute = alternateObj;
 
       return {
-        origin: { name: `Custom Location (${rawOriginCoords[1].toFixed(4)}, ${rawOriginCoords[0].toFixed(4)})`, coordinates: [rawOriginCoords[1], rawOriginCoords[0]] },
-        destination: { name: `Custom Location (${rawDestCoords[1].toFixed(4)}, ${rawDestCoords[0].toFixed(4)})`, coordinates: [rawDestCoords[1], rawDestCoords[0]] },
+        origin: { name: originName || `Location (${rawOriginCoords[1].toFixed(4)}, ${rawOriginCoords[0].toFixed(4)})`, coordinates: [rawOriginCoords[1], rawOriginCoords[0]] },
+        destination: { name: destName || `Location (${rawDestCoords[1].toFixed(4)}, ${rawDestCoords[0].toFixed(4)})`, coordinates: [rawDestCoords[1], rawDestCoords[0]] },
         departureOffsetMinutes: Number(departureOffsetMinutes),
         routes: routesContainer,
         comparison: {
           timeSavedMinutes: Number((dijkstraEta - extRoute.estimatedTravelTimeMinutes).toFixed(1)),
           distanceDifferenceKm: Number((extRoute.totalDistanceKm - dijkstraDist).toFixed(2)),
-          recommendation: "A* Fastest is recommended via primary transit corridor"
+          recommendation: "A* Optimal path is recommended based on real-time transit telemetry"
         }
       };
     }

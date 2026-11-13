@@ -50,12 +50,12 @@
       position: relative;
     }
 
-    /* Full-bleed Map Viewport */
+    /* Full-bleed Map Viewport offset by 60px left rail */
     .app-main {
       position: absolute;
       top: 0;
-      left: 0;
-      width: 100vw;
+      left: 60px;
+      width: calc(100vw - 60px);
       height: 100vh;
       overflow: hidden;
       z-index: 1;
@@ -67,62 +67,136 @@
       background: #090a0f;
     }
 
-    /* Floating Top Controls on Map */
-    .floating-left-controls {
-      position: absolute;
-      top: 18px;
-      left: 18px;
-      z-index: 1000;
+    /* Left Vertical Navigation Rail (Unslop / Google Maps Style) */
+    .left-rail {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 60px;
+      background: #0b0e14;
+      border-right: 1px solid var(--border);
+      z-index: 2500;
       display: flex;
+      flex-direction: column;
       align-items: center;
+      padding: 12px 0;
       gap: 10px;
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
     }
 
-    .floating-side-btn {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: rgba(17, 20, 28, 0.90);
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      color: #fff;
-      padding: 9px 18px 9px 12px;
-      border-radius: 9999px;
-      font-size: 13.5px;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.05);
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .floating-side-btn:hover {
-      background: rgba(30, 37, 52, 0.98);
-      border-color: var(--accent-blue);
-      box-shadow: 0 16px 36px rgba(59, 130, 246, 0.35);
-      transform: translateY(-1px);
-    }
-
-    .brand-badge-mini {
-      width: 26px;
-      height: 26px;
+    .rail-brand {
+      width: 38px;
+      height: 38px;
       background: linear-gradient(135deg, #3b82f6, #06b6d4);
       color: #fff;
       font-weight: 700;
-      font-size: 11.5px;
+      font-size: 13.5px;
       font-family: 'Geist Mono', monospace;
-      border-radius: 7px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+      margin-bottom: 6px;
+      box-shadow: 0 4px 14px rgba(59, 130, 246, 0.45);
+      cursor: pointer;
+      user-select: none;
     }
 
-    .badge-chevron {
-      font-size: 16px;
-      color: var(--accent-blue);
-      margin-left: 2px;
+    .rail-btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+      align-items: center;
+      flex: 1;
     }
 
+    .rail-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      position: relative;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .rail-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      transform: scale(1.05);
+    }
+    .rail-btn.active {
+      background: rgba(59, 130, 246, 0.18);
+      border-color: rgba(59, 130, 246, 0.4);
+      color: #60a5fa;
+      box-shadow: 0 0 16px rgba(59, 130, 246, 0.3);
+    }
+
+    .rail-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 54px;
+      background: #171d2b;
+      color: #fff;
+      font-size: 11.5px;
+      font-weight: 500;
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateX(-6px);
+      transition: all 0.2s ease;
+      z-index: 3000;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+    }
+    .rail-btn:hover::after {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .rail-bottom-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+      align-items: center;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* Pulsing Blue GPS Marker for Live User Location */
+    .gps-pulse-marker {
+      width: 18px;
+      height: 18px;
+      background: #2563eb;
+      border: 3px solid #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 0 16px rgba(37, 99, 235, 0.95);
+      position: relative;
+    }
+    .gps-pulse-marker::before {
+      content: "";
+      position: absolute;
+      top: -8px; left: -8px; right: -8px; bottom: -8px;
+      border-radius: 50%;
+      background: rgba(37, 99, 235, 0.35);
+      animation: pulseGpsRing 2s infinite ease-out;
+    }
+    @keyframes pulseGpsRing {
+      0% { transform: scale(0.6); opacity: 1; }
+      100% { transform: scale(2.4); opacity: 0; }
+    }
+
+    /* Floating Top Right: Status & Reset */
     .floating-right-controls {
       position: absolute;
       top: 18px;
@@ -184,20 +258,20 @@
       50% { transform: scale(1.3); opacity: 0.7; }
     }
 
-    /* Left Control Drawer (Pop-up/Slide-in on click) */
+    /* Left Control Drawer (Pop-up/Slide-in next to vertical rail) */
     .control-drawer {
       position: fixed;
-      top: 16px;
-      left: 16px;
-      bottom: 16px;
+      top: 14px;
+      left: 72px;
+      bottom: 14px;
       width: 440px;
-      max-width: calc(100vw - 32px);
+      max-width: calc(100vw - 86px);
       background: var(--panel-glass);
       backdrop-filter: blur(28px) saturate(190%);
       -webkit-backdrop-filter: blur(28px) saturate(190%);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      z-index: 2000;
+      z-index: 2400;
       box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.85);
       display: flex;
       flex-direction: column;
@@ -833,23 +907,34 @@
 </head>
 <body class="dark-tiles">
 
+  <!-- Left Vertical Navigation Rail (Unslop / Google Maps Style) -->
+  <nav class="left-rail">
+    <div class="rail-brand" onclick="toggleRailTab('routes')" title="PulseTraffic OS / Smart Routes">SR</div>
+    
+    <div class="rail-btn-group">
+      <button class="rail-btn active" id="rail-btn-routes" data-tooltip="Route Navigator &amp; GPS" onclick="toggleRailTab('routes')">🧭</button>
+      <button class="rail-btn" id="rail-btn-dashboard" data-tooltip="City Command Center" onclick="toggleRailTab('dashboard')">📊</button>
+      <button class="rail-btn" id="rail-btn-forecast" data-tooltip="Traffic Congestion Forecast" onclick="toggleRailTab('forecast')">📈</button>
+      <button class="rail-btn" id="rail-btn-emergency" data-tooltip="Emergency Green Wave" onclick="toggleRailTab('emergency')">🚨</button>
+      <button class="rail-btn" id="rail-btn-signals" data-tooltip="Adaptive Signal Lab" onclick="toggleRailTab('signals')">🚦</button>
+      <button class="rail-btn" id="rail-btn-incidents" data-tooltip="Incident Management" onclick="toggleRailTab('incidents')">⚠️</button>
+    </div>
+
+    <div class="rail-bottom-group">
+      <button class="rail-btn" id="rail-btn-gps" data-tooltip="My Live GPS Location" onclick="locateUserGPS()">📍</button>
+      <button class="rail-btn" id="rail-btn-layers" data-tooltip="Map Overlays" onclick="toggleRailTab('layers')">🗺️</button>
+      <button class="rail-btn" id="rail-btn-reset" data-tooltip="Reset Demo" onclick="resetDemoData()">↺</button>
+    </div>
+  </nav>
+
   <!-- Main Full-Screen Map Container -->
   <main class="app-main">
     <div id="city-map"></div>
 
-    <!-- Floating Top-Left: Side Options Button (Always accessible) -->
-    <div class="floating-left-controls">
-      <button class="floating-side-btn" id="open-drawer-btn" onclick="toggleDrawer(true)">
-        <div class="brand-badge-mini">SR</div>
-        <span class="btn-label">Side Options &amp; Routing</span>
-        <span class="badge-chevron">›</span>
-      </button>
-    </div>
-
     <!-- Floating Top-Right: Status & Actions -->
     <div class="floating-right-controls">
-      <button class="floating-action-pill" onclick="resetDemoData()" title="Reset to clean baseline">
-        <span>↺ Reset</span>
+      <button class="floating-action-pill" onclick="locateUserGPS()" title="Lock My GPS Position">
+        <span>📍 Live GPS</span>
       </button>
       <div class="floating-status-pill">
         <span class="status-dot"></span>
@@ -857,7 +942,7 @@
       </div>
     </div>
 
-    <!-- Slide-in / Popup Control Drawer -->
+    <!-- Slide-in / Popup Feature Drawer (Controlled by Left Rail) -->
     <div class="control-drawer" id="main-drawer">
       
       <!-- Drawer Header Bar with Brand & Close Button -->
@@ -865,19 +950,22 @@
         <div style="display: flex; align-items: center; gap: 10px;">
           <div class="brand-badge-mini" style="width: 28px; height: 28px; font-size: 12px;">SR</div>
           <div>
-            <div style="font-weight: 700; font-size: 13.5px; color: #fff;">Smart Routes</div>
-            <div style="font-size: 10px; color: var(--text-muted); font-family: 'Geist Mono';">Belagavi &amp; Global AI Engine</div>
+            <div style="font-weight: 700; font-size: 13.5px; color: #fff;" id="drawer-main-title">Route Navigator</div>
+            <div style="font-size: 10px; color: var(--text-muted); font-family: 'Geist Mono';">Global GPS &amp; City-to-City Engine</div>
           </div>
         </div>
-        <button class="drawer-close-btn" onclick="toggleDrawer(false)" title="Close Panel">✕</button>
+        <button class="drawer-close-btn" onclick="closeDrawer()" title="Close Panel">✕</button>
       </div>
 
-      <!-- Segmented Mode Tabs -->
-      <div class="drawer-tab-bar">
-        <button class="drawer-tab active" onclick="switchMode('routes')">🚗 Commuter Routes</button>
-        <button class="drawer-tab" onclick="switchMode('emergency')">🚨 Green Wave</button>
-        <button class="drawer-tab" onclick="switchMode('signals')">🚦 Signal Lab</button>
-        <button class="drawer-tab" onclick="switchMode('incidents')">⚠️ Incidents</button>
+      <!-- Segmented Mode Tabs (Synced with Left Navigation Rail) -->
+      <div class="drawer-tab-bar" style="overflow-x: auto; padding-bottom: 8px;">
+        <button class="drawer-tab active" id="tab-routes" onclick="toggleRailTab('routes')">🚗 Routes</button>
+        <button class="drawer-tab" id="tab-dashboard" onclick="toggleRailTab('dashboard')">📊 Dashboard</button>
+        <button class="drawer-tab" id="tab-forecast" onclick="toggleRailTab('forecast')">📈 Forecast</button>
+        <button class="drawer-tab" id="tab-emergency" onclick="toggleRailTab('emergency')">🚨 Green Wave</button>
+        <button class="drawer-tab" id="tab-signals" onclick="toggleRailTab('signals')">🚦 Signal Lab</button>
+        <button class="drawer-tab" id="tab-incidents" onclick="toggleRailTab('incidents')">⚠️ Incidents</button>
+        <button class="drawer-tab" id="tab-layers" onclick="toggleRailTab('layers')">🗺️ Layers</button>
       </div>
 
       <div class="drawer-body">
@@ -896,47 +984,46 @@
           <!-- Dedicated Route Search Card (Source & Destination) -->
           <div class="route-search-card">
             <div class="route-search-header">
-              <span>🔍 Route Search &amp; Navigation</span>
+              <span>🔍 Global Route Navigator</span>
               <button class="clear-route-link" onclick="clearCurrentRoute()">Clear Route</button>
             </div>
             
             <div class="search-field-group">
               <label class="field-label"><span style="color: #3b82f6;">●</span> Source (Origin)</label>
-              <input type="text" id="route-origin-input" class="route-text-input" 
-                     placeholder="Search Belagavi landmark or any city..." 
-                     value="Rani Chennamma Circle Hub" list="belagavi-places">
+              <div style="display: flex; gap: 6px;">
+                <input type="text" id="route-origin-input" class="route-text-input" 
+                       placeholder="Enter start location or click GPS..." 
+                       value="📍 Your Location (Live GPS)" list="common-places" style="flex: 1;">
+                <button onclick="locateUserGPS()" title="Use Live GPS Position" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.35); color: #60a5fa; border-radius: 6px; padding: 0 10px; cursor: pointer; font-size: 14px;">📍</button>
+              </div>
             </div>
 
-            <div style="display: flex; justify-content: center; margin: -4px 0;">
+            <div style="display: flex; justify-content: center; margin: -2px 0;">
               <button class="swap-locations-btn" onclick="swapOriginDest()" title="Swap Source and Destination">⇅</button>
             </div>
 
             <div class="search-field-group">
               <label class="field-label"><span style="color: #f43f5e;">■</span> Destination</label>
               <input type="text" id="route-dest-input" class="route-text-input" 
-                     placeholder="Search destination (e.g. Sambre Airport, KLE Tech, Goa, Bengaluru)..." 
-                     value="" list="belagavi-places" onkeydown="if(event.key==='Enter') executeRouteSearch()">
+                     placeholder="Search any destination city or street worldwide (e.g. Dharwad, Bagalkot, Goa, Sambre Airport)..." 
+                     value="" list="common-places" onkeydown="if(event.key==='Enter') executeRouteSearch()">
             </div>
 
-            <datalist id="belagavi-places">
-              <option value="Rani Chennamma Circle Hub">
+            <datalist id="common-places">
+              <option value="Dharwad">
+              <option value="Bagalkot">
+              <option value="Hubballi Central">
+              <option value="Belagavi Sambre Airport">
               <option value="KLE Tech Campus (Vidya Nagar)">
               <option value="Belagavi Central Railway Station">
+              <option value="Rani Chennamma Circle Hub">
               <option value="BIMS Civil Hospital Gate">
               <option value="Suvarna Vidhana Soudha">
-              <option value="Belagavi Sambre Airport">
               <option value="Tilakwadi 3rd Railway Gate">
-              <option value="Bogarves Circle">
-              <option value="Nehru Nagar Main Road">
-              <option value="Camp Belagavi (Fort Road)">
-              <option value="Shahapur Market">
-              <option value="Vadgaon Circle">
-              <option value="Machhe Industrial Area">
               <option value="Goa Panaji">
               <option value="Bengaluru Majestic">
-              <option value="Hubballi Central">
-              <option value="Mumbai CST">
               <option value="Pune Swargate">
+              <option value="Mumbai CST">
             </datalist>
 
             <div style="display: flex; gap: 8px; margin-top: 4px;">
@@ -944,31 +1031,11 @@
             </div>
           </div>
 
-          <!-- DEDICATED SUBSECTION: DEPARTURE TIME & AI CONGESTION FORECAST -->
-          <div class="subsection-box">
-            <div class="subsection-title">
-              <span>📅 Departure Time & AI Traffic Forecast</span>
-              <span style="color: #60a5fa; font-size: 10px; font-family: 'Geist Mono';">Ridge Regressor Active</span>
-            </div>
-            <div style="display: flex; gap: 8px; align-items: center;">
-              <div class="time-pills" style="flex: 1;">
-                <div class="pill-btn selected" onclick="setTimePill(this, 0)">Now</div>
-                <div class="pill-btn" onclick="setTimePill(this, 15)">+15m</div>
-                <div class="pill-btn" onclick="setTimePill(this, 30)">+30m</div>
-                <div class="pill-btn" onclick="setTimePill(this, 60)">+60m</div>
-              </div>
-              <div class="weather-toggle">
-                <button class="weather-btn active" id="btn-weather-clear" onclick="setWeather('clear')">☀️ Clear</button>
-                <button class="weather-btn" id="btn-weather-rain" onclick="setWeather('rain')">🌧️ Rain</button>
-              </div>
-            </div>
-          </div>
-
           <!-- Clean Map Placeholder Notice (Shown before any route is searched) -->
           <div id="route-placeholder-notice" style="text-align: center; padding: 22px 14px; color: var(--text-muted); font-size: 12px; background: rgba(255,255,255,0.02); border: 1px dashed var(--border); border-radius: 8px;">
-            <div style="font-size: 26px; margin-bottom: 6px;">🗺️</div>
-            <div style="font-weight: 600; color: #fff; margin-bottom: 4px;">Clean Map Initialized</div>
-            <div>Enter a destination above and click <b>Find Smart Route</b> to generate travel times and multi-factor paths.</div>
+            <div style="font-size: 26px; margin-bottom: 6px;">🧭</div>
+            <div style="font-weight: 600; color: #fff; margin-bottom: 4px;">Ready for Navigation</div>
+            <div>Your GPS origin is automatically detected. Enter any destination city or landmark above to calculate real-time optimal paths.</div>
           </div>
 
           <!-- Multi-Factor Route Comparison List (Initially hidden until search) -->
@@ -977,20 +1044,20 @@
             <div class="specular-card active-fastest" id="card-route-0" onclick="selectRoute(0)">
               <div class="route-header">
                 <div class="route-name-badge">
-                  <span style="color: #3b82f6;">● A* Dynamic (Fastest)</span>
+                  <span style="color: #3b82f6;">● A* Optimal (Fastest)</span>
                   <span style="font-size: 10px; background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 2px 6px; border-radius: 4px;">RECOMMENDED</span>
                 </div>
-                <span class="route-eta" id="fastest-eta">17.2 min</span>
+                <span class="route-eta" id="fastest-eta">-- min</span>
               </div>
-              <p class="route-desc" id="fastest-desc">Bypasses predicted bottleneck via NH-48 bypass corridor.</p>
+              <p class="route-desc" id="fastest-desc">Optimal path via primary highway corridor.</p>
               <div class="route-stats-grid">
                 <div class="stat-col">
                   <span class="stat-label">Distance</span>
-                  <span class="stat-val" id="fastest-dist">14.8 km</span>
+                  <span class="stat-val" id="fastest-dist">-- km</span>
                 </div>
                 <div class="stat-col">
                   <span class="stat-label">Fuel Est.</span>
-                  <span class="stat-val" id="fastest-fuel">1.05 L</span>
+                  <span class="stat-val" id="fastest-fuel">-- L</span>
                 </div>
                 <div class="stat-col">
                   <span class="stat-label">Reliability</span>
@@ -1005,32 +1072,96 @@
                 <div class="route-name-badge">
                   <span style="color: #a855f7;">● Dijkstra (Shortest)</span>
                 </div>
-                <span class="route-eta" id="shortest-eta">23.4 min</span>
+                <span class="route-eta" id="shortest-eta">-- min</span>
               </div>
-              <p class="route-desc" id="shortest-desc">Direct line through Central College Road; high bottleneck delay.</p>
+              <p class="route-desc" id="shortest-desc">Direct line shortest physical distance.</p>
               <div class="route-stats-grid">
                 <div class="stat-col">
                   <span class="stat-label">Distance</span>
-                  <span class="stat-val" id="shortest-dist">13.1 km</span>
+                  <span class="stat-val" id="shortest-dist">-- km</span>
                 </div>
                 <div class="stat-col">
                   <span class="stat-label">Fuel Est.</span>
-                  <span class="stat-val" id="shortest-fuel">1.18 L</span>
+                  <span class="stat-val" id="shortest-fuel">-- L</span>
                 </div>
                 <div class="stat-col">
-                  <span class="stat-label">Congestion</span>
-                  <span class="stat-val" style="color: #f43f5e;" id="shortest-risk">HIGH</span>
+                  <span class="stat-label">Risk</span>
+                  <span class="stat-val" style="color: #f43f5e;" id="shortest-risk">MODERATE</span>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- Optional Layer Overlays in Drawer (Default Off for Clean Map) -->
-          <div class="subsection-box" style="margin-top: 6px;">
-            <div class="subsection-title">Map Layer Overlays</div>
+        <!-- VIEW: CITY COMMAND CENTER DASHBOARD -->
+        <div class="view-panel" id="panel-dashboard">
+          <div class="subsection-box">
+            <div class="subsection-title">
+              <span>City Real-Time Overview</span>
+              <span style="color: #34d399; font-size: 10px; font-family: 'Geist Mono';">Telemetry Live</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px;">
+                <div style="font-size: 10.5px; color: var(--text-muted);">Simulated Vehicles</div>
+                <div style="font-size: 18px; font-weight: 700; color: #60a5fa; font-family: 'Geist Mono';" id="dash-veh-count">14,290</div>
+              </div>
+              <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px;">
+                <div style="font-size: 10.5px; color: var(--text-muted);">Network Speed</div>
+                <div style="font-size: 18px; font-weight: 700; color: #34d399; font-family: 'Geist Mono';" id="dash-avg-speed">38.4 km/h</div>
+              </div>
+              <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px;">
+                <div style="font-size: 10.5px; color: var(--text-muted);">Active Incidents</div>
+                <div style="font-size: 18px; font-weight: 700; color: #f43f5e; font-family: 'Geist Mono';" id="dash-incidents-count">2 Tracked</div>
+              </div>
+              <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px;">
+                <div style="font-size: 10.5px; color: var(--text-muted);">Adaptive Signals</div>
+                <div style="font-size: 18px; font-weight: 700; color: #f59e0b; font-family: 'Geist Mono';" id="dash-signals-count">23 Active</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="subsection-box">
+            <div class="subsection-title">Network Congestion Breakdown</div>
+            <div style="font-size: 12px; color: var(--text-muted); line-height: 1.6;">
+              🟢 <b>Nominal Corridors:</b> 44 edges (71%)<br>
+              🟡 <b>Moderate Delays:</b> 12 edges (19%)<br>
+              🔴 <b>Critical Chokepoints:</b> 6 edges (10%)
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW: TRAFFIC CONGESTION FORECAST -->
+        <div class="view-panel" id="panel-forecast">
+          <div class="subsection-box">
+            <div class="subsection-title">
+              <span>Predictive Congestion Horizons</span>
+              <span style="color: #60a5fa; font-size: 10px; font-family: 'Geist Mono';">Ridge Model</span>
+            </div>
+            <div class="time-pills">
+              <div class="pill-btn selected" onclick="setTimePill(this, 0)">Now</div>
+              <div class="pill-btn" onclick="setTimePill(this, 15)">+15m</div>
+              <div class="pill-btn" onclick="setTimePill(this, 30)">+30m</div>
+              <div class="pill-btn" onclick="setTimePill(this, 60)">+60m</div>
+            </div>
+          </div>
+
+          <div class="subsection-box">
+            <div class="subsection-title">Weather Condition Adjustment</div>
             <div style="display: flex; gap: 8px;">
-              <button class="weather-btn" id="btn-toggle-congestion" style="flex: 1;" onclick="toggleCongestionOverlay()">🔥 Traffic Heatmap</button>
-              <button class="weather-btn active" id="btn-toggle-signals" style="flex: 1;" onclick="toggleSignalsOverlay()">🚦 Signal Nodes</button>
+              <button class="weather-btn active" id="btn-weather-clear" style="flex: 1;" onclick="setWeather('clear')">☀️ Clear</button>
+              <button class="weather-btn" id="btn-weather-rain" style="flex: 1;" onclick="setWeather('rain')">🌧️ Rain (BPR Speed -20%)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW: MAP LAYER OVERLAYS -->
+        <div class="view-panel" id="panel-layers">
+          <div class="subsection-box">
+            <div class="subsection-title">Map Overlays</div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <button class="action-btn-primary" id="btn-layer-heatmap" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff;" onclick="toggleCongestionOverlay()">🔥 Toggle Traffic Heatmap</button>
+              <button class="action-btn-primary" id="btn-layer-signals" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff;" onclick="toggleSignalsOverlay()">🚦 Toggle Signal Nodes</button>
+              <button class="action-btn-primary" id="btn-locate-user" style="background: rgba(59,130,246,0.2); border: 1px solid #3b82f6; color: #fff;" onclick="locateUserGPS()">📍 Re-center on My GPS</button>
             </div>
           </div>
         </div>
@@ -1181,20 +1312,122 @@
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    // Drawer State Toggle
-    function toggleDrawer(forceState) {
-      const drawer = document.getElementById('main-drawer');
-      const btn = document.getElementById('open-drawer-btn');
-      const isOpen = forceState !== undefined ? forceState : !drawer.classList.contains('open');
+    // Rail & Drawer Navigation State
+    let currentActiveTab = 'routes';
 
-      if (isOpen) {
-        drawer.classList.add('open');
-        if (btn) btn.style.display = 'none';
-      } else {
-        drawer.classList.remove('open');
-        if (btn) btn.style.display = 'flex';
+    function toggleRailTab(tabKey) {
+      const drawer = document.getElementById('main-drawer');
+      const isOpen = drawer.classList.contains('open');
+
+      // If clicking currently active rail icon while drawer is open, toggle closed
+      if (isOpen && currentActiveTab === tabKey) {
+        closeDrawer();
+        return;
       }
+
+      currentActiveTab = tabKey;
+
+      // Update rail buttons
+      document.querySelectorAll('.rail-btn').forEach(b => b.classList.remove('active'));
+      const activeRailBtn = document.getElementById(`rail-btn-${tabKey}`);
+      if (activeRailBtn) activeRailBtn.classList.add('active');
+
+      // Update drawer tab headers
+      document.querySelectorAll('.drawer-tab').forEach(t => t.classList.remove('active'));
+      const activeDrawerTab = document.getElementById(`tab-${tabKey}`);
+      if (activeDrawerTab) activeDrawerTab.classList.add('active');
+
+      // Switch view panel
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+      const targetPanel = document.getElementById(`panel-${tabKey}`);
+      if (targetPanel) targetPanel.classList.add('active');
+
+      // Update title
+      const titles = {
+        'routes': 'Route Navigator & GPS',
+        'dashboard': 'City Command Center',
+        'forecast': 'Congestion Forecast',
+        'emergency': 'Green Wave Corridor',
+        'signals': 'Signal Lab (Webster HCM)',
+        'incidents': 'Incident Management',
+        'layers': 'Map Layer Overlays'
+      };
+      const titleEl = document.getElementById('drawer-main-title');
+      if (titleEl) titleEl.innerText = titles[tabKey] || 'Controls';
+
+      openDrawer();
+    }
+
+    function openDrawer() {
+      const drawer = document.getElementById('main-drawer');
+      drawer.classList.add('open');
       setTimeout(() => map.invalidateSize(), 350);
+    }
+
+    function closeDrawer() {
+      const drawer = document.getElementById('main-drawer');
+      drawer.classList.remove('open');
+      document.querySelectorAll('.rail-btn').forEach(b => b.classList.remove('active'));
+      setTimeout(() => map.invalidateSize(), 350);
+    }
+
+    function toggleDrawer(forceState) {
+      if (forceState === false) {
+        closeDrawer();
+      } else {
+        openDrawer();
+      }
+    }
+
+    // Live GPS Location Tracking
+    let userGpsMarker = null;
+    let userGpsCoords = null;
+
+    function locateUserGPS() {
+      showToast('🛰️ Connecting to live GPS location...');
+      if (!navigator.geolocation) {
+        showToast('Geolocation is not supported by your browser', 'error');
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          userGpsCoords = { lat, lng, name: `📍 Your Location (${lat.toFixed(4)}, ${lng.toFixed(4)})` };
+          customOriginCoords = userGpsCoords;
+
+          const origInput = document.getElementById('route-origin-input');
+          if (origInput) {
+            origInput.value = `📍 Your Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+          }
+
+          if (userGpsMarker) {
+            map.removeLayer(userGpsMarker);
+          }
+          const gpsIcon = L.divIcon({
+            className: 'gps-pulse-marker',
+            iconSize: [18, 18],
+            iconAnchor: [9, 9]
+          });
+          userGpsMarker = L.marker([lat, lng], { icon: gpsIcon })
+            .bindPopup(`<b>📍 Your Location</b><br>Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}<br><small>GPS Real-time Locked</small>`)
+            .addTo(map);
+
+          map.setView([lat, lng], 14, { animate: true });
+          showToast(`📍 Live GPS Locked: (${lat.toFixed(4)}, ${lng.toFixed(4)})`);
+        },
+        (err) => {
+          console.warn("GPS request notice:", err.message);
+          userGpsCoords = { lat: 15.8497, lng: 74.5089, name: "Rani Chennamma Circle Hub" };
+          customOriginCoords = userGpsCoords;
+          const origInput = document.getElementById('route-origin-input');
+          if (origInput) {
+            origInput.value = "Rani Chennamma Circle Hub";
+          }
+        },
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 30000 }
+      );
     }
 
     // Auto-fix Leaflet container size on zoom and window resize
@@ -1862,10 +2095,19 @@
       })
       .catch(e => console.log('Signals init notice'));
 
-    // Initial Load - Pristine clean map only!
+    // Initial Load - Pristine clean map with real-time GPS
     // No routes or heatmaps are pre-rendered on startup.
+    locateUserGPS();
     loadActiveIncidents();
     recalculateSignalTiming();
+
+    // URL Hash Deep-Linking for Panels
+    if (window.location.hash) {
+      const hashKey = window.location.hash.replace('#', '');
+      if (['routes', 'dashboard', 'forecast', 'emergency', 'signals', 'incidents', 'layers'].includes(hashKey)) {
+        setTimeout(() => toggleRailTab(hashKey), 200);
+      }
+    }
   </script>
 </body>
 </html>
