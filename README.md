@@ -27,6 +27,9 @@ Before developing new endpoints or UI components, consult:
 - [`contract.json`](./contract.json) — Canonical data schema for all 5 mandatory features.
 - [`mock_data.json`](./mock_data.json) — Thunder Client / Postman ready-to-test scenarios.
 
-### 3. Ports
-- **Frontend (`/client`)**: `http://localhost:5173`
-- **Backend (`/server`)**: `http://localhost:5000`
+### 3. Ports & Architecture
+- **Unified Full-Stack Command Center**: `http://localhost:5000/`
+  - High-performance, low-latency UI served directly via Express from `/public`
+  - REST API endpoints on `/api/*`
+  - Real-time Bidirectional Telemetry via Socket.IO
+- **Database Engine**: Embedded SQLite (`better-sqlite3`) with WAL journal mode for zero-latency local persistence and incident lifecycle management.

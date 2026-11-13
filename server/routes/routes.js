@@ -5,10 +5,25 @@ import { getCongestionHeatmap } from '../services/mlPredictor.js';
 const router = express.Router();
 
 // POST /api/routes/calculate
-router.post('/calculate', (req, res) => {
-  const { originNodeId = 1, destinationNodeId = 98, departureOffsetMinutes = 0 } = req.body;
-  const result = calculateMultiFactorRoutes(originNodeId, destinationNodeId, departureOffsetMinutes);
-  res.status(200).json({ status: 200, data: result });
+router.post('/calculate', async (req, res) => {
+  try {
+    const { 
+      originNodeId, 
+      destinationNodeId, 
+      origin, 
+      destination, 
+      departureOffsetMinutes = 0 
+    } = req.body;
+
+    const fromParam = origin || originNodeId || 1;
+    const toParam = destination || destinationNodeId || 98;
+
+    const result = await calculateMultiFactorRoutes(fromParam, toParam, departureOffsetMinutes);
+    res.status(200).json({ status: 200, data: result });
+  } catch (error) {
+    console.error("Routing error:", error);
+    res.status(500).json({ status: 500, message: "Internal routing computation error", error: error.message });
+  }
 });
 
 // GET /api/predictions/heatmap

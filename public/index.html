@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PulseTraffic // City Traffic Management OS (PS 01)</title>
+  <title>PulseTraffic OS // Intelligent Traffic Management (PS 01)</title>
   
   <!-- Typography & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,6 +25,7 @@
       --text-muted: #8b95a5;
       --text-dim: #4b5565;
       --accent-blue: #3b82f6;
+      --accent-cyan: #06b6d4;
       --accent-emerald: #10b981;
       --accent-amber: #f59e0b;
       --accent-rose: #f43f5e;
@@ -51,7 +52,7 @@
 
     /* Top Navigation Bar */
     header {
-      height: 54px;
+      height: 56px;
       border-bottom: 1px solid var(--border);
       background: var(--panel);
       display: flex;
@@ -68,17 +69,18 @@
     }
 
     .brand-badge {
-      width: 28px;
-      height: 28px;
+      width: 30px;
+      height: 30px;
       background: #ffffff;
       color: #090a0f;
       font-weight: 700;
       font-size: 14px;
       font-family: 'Geist Mono', monospace;
-      border-radius: 7px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
     }
 
     .brand-title {
@@ -121,6 +123,9 @@
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       background: transparent;
       border: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .tab-item:hover {
@@ -177,7 +182,7 @@
       top: 16px;
       left: 16px;
       bottom: 16px;
-      width: 410px;
+      width: 440px;
       background: var(--panel-glass);
       backdrop-filter: blur(24px) saturate(180%);
       -webkit-backdrop-filter: blur(24px) saturate(180%);
@@ -188,6 +193,7 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .drawer-header {
@@ -199,89 +205,168 @@
       background: rgba(255, 255, 255, 0.015);
     }
 
-    .drawer-header h2 {
+    .drawer-title-group h2 {
       font-size: 15px;
       font-weight: 600;
       letter-spacing: -0.01em;
     }
 
     .drawer-body {
-      padding: 16px 20px;
-      overflow-y: auto;
       flex: 1;
+      overflow-y: auto;
+      padding: 18px 20px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
-      scroll-behavior: smooth;
+      gap: 16px;
     }
 
+    /* Custom Scrollbar */
     .drawer-body::-webkit-scrollbar {
-      width: 5px;
+      width: 4px;
     }
     .drawer-body::-webkit-scrollbar-thumb {
-      background: var(--panel-elevated);
+      background: rgba(255, 255, 255, 0.1);
       border-radius: 4px;
     }
 
-    /* View panels */
+    /* View Panels */
     .view-panel {
       display: none;
       flex-direction: column;
-      gap: 14px;
+      gap: 16px;
     }
-
     .view-panel.active {
       display: flex;
-      animation: staggerIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
-    @keyframes staggerIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
+    /* --- View 0: Executive City Dashboard --- */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
     }
 
-    .specular-card {
-      position: relative;
-      background: var(--bg);
+    .kpi-card {
+      background: var(--panel-elevated);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
       padding: 14px;
-      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-      overflow: hidden;
-      cursor: pointer;
-    }
-
-    .specular-card:hover {
-      border-color: rgba(255, 255, 255, 0.2);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.5);
-    }
-
-    .specular-card.active-fastest {
-      border-color: rgba(59, 130, 246, 0.6);
-      background: rgba(59, 130, 246, 0.04);
-      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3);
-    }
-
-    .specular-card.active-shortest {
-      border-color: rgba(148, 163, 184, 0.5);
-      background: rgba(148, 163, 184, 0.04);
-    }
-
-    /* Input Groups */
-    .route-input-group {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.6), transparent);
+    }
+
+    .kpi-title {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .kpi-val {
+      font-size: 20px;
+      font-weight: 700;
+      font-family: 'Geist Mono', monospace;
+      color: #ffffff;
+    }
+
+    .kpi-status {
+      font-size: 10.5px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 2px;
+    }
+
+    .quick-preset-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .quick-preset-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .preset-chip {
+      background: var(--panel-elevated);
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s ease;
+    }
+
+    .preset-chip:hover {
+      background: rgba(59, 130, 246, 0.12);
+      border-color: rgba(59, 130, 246, 0.4);
+      transform: translateX(3px);
+    }
+
+    /* Global Search Box */
+    .search-box-wrapper {
+      position: relative;
+      margin-bottom: 2px;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 12.5px;
+      padding: 10px 12px 10px 36px;
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      color: var(--text-dim);
+    }
+
+    /* Route Form Inputs */
+    .route-input-group {
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      padding: 12px;
+      padding: 4px;
+      display: flex;
+      flex-direction: column;
     }
 
     .input-row {
       display: flex;
       align-items: center;
+      padding: 8px 12px;
       gap: 10px;
     }
 
@@ -291,177 +376,153 @@
       border-radius: 50%;
       flex-shrink: 0;
     }
-
-    .pin-source { background: #3b82f6; border: 2px solid #ffffff; }
-    .pin-dest { background: #10b981; border: 2px solid #ffffff; }
+    .pin-source { background: var(--accent-blue); box-shadow: 0 0 8px var(--accent-blue); }
+    .pin-dest { background: var(--accent-emerald); box-shadow: 0 0 8px var(--accent-emerald); }
 
     .node-select {
-      flex: 1;
       background: transparent;
       border: none;
       color: var(--text);
-      font-size: 13px;
+      font-size: 12.5px;
+      font-weight: 500;
+      width: 100%;
       outline: none;
       cursor: pointer;
     }
 
     .node-select option {
-      background: #11141c;
-      color: #fff;
+      background: var(--panel-elevated);
+      color: var(--text);
     }
 
     .input-divider {
       height: 1px;
       background: var(--border);
-      margin-left: 20px;
+      margin: 0 12px;
     }
 
+    /* Time Pills */
     .departure-row {
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
       font-size: 12px;
       color: var(--text-muted);
     }
 
     .pill-group {
       display: flex;
-      gap: 4px;
+      gap: 6px;
     }
 
     .time-pill {
       background: var(--panel-elevated);
       border: 1px solid var(--border);
       color: var(--text-muted);
+      font-family: 'Geist Mono', monospace;
       font-size: 11px;
-      padding: 4px 8px;
+      padding: 5px 10px;
       border-radius: 6px;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: all 0.2s;
     }
 
     .time-pill.selected {
-      background: rgba(59, 130, 246, 0.2);
-      border-color: rgba(59, 130, 246, 0.5);
-      color: #60a5fa;
+      background: rgba(59, 130, 246, 0.15);
+      border-color: var(--accent-blue);
+      color: #93c5fd;
     }
 
+    /* Buttons */
     .action-btn-primary {
       width: 100%;
-      padding: 10px 14px;
-      background: #ffffff;
-      color: #090a0f;
-      border: none;
-      border-radius: var(--radius-sm);
+      padding: 12px;
+      background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      color: #ffffff;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .action-btn-primary:hover {
-      background: #e2e8f0;
       transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.45);
     }
 
     .action-btn-emerald {
-      width: 100%;
-      padding: 10px 14px;
-      background: var(--accent-emerald);
-      color: #ffffff;
-      border: none;
-      border-radius: var(--radius-sm);
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all 0.18s ease;
+      background: linear-gradient(180deg, #059669 0%, #047857 100%);
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35);
     }
 
-    .action-btn-emerald:hover {
-      background: #059669;
-      transform: translateY(-1px);
-    }
-
-    /* Reroute Alert Banner */
-    .reroute-banner {
-      background: rgba(244, 63, 94, 0.12);
-      border: 1px solid rgba(244, 63, 94, 0.35);
-      border-radius: var(--radius-sm);
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      animation: alertPulse 3s infinite ease-in-out;
-    }
-
-    @keyframes alertPulse {
-      0%, 100% { border-color: rgba(244, 63, 94, 0.35); }
-      50% { border-color: rgba(244, 63, 94, 0.65); }
-    }
-
-    .reroute-banner-top {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      font-weight: 600;
-      color: #fb7185;
-    }
-
-    .reroute-btn {
-      background: #f43f5e;
-      color: #fff;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 4px;
-      transition: background 0.15s;
-    }
-    .reroute-btn:hover { background: #e11d48; }
-
-    /* Route Comparison Cards */
+    /* Specular Route Cards */
     .routes-container {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
+    }
+
+    .specular-card {
+      background: var(--panel-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .specular-card:hover {
+      border-color: var(--border-focus);
+      transform: translateY(-2px);
+    }
+
+    .specular-card.active-fastest {
+      border-color: rgba(59, 130, 246, 0.6);
+      background: linear-gradient(180deg, rgba(37, 99, 235, 0.08) 0%, rgba(17, 20, 28, 0.6) 100%);
+      box-shadow: 0 8px 24px -6px rgba(37, 99, 235, 0.25);
+    }
+
+    .specular-card.active-shortest {
+      border-color: rgba(16, 185, 129, 0.6);
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.08) 0%, rgba(17, 20, 28, 0.6) 100%);
+      box-shadow: 0 8px 24px -6px rgba(16, 185, 129, 0.25);
     }
 
     .route-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 6px;
     }
 
     .route-name-badge {
-      display: flex;
-      align-items: center;
-      gap: 6px;
       font-size: 13px;
       font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .rec-badge {
       font-size: 10px;
-      font-weight: 600;
+      font-family: 'Geist Mono', monospace;
+      padding: 2px 6px;
+      border-radius: 4px;
       background: rgba(16, 185, 129, 0.15);
       color: #34d399;
       border: 1px solid rgba(16, 185, 129, 0.3);
-      padding: 1px 6px;
-      border-radius: 4px;
     }
 
     .route-eta {
-      font-size: 15px;
+      font-size: 18px;
       font-weight: 700;
       font-family: 'Geist Mono', monospace;
     }
@@ -469,150 +530,214 @@
     .route-stats-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
       margin-top: 10px;
-      padding-top: 8px;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      font-size: 11px;
-      color: var(--text-muted);
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .stat-col {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
 
     .stat-val {
-      color: #ffffff;
+      font-size: 12px;
       font-weight: 600;
       font-family: 'Geist Mono', monospace;
+      color: var(--text);
     }
 
-    /* Telemetry cards */
-    .telemetry-card {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 14px;
+    /* Dynamic Reroute Alert Banner */
+    .reroute-banner {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.35);
+      border-radius: 8px;
+      padding: 12px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 6px;
+      animation: alertPulse 2s infinite ease-in-out;
     }
 
-    .telemetry-header {
+    @keyframes alertPulse {
+      0%, 100% { border-color: rgba(244, 63, 94, 0.35); }
+      50% { border-color: rgba(244, 63, 94, 0.7); }
+    }
+
+    .reroute-banner-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-size: 12px;
-      color: var(--text-muted);
+      font-weight: 600;
+      color: #fb7185;
     }
 
-    .telemetry-value-lg {
-      font-size: 26px;
-      font-weight: 700;
-      font-family: 'Geist Mono', monospace;
-      color: #ffffff;
-    }
-
-    /* Sliders */
-    .slider-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .slider-label {
-      display: flex;
-      justify-content: space-between;
+    .reroute-btn {
+      background: #f43f5e;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
       font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .range-input {
-      width: 100%;
-      height: 6px;
-      background: var(--panel-elevated);
-      border-radius: 3px;
-      outline: none;
-      -webkit-appearance: none;
+      font-weight: 600;
       cursor: pointer;
+      margin-top: 4px;
+      transition: background 0.2s;
     }
 
-    .range-input::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: var(--accent-blue);
-      cursor: pointer;
-      border: 2px solid #ffffff;
-    }
-
-    /* Leaflet Map */
-    #city-map {
-      flex: 1;
-      height: 100%;
-      background: #090a0f;
-      z-index: 10;
-    }
-
-    .leaflet-tile-pane {
-      filter: none;
-    }
-
-    /* Floating HUD Toggles */
+    /* --- Custom iOS / Stitch Modern Toggle Switches --- */
     .map-hud {
       position: absolute;
       top: 16px;
       right: 16px;
       background: var(--panel-glass);
-      backdrop-filter: blur(16px);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 8px 12px;
-      z-index: 1000;
+      border-radius: var(--radius);
+      padding: 12px 16px;
       display: flex;
-      gap: 16px;
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .hud-toggle {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .hud-toggle input {
-      accent-color: var(--accent-blue);
-    }
-
-    /* Report Incident FAB */
-    .report-fab {
-      position: absolute;
-      bottom: 24px;
-      right: 24px;
+      flex-direction: column;
+      gap: 12px;
       z-index: 1000;
-      background: #f43f5e;
-      color: #ffffff;
-      border: none;
-      border-radius: 9999px;
-      padding: 12px 20px;
-      font-size: 13px;
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.5);
+      min-width: 220px;
+    }
+
+    .hud-title {
+      font-size: 11px;
       font-weight: 600;
-      cursor: pointer;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+    }
+
+    .hud-row {
       display: flex;
       align-items: center;
-      gap: 8px;
-      box-shadow: 0 10px 25px -4px rgba(244, 63, 94, 0.5);
-      transition: transform 0.15s ease;
+      justify-content: space-between;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--text);
     }
 
-    .report-fab:hover {
-      transform: translateY(-2px);
+    /* iOS Animated Switch Slider */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+      flex-shrink: 0;
     }
 
-    /* Modal */
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(255, 255, 255, 0.12);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      border-radius: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 2px;
+      background-color: #ffffff;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      border-radius: 50%;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    }
+
+    input:checked + .slider {
+      background-color: var(--accent-blue);
+      border-color: #60a5fa;
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+    }
+
+    input:checked + .slider.slider-emerald {
+      background-color: var(--accent-emerald);
+      border-color: #34d399;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(18px);
+    }
+
+    /* Fullscreen Leaflet Map */
+    #city-map {
+      flex: 1;
+      height: 100%;
+      background: #090a0f;
+    }
+
+    /* Leaflet Dark Filter override */
+    .leaflet-tile-pane {
+      filter: none !important;
+    }
+
+    /* Interactive Click Popup */
+    .custom-map-popup .leaflet-popup-content-wrapper {
+      background: var(--panel-elevated);
+      color: var(--text);
+      border: 1px solid var(--border-focus);
+      border-radius: 10px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+    }
+    .custom-map-popup .leaflet-popup-tip {
+      background: var(--panel-elevated);
+    }
+    .popup-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .popup-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 6px 10px;
+      font-size: 11px;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s;
+    }
+    .popup-btn:hover {
+      background: var(--accent-blue);
+      color: white;
+    }
+
+    /* Incident Modal */
     .modal-overlay {
       position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.75);
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
       backdrop-filter: blur(8px);
       z-index: 2000;
       display: none;
@@ -621,40 +746,35 @@
     }
 
     .modal-card {
-      width: 440px;
+      width: 420px;
       background: var(--panel);
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-focus);
       border-radius: var(--radius);
       padding: 24px;
       display: flex;
       flex-direction: column;
       gap: 16px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9);
-      animation: modalScale 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+      box-shadow: 0 32px 64px rgba(0, 0, 0, 0.8);
     }
 
-    @keyframes modalScale {
-      from { opacity: 0; transform: scale(0.96); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    .modal-header {
+    .form-group {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
+      gap: 6px;
     }
-
-    .modal-header h3 {
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    .modal-close {
-      background: transparent;
-      border: none;
+    .form-group label {
+      font-size: 12px;
+      font-weight: 500;
       color: var(--text-muted);
-      cursor: pointer;
-      font-size: 18px;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
     }
   </style>
 </head>
@@ -665,55 +785,138 @@
     <div class="brand-section">
       <div class="brand-badge">PT</div>
       <div class="brand-title">
-        <span>PulseTraffic</span>
+        <span>PulseTraffic OS</span>
         <span class="simulated-pill">Simulated Traffic Platform</span>
       </div>
     </div>
 
-    <!-- Navigation Tabs -->
+    <!-- Mode Tabs -->
     <div class="nav-tabs">
-      <button class="tab-item active" onclick="switchView('routes')">Route Search</button>
-      <button class="tab-item" onclick="switchView('emergency')">Emergency Corridor</button>
-      <button class="tab-item" onclick="switchView('signals')">Signal Lab</button>
-      <button class="tab-item" onclick="switchView('admin')">Admin Queue</button>
+      <button class="tab-item active" onclick="switchView('dashboard')">
+        <span>📊 City Dashboard</span>
+      </button>
+      <button class="tab-item" onclick="switchView('routes')">
+        <span>🗺️ Commuter Routing</span>
+      </button>
+      <button class="tab-item" onclick="switchView('emergency')">
+        <span>🚨 Green Wave</span>
+      </button>
+      <button class="tab-item" onclick="switchView('signals')">
+        <span>🚦 Signal Lab</span>
+      </button>
+      <button class="tab-item" onclick="switchView('admin')">
+        <span>⚠️ Incident Queue</span>
+      </button>
     </div>
 
     <div class="top-meta">
       <div class="system-status">
         <span class="status-dot"></span>
-        <span id="engine-status">BPR Impedance Engine // Mapbox Dark HD</span>
+        <span id="socket-status">SQLite & BPR Engine Live</span>
       </div>
+      <span>Belagavi Grid (15.85°N, 74.51°E)</span>
     </div>
   </header>
 
-  <!-- Main Split Layout -->
-  <div class="app-main">
+  <!-- Main Application Body -->
+  <main class="app-main">
     
-    <!-- Left Drawer -->
+    <!-- Left Floating Control Drawer -->
     <div class="control-drawer" id="main-drawer">
       <div class="drawer-header">
-        <h2 id="drawer-title">Commuter Routing</h2>
-        <span style="font-family: 'Geist Mono'; font-size: 11px; color: var(--text-dim);" id="drawer-subtitle">BPR Cost + A*</span>
+        <div class="drawer-title-group">
+          <h2 id="drawer-title">City Command Overview</h2>
+          <span style="font-family: 'Geist Mono'; font-size: 11px; color: var(--text-dim);" id="drawer-subtitle">Executive Traffic Intelligence</span>
+        </div>
       </div>
 
       <div class="drawer-body">
+
+        <!-- VIEW 0: EXECUTIVE STARTING DASHBOARD -->
+        <div class="view-panel active" id="panel-dashboard">
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <span class="kpi-title">Network Fluidity</span>
+              <span class="kpi-val" style="color: #34d399;" id="kpi-fluidity">86.4%</span>
+              <span class="kpi-status" style="color: #34d399;">● Nominal Freeflow</span>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-title">BPR Impedance</span>
+              <span class="kpi-val" style="color: #60a5fa;" id="kpi-bpr">1.12x</span>
+              <span class="kpi-status" style="color: #60a5fa;">● Low Delay Index</span>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-title">Active Incidents</span>
+              <span class="kpi-val" style="color: #f59e0b;" id="kpi-incidents">2 Logged</span>
+              <span class="kpi-status" style="color: #f59e0b;">● SQLite Synchronized</span>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-title">Smart Signals</span>
+              <span class="kpi-val" style="color: #a78bfa;" id="kpi-signals">5 Hubs</span>
+              <span class="kpi-status" style="color: #a78bfa;">● Dynamic Queue Balancer</span>
+            </div>
+          </div>
+
+          <div class="search-box-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="global-search" placeholder="Search any street, hospital, or city worldwide..." onkeydown="handleSearchKey(event)">
+          </div>
+
+          <span class="quick-preset-label">Belagavi Live Demo Scenarios</span>
+          <div class="quick-preset-group">
+            <div class="preset-chip" onclick="loadDemoScenario('kle_airport')">
+              <div>
+                <b>KLE Tech ➔ Sambre Airport</b>
+                <div style="font-size: 11px; color: var(--text-muted);">Highway NH-48 vs PB Road downtown</div>
+              </div>
+              <span style="color: #60a5fa; font-weight: 600;">Run A* →</span>
+            </div>
+
+            <div class="preset-chip" onclick="loadDemoScenario('station_hospital')">
+              <div>
+                <b>Railway Station ➔ BIMS Hospital</b>
+                <div style="font-size: 11px; color: var(--text-muted);">Critical emergency civil hospital link</div>
+              </div>
+              <span style="color: #34d399; font-weight: 600;">Run Green Wave →</span>
+            </div>
+
+            <div class="preset-chip" onclick="loadDemoScenario('chennamma_suvarna')">
+              <div>
+                <b>Chennamma Circle ➔ Suvarna Soudha</b>
+                <div style="font-size: 11px; color: var(--text-muted);">State Secretariat express corridor</div>
+              </div>
+              <span style="color: #f59e0b; font-weight: 600;">Analyze BPR →</span>
+            </div>
+          </div>
+
+          <button class="action-btn-primary" onclick="switchView('routes')">
+            <span>Open Granular Route Optimizer</span>
+          </button>
+        </div>
         
-        <!-- View 1: Commuter Route Search -->
-        <div class="view-panel active" id="panel-routes">
+        <!-- VIEW 1: COMMUTER ROUTE SEARCH -->
+        <div class="view-panel" id="panel-routes">
           <div class="route-input-group">
             <div class="input-row">
               <span class="node-pin pin-source"></span>
               <select class="node-select" id="origin-select" onchange="runRouting()">
-                <option value="central">Central Railway Station (12.9716, 77.5946)</option>
-                <option value="techpark">Tech Park Gateway (12.9255, 77.6844)</option>
+                <option value="kle_tech" selected>KLE Technological University (15.8902, 74.5180)</option>
+                <option value="chennamma_circle">Rani Chennamma Circle Hub (15.8497, 74.5089)</option>
+                <option value="railway_station">Belagavi Railway Station (15.8640, 74.5065)</option>
+                <option value="bims_hospital">BIMS District Hospital (15.8560, 74.5150)</option>
+                <option value="rpd_cross">RPD College Cross (15.8340, 74.5020)</option>
+                <option value="tilakwadi">Tilakwadi 1st Gate (15.8380, 74.5050)</option>
               </select>
             </div>
             <div class="input-divider"></div>
             <div class="input-row">
               <span class="node-pin pin-dest"></span>
               <select class="node-select" id="dest-select" onchange="runRouting()">
-                <option value="airport" selected>Kempegowda Airport T2 (13.1986, 77.7066)</option>
-                <option value="hospital">Central Hospital Hub (12.9710, 77.5990)</option>
+                <option value="sambre_airport" selected>Belagavi Sambre Airport IXG (15.8590, 74.6180)</option>
+                <option value="bims_hospital">BIMS Civil Hospital (15.8560, 74.5150)</option>
+                <option value="suvarna_soudha">Suvarna Vidhana Soudha (15.7890, 74.5680)</option>
+                <option value="auto_nagar">Auto Nagar Industrial Hub (15.8750, 74.5420)</option>
+                <option value="peeranwadi">Peeranwadi Industrial Bypass (15.8150, 74.4650)</option>
               </select>
             </div>
           </div>
@@ -728,17 +931,17 @@
           </div>
 
           <button class="action-btn-primary" onclick="runRouting()">
-            <span>Calculate BPR Routes</span>
+            <span>Calculate A* vs Dijkstra Routes</span>
           </button>
 
           <!-- Dynamic Reroute Alert -->
           <div class="reroute-banner" id="reroute-alert" style="display: none;">
             <div class="reroute-banner-top">
-              <span id="reroute-title">⚠ Incident on Primary Route</span>
+              <span id="reroute-title">⚠️ Incident on Primary Route</span>
               <span id="reroute-delay">+9.2 min delay</span>
             </div>
             <p style="font-size: 11.5px; color: #fecdd3; line-height: 1.4;" id="reroute-msg">Active collision detected. Alternate route bypasses bottleneck.</p>
-            <button class="reroute-btn" onclick="applyReroute()">Switch to Ring Road Bypass</button>
+            <button class="reroute-btn" onclick="applyReroute()">Switch to Dynamic Bypass</button>
           </div>
 
           <!-- Route Comparison Cards -->
@@ -746,399 +949,357 @@
             <div class="specular-card active-fastest" id="card-route-0" onclick="selectRoute(0)">
               <div class="route-header">
                 <div class="route-name-badge">
-                  <span style="color: #60a5fa;">● A* Fastest</span>
+                  <span style="color: #60a5fa;">● A* Optimal Path</span>
                   <span class="rec-badge" id="fastest-badge">Recommended</span>
                 </div>
-                <span class="route-eta" id="fastest-eta">36.1 min</span>
+                <span class="route-eta" id="fastest-eta">24.2 min</span>
               </div>
-              <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;" id="fastest-desc">Bypasses Civic Square congestion via NH 44 Expressway.</p>
+              <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;" id="fastest-desc">Bypasses downtown arterial congestion via Outer Corridor.</p>
               <div class="route-stats-grid">
-                <div>Dist: <span class="stat-val" id="fastest-dist">34.8 km</span></div>
-                <div>Congestion: <span class="stat-val" style="color: #34d399;" id="fastest-cong">Low</span></div>
-                <div>Fuel: <span class="stat-val" id="fastest-fuel">2.44 L</span></div>
+                <div class="stat-col">
+                  <span class="stat-label">Distance</span>
+                  <span class="stat-val" id="fastest-dist">15.4 km</span>
+                </div>
+                <div class="stat-col">
+                  <span class="stat-label">Fuel Est.</span>
+                  <span class="stat-val" id="fastest-fuel">1.05 L</span>
+                </div>
+                <div class="stat-col">
+                  <span class="stat-label">Risk</span>
+                  <span class="stat-val" style="color: #34d399;" id="fastest-cong">LOW</span>
+                </div>
               </div>
             </div>
 
             <div class="specular-card" id="card-route-1" onclick="selectRoute(1)">
               <div class="route-header">
                 <div class="route-name-badge">
-                  <span style="color: #94a3b8;">● Dijkstra Shortest</span>
+                  <span style="color: #a78bfa;">● Dijkstra Shortest</span>
                 </div>
-                <span class="route-eta" id="shortest-eta">48.5 min</span>
+                <span class="route-eta" id="shortest-eta">32.8 min</span>
               </div>
-              <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;" id="shortest-desc">Shortest physical distance (32.3 km) with heavy Civic Square volume.</p>
+              <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;" id="shortest-desc">Direct line through Central College Road; high bottleneck delay.</p>
               <div class="route-stats-grid">
-                <div>Dist: <span class="stat-val" id="shortest-dist">32.3 km</span></div>
-                <div>Congestion: <span class="stat-val" style="color: #f87171;" id="shortest-cong">High</span></div>
-                <div>Fuel: <span class="stat-val" id="shortest-fuel">3.07 L</span></div>
+                <div class="stat-col">
+                  <span class="stat-label">Distance</span>
+                  <span class="stat-val" id="shortest-dist">13.2 km</span>
+                </div>
+                <div class="stat-col">
+                  <span class="stat-label">Fuel Est.</span>
+                  <span class="stat-val" id="shortest-fuel">1.18 L</span>
+                </div>
+                <div class="stat-col">
+                  <span class="stat-label">Risk</span>
+                  <span class="stat-val" style="color: #f43f5e;" id="shortest-cong">HIGH</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- View 2: Emergency Priority Corridor -->
+        <!-- VIEW 2: EMERGENCY GREEN WAVE -->
         <div class="view-panel" id="panel-emergency">
-          <div class="telemetry-card" style="border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.05);">
-            <div class="telemetry-header">
-              <span>PRIORITY CORRIDOR STATUS</span>
-              <span style="color: #34d399; font-weight: 700; font-family: 'Geist Mono';" id="emg-status">● GREEN WAVE ACTIVE</span>
+          <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 13px; font-weight: 600; color: #34d399;">Ambulance Corridor #EMS-901</span>
+              <span style="font-size: 11px; background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 2px 6px; border-radius: 4px;">ACTIVE</span>
             </div>
-            <div style="display: flex; align-items: baseline; gap: 8px;">
-              <span class="telemetry-value-lg" style="color: #34d399;" id="emg-saved">12.6</span>
-              <span style="font-size: 13px; color: #a7f3d0;">minutes saved (56.2%)</span>
-            </div>
-            <p style="font-size: 11.5px; color: var(--text-muted);">Corridor dynamically clears ahead of approaching EMS unit.</p>
-          </div>
-
-          <div class="route-input-group">
-            <div class="input-row">
-              <span style="font-size: 11px; color: var(--text-muted); width: 80px;">Vehicle:</span>
-              <select class="node-select" id="emg-vehicle">
-                <option value="ambulance">Ambulance (EMS Priority 1)</option>
-                <option value="fire">Fire Engine (Rescue Priority 1)</option>
-              </select>
-            </div>
-            <div class="input-divider"></div>
-            <div class="input-row">
-              <span style="font-size: 11px; color: var(--text-muted); width: 80px;">Hospital:</span>
-              <select class="node-select" id="emg-hospital">
-                <option value="88">City Central Hospital (Node 88)</option>
-                <option value="104">Memorial Trauma Center (Node 104)</option>
-              </select>
+            <p style="font-size: 12px; color: var(--text-muted);">Target: BIMS Civil Hospital Emergency ICU Gate. Cascading junction preemption ready.</p>
+            <div style="font-size: 22px; font-weight: 700; font-family: 'Geist Mono'; color: #ffffff;">
+              <span id="emg-saved">12.6</span> min saved
             </div>
           </div>
-
-          <div style="background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; display: flex; flex-direction: column; gap: 8px;">
-            <div style="font-size: 12px; font-weight: 600; color: #fff;">Preempted Junctions (Auto-Cleared)</div>
-            <div style="display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-muted);">
-              <span>Tech Park Gateway (JNC-14)</span>
-              <span style="color: #34d399; font-family: 'Geist Mono';">LOCKED GREEN (0s)</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-muted);">
-              <span>HAL Airport Road (JNC-22)</span>
-              <span style="color: #60a5fa; font-family: 'Geist Mono';">QUEUED (ETA 90s)</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-muted);">
-              <span>Trinity Circle Gate (JNC-38)</span>
-              <span style="color: #60a5fa; font-family: 'Geist Mono';">QUEUED (ETA 210s)</span>
-            </div>
-          </div>
-
-          <button class="action-btn-emerald" onclick="activateGreenWave()">
-            <span>⚡ Trigger Emergency Green Wave</span>
+          <button class="action-btn-primary action-btn-emerald" onclick="activateGreenWave()">
+            <span>Dispatch & Preempt Next Signals</span>
           </button>
         </div>
 
-        <!-- View 3: Adaptive Signal Lab -->
+        <!-- VIEW 3: SIGNAL LAB -->
         <div class="view-panel" id="panel-signals">
-          <div class="telemetry-card">
-            <div class="telemetry-header">
-              <span>WAIT TIME REDUCTION</span>
-              <span style="color: #60a5fa; font-weight: 700; font-family: 'Geist Mono';">BPR QUEUE-ALGO</span>
-            </div>
-            <div style="display: flex; align-items: baseline; gap: 8px;">
-              <span class="telemetry-value-lg" id="signal-reduction">-42.8%</span>
-              <span style="font-size: 13px; color: var(--text-muted);" id="signal-times">68.4s ➔ 39.1s</span>
-            </div>
-            <p style="font-size: 11.5px; color: var(--text-muted);">Dynamically calculates green splits based on live vehicle arrival rates.</p>
-          </div>
-
-          <div class="route-input-group">
-            <div style="font-size: 12px; font-weight: 600; color: #fff; margin-bottom: 4px;">Selected Junction: Hebbal Flyover Intersection</div>
+          <div style="background: var(--panel-elevated); border: 1px solid var(--border); border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 12px;">
+            <span style="font-size: 12.5px; font-weight: 600;">Rani Chennamma Circle (JNC-14)</span>
             
-            <div class="slider-group">
-              <div class="slider-label">
-                <span>North Queue (Vehicles)</span>
-                <span class="stat-val" id="val-q-north">38</span>
-              </div>
-              <input type="range" min="5" max="80" value="38" class="range-input" id="slider-north" oninput="updateQueue('north', this.value)">
+            <div class="form-group">
+              <label>Northbound Queue (College Rd): <span id="val-q-north">38</span> veh</label>
+              <input type="range" id="slider-north" min="5" max="80" value="38" oninput="updateQueue('north', this.value); optimizeSignalTiming();">
             </div>
 
-            <div class="slider-group">
-              <div class="slider-label">
-                <span>East Queue (Vehicles)</span>
-                <span class="stat-val" id="val-q-east">44</span>
-              </div>
-              <input type="range" min="5" max="80" value="44" class="range-input" id="slider-east" oninput="updateQueue('east', this.value)">
+            <div class="form-group">
+              <label>Eastbound Queue (Civil Hospital Rd): <span id="val-q-east">44</span> veh</label>
+              <input type="range" id="slider-east" min="5" max="80" value="44" oninput="updateQueue('east', this.value); optimizeSignalTiming();">
+            </div>
+
+            <div style="display: flex; justify-content: space-between; padding-top: 8px; border-top: 1px solid var(--border);">
+              <span style="font-size: 12px; color: var(--text-muted);">Wait Time Reduction:</span>
+              <span style="font-size: 13px; font-weight: 700; color: #34d399;" id="signal-reduction">-38.4%</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="font-size: 12px; color: var(--text-muted);">Baseline vs Adaptive:</span>
+              <span style="font-size: 12px; font-family: 'Geist Mono';" id="signal-times">68.4s ➔ 42.1s</span>
             </div>
           </div>
-
-          <button class="action-btn-primary" onclick="optimizeSignalTiming()">
-            <span>Compute Adaptive Green Splits</span>
-          </button>
         </div>
 
-        <!-- View 4: Admin Incident Queue -->
+        <!-- VIEW 4: ADMIN INCIDENT QUEUE -->
         <div class="view-panel" id="panel-admin">
-          <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.2); padding: 8px 12px; border-radius: 6px; font-size: 11px; color: #93c5fd;">
-            <span>🛡 Deduplication Engine (< 150m, 30m window)</span>
-            <span style="font-weight: 700;">ACTIVE</span>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Active Roadway Events</span>
+            <button class="reroute-btn" style="padding: 4px 8px; font-size: 11px;" onclick="triggerIncidentModal()">+ Report New</button>
           </div>
-
-          <div style="display: flex; flex-direction: column; gap: 8px;" id="admin-incident-list">
-            <!-- Dynamically populated from /api/incidents/active -->
-          </div>
+          <div id="admin-incident-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
         </div>
 
       </div>
     </div>
 
-    <!-- Interactive Leaflet Map -->
+    <!-- Map View -->
     <div id="city-map"></div>
 
-    <!-- Floating HUD Toggles -->
+    <!-- Floating HUD iOS Toggle Switches -->
     <div class="map-hud">
-      <label class="hud-toggle">
-        <input type="checkbox" id="layer-congestion" checked onchange="toggleLayers()">
-        <span>Congestion Overlay</span>
-      </label>
-      <label class="hud-toggle">
-        <input type="checkbox" id="layer-incidents" checked onchange="toggleLayers()">
+      <div class="hud-title">Map Overlays</div>
+      
+      <div class="hud-row">
+        <span>Traffic Congestion</span>
+        <label class="switch">
+          <input type="checkbox" id="layer-congestion" checked onchange="toggleLayers()">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="hud-row">
         <span>Active Incidents</span>
-      </label>
-      <label class="hud-toggle">
-        <input type="checkbox" id="layer-signals" onchange="toggleLayers()">
-        <span>Adaptive Signals</span>
-      </label>
+        <label class="switch">
+          <input type="checkbox" id="layer-incidents" checked onchange="toggleLayers()">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="hud-row">
+        <span>Signal Hubs</span>
+        <label class="switch">
+          <input type="checkbox" id="layer-signals" checked onchange="toggleLayers()">
+          <span class="slider slider-emerald"></span>
+        </label>
+      </div>
+
+      <div class="hud-row">
+        <span>Satellite / Dark</span>
+        <label class="switch">
+          <input type="checkbox" id="layer-satellite" onchange="toggleBasemap()">
+          <span class="slider"></span>
+        </label>
+      </div>
     </div>
 
-    <!-- Report Incident FAB -->
-    <button class="report-fab" onclick="triggerIncidentModal()">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-      </svg>
-      <span>Report Incident</span>
-    </button>
-
-  </div>
+  </main>
 
   <!-- Incident Reporting Modal -->
   <div class="modal-overlay" id="incident-modal">
     <div class="modal-card">
-      <div class="modal-header">
-        <h3>Report Road Incident</h3>
-        <button class="modal-close" onclick="closeIncidentModal()">&times;</button>
+      <h3 style="font-size: 16px; font-weight: 600;">Report Traffic Incident</h3>
+      <div class="form-group">
+        <label>Incident Type</label>
+        <select id="report-type">
+          <option value="accident">Accident / Collision</option>
+          <option value="roadblock">Roadblock / Construction</option>
+          <option value="hazard">Waterlogging / Hazard</option>
+          <option value="congestion">Severe Bottleneck</option>
+        </select>
       </div>
-      <div class="route-input-group">
-        <div class="input-row">
-          <span style="font-size: 12px; color: var(--text-muted); width: 80px;">Type:</span>
-          <select class="node-select" id="report-type">
-            <option value="accident">Accident / Collision</option>
-            <option value="roadblock">Roadblock / Construction</option>
-            <option value="congestion">Severe Congestion Jam</option>
-          </select>
-        </div>
-        <div class="input-divider"></div>
-        <div class="input-row">
-          <span style="font-size: 12px; color: var(--text-muted); width: 80px;">Severity:</span>
-          <select class="node-select" id="report-severity">
-            <option value="1">Level 1 (Minor delay)</option>
-            <option value="2">Level 2 (Lane partially blocked)</option>
-            <option value="3" selected>Level 3 (Major blockage / Gridlock)</option>
-          </select>
-        </div>
-        <div class="input-divider"></div>
-        <div class="input-row">
-          <span style="font-size: 12px; color: var(--text-muted); width: 80px;">Description:</span>
-          <input type="text" id="report-desc" placeholder="e.g. Hebbal Flyover ramp accident" style="flex:1; background:transparent; border:none; color:#fff; font-size:13px; outline:none;" value="Hebbal Flyover Expressway Ramp collision" />
-        </div>
+      <div class="form-group">
+        <label>Severity Level (1-5)</label>
+        <select id="report-severity">
+          <option value="1">1 - Minor Shoulder Delay</option>
+          <option value="2">2 - Single Lane Blocked</option>
+          <option value="3" selected>3 - Multi-lane Severe Blockage</option>
+          <option value="4">4 - Complete Segment Closure</option>
+          <option value="5">5 - Critical Emergency Gridlock</option>
+        </select>
       </div>
-      <button class="action-btn-primary" style="background: #f43f5e; color: #fff;" onclick="submitIncident()">
-        Broadcast to Server & Network
-      </button>
+      <div class="form-group">
+        <label>Location / Landmark Note</label>
+        <input type="text" id="report-desc" placeholder="e.g. Near Chennamma Circle PB Road Flyover" value="Rani Chennamma Circle Arterial">
+      </div>
+      <div style="display: flex; gap: 8px; margin-top: 8px;">
+        <button class="action-btn-primary" style="flex: 1;" onclick="submitIncident()">Submit to SQLite</button>
+        <button class="action-btn-primary" style="flex: 1; background: var(--panel-elevated);" onclick="closeIncidentModal()">Cancel</button>
+      </div>
     </div>
   </div>
 
-  <!-- Leaflet Map Script & Socket.io -->
+  <!-- Leaflet & Socket.IO Client Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="/socket.io/socket.io.js"></script>
-  <script>
-    // Mapbox Token loaded dynamically via /api/config to protect GitHub push secrets
-    let MAPBOX_TOKEN = window.localStorage.getItem('MAPBOX_TOKEN') || '';
 
-    // 1. Initialize Map
+  <script>
+    let MAPBOX_TOKEN = '';
+
+    // 1. Initialize Map centered on Belagavi
     const map = L.map('city-map', {
-      center: [13.06, 77.63],
-      zoom: 11,
+      center: [15.855, 74.515],
+      zoom: 13,
       zoomControl: false
     });
 
     L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
-    const esriFallbackUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
+    // Dark Tile Layers
+    const esriDarkUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
+    const satUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+    let currentBaseLayer = L.tileLayer(esriDarkUrl, { attribution: '© Esri & OSM', maxZoom: 18 }).addTo(map);
 
-    const baseTileLayer = L.tileLayer(esriFallbackUrl, {
-      maxZoom: 18,
-      attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ &copy; Mapbox'
-    }).addTo(map);
-
-    async function loadMapboxLayer() {
-      try {
-        const res = await fetch('/api/config');
-        const cfg = await res.json();
-        if (cfg.mapboxToken) {
-          MAPBOX_TOKEN = cfg.mapboxToken;
-          baseTileLayer.setUrl(`https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/256/{z}/{x}/{y}?access_token=${MAPBOX_TOKEN}`);
-          console.log('[Map] Mapbox Dark HD vector tiles activated');
+    // Fetch Mapbox token dynamically from server
+    fetch('/api/config')
+      .then(res => res.json())
+      .then(config => {
+        if (config && config.mapboxToken) {
+          MAPBOX_TOKEN = config.mapboxToken;
+          const mapboxDarkUrl = `https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`;
+          map.removeLayer(currentBaseLayer);
+          currentBaseLayer = L.tileLayer(mapboxDarkUrl, { attribution: '© Mapbox © OpenStreetMap', maxZoom: 19 }).addTo(map);
         }
-      } catch (e) {
-        console.log('[Map] Running on local Dark Canvas basemap');
+      })
+      .catch(e => console.log('Using Esri fallback basemap'));
+
+    function toggleBasemap() {
+      const isSat = document.getElementById('layer-satellite').checked;
+      map.removeLayer(currentBaseLayer);
+      if (isSat) {
+        currentBaseLayer = L.tileLayer(satUrl, { attribution: '© Esri Satellite', maxZoom: 18 }).addTo(map);
+      } else {
+        const url = MAPBOX_TOKEN 
+          ? `https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`
+          : esriDarkUrl;
+        currentBaseLayer = L.tileLayer(url, { maxZoom: 19 }).addTo(map);
       }
     }
-    loadMapboxLayer();
 
-    // 2. Real Road Geometries
-    const REAL_FASTEST = [[12.971848, 77.594697], [12.971911, 77.594527], [12.972113, 77.594044], [12.97246, 77.594226], [12.97373, 77.595372], [12.97463, 77.596459], [12.975144, 77.597125], [12.97594, 77.59824], [12.976583, 77.599061], [12.976704, 77.599499], [12.976661, 77.600859], [12.976736, 77.601785], [12.977937, 77.602069], [12.979205, 77.602388], [12.979803, 77.602614], [12.980782, 77.602919], [12.982168, 77.603396], [12.982801, 77.603194], [12.983865, 77.603511], [12.984117, 77.603707], [12.984127, 77.604768], [12.984633, 77.605102], [12.985532, 77.605352], [12.986667, 77.60442], [12.98754, 77.603924], [12.989194, 77.603918], [12.990053, 77.603806], [12.991221, 77.603836], [12.992143, 77.604176], [12.992484, 77.604502], [12.994006, 77.605693], [12.99547, 77.606549], [12.995857, 77.606818], [12.996577, 77.607311], [12.998862, 77.60887], [12.999122, 77.609118], [13.000134, 77.610725], [13.000744, 77.611359], [13.001047, 77.611725], [13.000861, 77.613758], [13.000647, 77.616073], [13.001571, 77.61613], [13.002265, 77.616356], [13.001988, 77.617281], [13.001682, 77.618114], [13.001492, 77.618556], [13.002313, 77.619072], [13.003208, 77.619301], [13.003939, 77.619571], [13.004097, 77.619635], [13.004676, 77.619888], [13.005303, 77.62025], [13.00627, 77.62093], [13.007341, 77.621719], [13.008892, 77.623166], [13.009824, 77.623727], [13.010984, 77.624751], [13.011566, 77.625237], [13.012235, 77.625673], [13.013019, 77.626112], [13.013784, 77.626565], [13.014311, 77.626942], [13.014996, 77.627453], [13.015598, 77.627639], [13.017789, 77.628057], [13.021079, 77.628631], [13.022201, 77.628994], [13.023789, 77.62975], [13.024448, 77.630255], [13.02538, 77.630472], [13.026076, 77.630765], [13.027184, 77.631693], [13.02761, 77.632229], [13.027613, 77.632468], [13.027901, 77.632688], [13.028694, 77.63334], [13.030086, 77.634568], [13.030652, 77.635065], [13.031223, 77.635504], [13.031666, 77.63588], [13.032312, 77.63652], [13.032963, 77.637354], [13.033251, 77.637702], [13.033766, 77.638221], [13.034396, 77.638847], [13.035052, 77.639332], [13.035687, 77.639748], [13.036387, 77.640161], [13.036693, 77.640524], [13.037055, 77.641121], [13.037588, 77.641334], [13.038902, 77.641419], [13.03984, 77.641443], [13.041636, 77.641741], [13.04266, 77.642113], [13.043887, 77.642807], [13.044216, 77.643105], [13.044916, 77.643629], [13.045938, 77.644171], [13.047063, 77.644427], [13.047926, 77.644994], [13.048336, 77.645318], [13.048797, 77.645539], [13.049216, 77.645525], [13.050338, 77.645571], [13.050904, 77.645631], [13.051599, 77.645752], [13.052656, 77.64601], [13.053009, 77.646104], [13.054008, 77.646468], [13.054775, 77.646707], [13.055109, 77.646866], [13.055686, 77.647196], [13.056374, 77.647618], [13.057523, 77.648516], [13.058799, 77.648672], [13.060092, 77.648741], [13.061129, 77.648884], [13.061939, 77.648959], [13.062321, 77.649157], [13.063386, 77.649813], [13.063976, 77.650321], [13.064097, 77.650696], [13.064137, 77.651082], [13.064238, 77.651417], [13.064395, 77.651626], [13.064564, 77.651751], [13.065387, 77.651777], [13.066216, 77.651784], [13.067624, 77.651705], [13.068902, 77.651599], [13.070533, 77.651502], [13.071329, 77.651458], [13.073457, 77.651414], [13.074992, 77.651485], [13.075754, 77.651682], [13.07673, 77.652294], [13.077755, 77.653125], [13.078251, 77.653619], [13.078746, 77.653815], [13.080304, 77.653517], [13.081685, 77.653295], [13.083514, 77.653954], [13.084719, 77.654257], [13.086848, 77.654643], [13.087909, 77.654892], [13.08871, 77.654772], [13.089909, 77.65451], [13.090973, 77.654555], [13.091639, 77.654672], [13.092273, 77.65478], [13.092704, 77.654699], [13.093014, 77.654322], [13.093677, 77.654306], [13.095284, 77.654486], [13.096447, 77.65472], [13.097815, 77.655825], [13.098713, 77.656498], [13.100728, 77.65758], [13.101905, 77.658384], [13.102872, 77.659116], [13.104142, 77.659661], [13.105851, 77.660622], [13.10633, 77.661046], [13.106072, 77.663237], [13.105975, 77.664859], [13.107312, 77.665521], [13.108667, 77.665948], [13.110216, 77.666444], [13.11249, 77.667165], [13.114395, 77.667741], [13.115943, 77.668241], [13.117416, 77.668646], [13.118532, 77.668608], [13.120086, 77.668351], [13.122406, 77.668244], [13.12346, 77.668362], [13.124444, 77.668145], [13.125313, 77.667924], [13.126252, 77.667724], [13.126697, 77.667353], [13.127961, 77.666752], [13.129302, 77.666671], [13.130578, 77.666494], [13.131582, 77.666714], [13.132854, 77.666815], [13.133637, 77.666837], [13.134383, 77.667412], [13.134617, 77.667978], [13.135536, 77.668241], [13.136546, 77.668574], [13.137208, 77.669324], [13.138004, 77.669787], [13.138937, 77.670321], [13.140503, 77.670885], [13.141897, 77.671381], [13.142343, 77.671704], [13.142877, 77.672183], [13.143565, 77.672809], [13.144536, 77.673205], [13.146588, 77.673615], [13.150322, 77.675635], [13.153152, 77.677817], [13.155864, 77.680931], [13.157042, 77.681824], [13.159816, 77.683727], [13.16292, 77.68567], [13.165642, 77.687199], [13.166902, 77.687862], [13.167936, 77.688559], [13.168864, 77.689354], [13.169905, 77.689938], [13.170754, 77.6903], [13.173513, 77.691386], [13.176088, 77.69236], [13.178173, 77.692713], [13.179559, 77.693005], [13.180088, 77.693386], [13.180899, 77.693573], [13.181523, 77.693871], [13.182634, 77.694783], [13.183327, 77.695395], [13.184182, 77.69563], [13.184532, 77.692934], [13.184335, 77.691005], [13.184107, 77.689617], [13.183896, 77.688884], [13.183842, 77.686904], [13.183731, 77.684876], [13.183591, 77.682788], [13.183557, 77.681227], [13.183517, 77.679869], [13.183657, 77.679588], [13.186377, 77.680011], [13.192904, 77.680955], [13.194583, 77.680943], [13.194841, 77.68089], [13.194853, 77.682636], [13.194788, 77.688445], [13.194654, 77.69869], [13.194628, 77.699936], [13.194615, 77.70118], [13.194598, 77.703655], [13.195058, 77.704556], [13.196916, 77.705655], [13.197692, 77.705401], [13.198402, 77.705463], [13.198569, 77.705765], [13.19855, 77.706599]];
-    const REAL_SHORTEST = [[12.971848, 77.594697], [12.971911, 77.594527], [12.971931, 77.594072], [12.971574, 77.594033], [12.970952, 77.594169], [12.970516, 77.594259], [12.968736, 77.594645], [12.967485, 77.594907], [12.967139, 77.594789], [12.96748, 77.594214], [12.967778, 77.593636], [12.967981, 77.592805], [12.968104, 77.592091], [12.967967, 77.590992], [12.967826, 77.590504], [12.967711, 77.589867], [12.967555, 77.588909], [12.967378, 77.588505], [12.967087, 77.588172], [12.966787, 77.587697], [12.966913, 77.587424], [12.967655, 77.587259], [12.968091, 77.586979], [12.968968, 77.586059], [12.969706, 77.585207], [12.970669, 77.584121], [12.971452, 77.583334], [12.972092, 77.582616], [12.972766, 77.581676], [12.972962, 77.581242], [12.97339, 77.580301], [12.973804, 77.579389], [12.97429, 77.578337], [12.974655, 77.577467], [12.974969, 77.576636], [12.975168, 77.576083], [12.975009, 77.575667], [12.974348, 77.575074], [12.974275, 77.574665], [12.974363, 77.573672], [12.974431, 77.571809], [12.974465, 77.571269], [12.974641, 77.570776], [12.974922, 77.570632], [12.975448, 77.57082], [12.976024, 77.570891], [12.978617, 77.570851], [12.979802, 77.570984], [12.980058, 77.570989], [12.980145, 77.571121], [12.980054, 77.571245], [12.979899, 77.571181], [12.979734, 77.571056], [12.976656, 77.570984], [12.97592, 77.571015], [12.975335, 77.570775], [12.975922, 77.570885], [12.978516, 77.570847], [12.97947, 77.570956], [12.980017, 77.570982], [12.98014, 77.571079], [12.980094, 77.571223], [12.980295, 77.57207], [12.980369, 77.572488], [12.98066, 77.573369], [12.980874, 77.574533], [12.981049, 77.574638], [12.982256, 77.57454], [12.982881, 77.574586], [12.984423, 77.574766], [12.984976, 77.574732], [12.986514, 77.574493], [12.988497, 77.57415], [12.989416, 77.57346], [12.989773, 77.573565], [12.991639, 77.574233], [12.992329, 77.574823], [12.992773, 77.576235], [12.993408, 77.576835], [12.994335, 77.577896], [12.99453, 77.578132], [12.995256, 77.578923], [12.995716, 77.579428], [12.996299, 77.579952], [12.996784, 77.580373], [12.997304, 77.58084], [12.99813, 77.581592], [12.998512, 77.581939], [12.99857, 77.58194], [12.998592, 77.581993], [12.999236, 77.582748], [12.999382, 77.583426], [12.999464, 77.583843], [12.999891, 77.583953], [13.002473, 77.584078], [13.003008, 77.584075], [13.004071, 77.584091], [13.00904, 77.583829], [13.010752, 77.583793], [13.01521, 77.583923], [13.018143, 77.583848], [13.020224, 77.583832], [13.020987, 77.583973], [13.022916, 77.584493], [13.026119, 77.585282], [13.028642, 77.586102], [13.030579, 77.586889], [13.031867, 77.587466], [13.033309, 77.588172], [13.034244, 77.588336], [13.036008, 77.589016], [13.03661, 77.589177], [13.037698, 77.589216], [13.038476, 77.589281], [13.039608, 77.589481], [13.04205, 77.590048], [13.043536, 77.590666], [13.044156, 77.590916], [13.045176, 77.591176], [13.04637, 77.591343], [13.047878, 77.592001], [13.048756, 77.592412], [13.049619, 77.592734], [13.050153, 77.592871], [13.052903, 77.593481], [13.053524, 77.593477], [13.055396, 77.593356], [13.059285, 77.593397], [13.061276, 77.593373], [13.065125, 77.593213], [13.067046, 77.593077], [13.070573, 77.592806], [13.074785, 77.592608], [13.079836, 77.593043], [13.082117, 77.593277], [13.083895, 77.593835], [13.087786, 77.595445], [13.089922, 77.596318], [13.091225, 77.596671], [13.094301, 77.597352], [13.095118, 77.597615], [13.097265, 77.598484], [13.100168, 77.599405], [13.10347, 77.600319], [13.10486, 77.600872], [13.107144, 77.602186], [13.11002, 77.603879], [13.112746, 77.60558], [13.114615, 77.606757], [13.117283, 77.608371], [13.120039, 77.609831], [13.124539, 77.611975], [13.127673, 77.61347], [13.12982, 77.614496], [13.131586, 77.615327], [13.133503, 77.616233], [13.135817, 77.61723], [13.136517, 77.617434], [13.137463, 77.617495], [13.139388, 77.617441], [13.142816, 77.617348], [13.146646, 77.617763], [13.147696, 77.618068], [13.149812, 77.619134], [13.152749, 77.620696], [13.15405, 77.621433], [13.156855, 77.623396], [13.16025, 77.626013], [13.161598, 77.626961], [13.164927, 77.629636], [13.165959, 77.630237], [13.171886, 77.633005], [13.173888, 77.633854], [13.174903, 77.634488], [13.176333, 77.635561], [13.178105, 77.636897], [13.183307, 77.640617], [13.185222, 77.641999], [13.190407, 77.64576], [13.191109, 77.646382], [13.192269, 77.647643], [13.195053, 77.651887], [13.197167, 77.654806], [13.198348, 77.656552], [13.198986, 77.657358], [13.199881, 77.657999], [13.200358, 77.658199], [13.201467, 77.658546], [13.202112, 77.658816], [13.202444, 77.659273], [13.202481, 77.659959], [13.202193, 77.660471], [13.200222, 77.661888], [13.199241, 77.6627], [13.198714, 77.663443], [13.198357, 77.664344], [13.198251, 77.665649], [13.198269, 77.671447], [13.198217, 77.675527], [13.198298, 77.679555], [13.198653, 77.681926], [13.198549, 77.688293], [13.19846, 77.697114], [13.198417, 77.69998], [13.198426, 77.701897], [13.198561, 77.703381], [13.198682, 77.705643], [13.198822, 77.706655], [13.198719, 77.708809], [13.197839, 77.709018], [13.196698, 77.708993], [13.196567, 77.708853], [13.196495, 77.708284], [13.196531, 77.706345], [13.196778, 77.705898], [13.197298, 77.70555], [13.198179, 77.705383], [13.198489, 77.705545], [13.19855, 77.706599]];
-    const REAL_EMERGENCY = [[12.92577, 77.685789], [12.926082, 77.68576], [12.926815, 77.68572], [12.927214, 77.685581], [12.927395, 77.685364], [12.927512, 77.685077], [12.927656, 77.684813], [12.927911, 77.68468], [12.928653, 77.684662], [12.929223, 77.684674], [12.929531, 77.684666], [12.92953, 77.684488], [12.929349, 77.684118], [12.928665, 77.68268], [12.928164, 77.681577], [12.927926, 77.681077], [12.927812, 77.680585], [12.926921, 77.678759], [12.925282, 77.675354], [12.924633, 77.674026], [12.924416, 77.673511], [12.923652, 77.671752], [12.922221, 77.668678], [12.921222, 77.666594], [12.920657, 77.665281], [12.920645, 77.66477], [12.921113, 77.662985], [12.921281, 77.662394], [12.921571, 77.661234], [12.921899, 77.659956], [12.923311, 77.655941], [12.923546, 77.65499], [12.923718, 77.654037], [12.924337, 77.650785], [12.924356, 77.649875], [12.92417, 77.648086], [12.923927, 77.647441], [12.923471, 77.647451], [12.923586, 77.647833], [12.923523, 77.648077], [12.923648, 77.648739], [12.923996, 77.649786], [12.924293, 77.650133], [12.92447, 77.649974], [12.924589, 77.649854], [12.924651, 77.649344], [12.924661, 77.649025], [12.924558, 77.64763], [12.924444, 77.645321], [12.923919, 77.643522], [12.923378, 77.641546], [12.923338, 77.641293], [12.923691, 77.640344], [12.92382, 77.639998], [12.924133, 77.639184], [12.92446, 77.638424], [12.924756, 77.637982], [12.924876, 77.637763], [12.925071, 77.63737], [12.925221, 77.636806], [12.925174, 77.636388], [12.925033, 77.635403], [12.924847, 77.634227], [12.924813, 77.634001], [12.92476, 77.633578], [12.925106, 77.633533], [12.926384, 77.633402], [12.927347, 77.633314], [12.927933, 77.633253], [12.928192, 77.63323], [12.928888, 77.633165], [12.929706, 77.63311], [12.929868, 77.633099], [12.930817, 77.632889], [12.932047, 77.632002], [12.933077, 77.630944], [12.933692, 77.630346], [12.934307, 77.629735], [12.934744, 77.629314], [12.935964, 77.628096], [12.937121, 77.627012], [12.93738, 77.626792], [12.938183, 77.626158], [12.939318, 77.625625], [12.93985, 77.625365], [12.940901, 77.624399], [12.942359, 77.622878], [12.942527, 77.622686], [12.943073, 77.62207], [12.943715, 77.621349], [12.94428, 77.620684], [12.94533, 77.61922], [12.945823, 77.618617], [12.946032, 77.618587], [12.946646, 77.618854], [12.947254, 77.619185], [12.948492, 77.619863], [12.949081, 77.620186], [12.949234, 77.62028], [12.949865, 77.620624], [12.950708, 77.621077], [12.951384, 77.621333], [12.951617, 77.621422], [12.95215, 77.620573], [12.952438, 77.620162], [12.952921, 77.620247], [12.953226, 77.620311], [12.953762, 77.620442], [12.95423, 77.620576], [12.954578, 77.620688], [12.955307, 77.620864], [12.956159, 77.620989], [12.956583, 77.621077], [12.957175, 77.62117], [12.957823, 77.621139], [12.958949, 77.62039], [12.961416, 77.61934], [12.963511, 77.618423], [12.964916, 77.617788], [12.965316, 77.617694], [12.965692, 77.616567], [12.96614, 77.615196], [12.96628, 77.614744], [12.966426, 77.614222], [12.966487, 77.613981], [12.96655, 77.613744], [12.96673, 77.613024], [12.9669, 77.612319], [12.967085, 77.61155], [12.96714, 77.611232], [12.967091, 77.610968], [12.967146, 77.610834], [12.967307, 77.610229], [12.967509, 77.6094], [12.967874, 77.608437], [12.968109, 77.607811], [12.968312, 77.60747], [12.968545, 77.606872], [12.968562, 77.606245], [12.968299, 77.606224], [12.9686, 77.605935], [12.969723, 77.605384], [12.970214, 77.605149], [12.970768, 77.604869], [12.970985, 77.604773], [12.971709, 77.604476], [12.971886, 77.604408], [12.972344, 77.604152], [12.972536, 77.603843], [12.972723, 77.603518], [12.972852, 77.603259], [12.972912, 77.60261], [12.972966, 77.6016], [12.972932, 77.601437], [12.972852, 77.601327], [12.972743, 77.601252], [12.972248, 77.60115], [12.971354, 77.600959], [12.970894, 77.600858], [12.970402, 77.60076], [12.970474, 77.600263], [12.97075, 77.599298], [12.971127, 77.59798], [12.971204, 77.597755], [12.971129, 77.597245], [12.971141, 77.596832], [12.971164, 77.596564], [12.971211, 77.596287], [12.971585, 77.595378], [12.971723, 77.595044], [12.971848, 77.594697]];
-
-    const fastestPoly = L.polyline(REAL_FASTEST, {
-      color: '#3b82f6',
-      weight: 6,
-      opacity: 0.95,
-      lineCap: 'round',
-      lineJoin: 'round'
-    }).addTo(map);
-
-    const shortestPoly = L.polyline(REAL_SHORTEST, {
-      color: '#94a3b8',
-      weight: 4,
-      dashArray: '6, 8',
-      opacity: 0.7,
-      lineCap: 'round'
-    }).addTo(map);
-
-    const emergencyPoly = L.polyline(REAL_EMERGENCY, {
-      color: '#10b981',
-      weight: 7,
-      opacity: 1,
-      lineCap: 'round'
-    });
-
-    // Markers
-    L.circleMarker(REAL_FASTEST[0], {
-      radius: 8,
-      color: '#ffffff',
-      fillColor: '#3b82f6',
-      fillOpacity: 1,
-      weight: 2
-    }).addTo(map).bindPopup("<b>Source:</b> Central Railway Station");
-
-    L.circleMarker(REAL_FASTEST[REAL_FASTEST.length - 1], {
-      radius: 8,
-      color: '#ffffff',
-      fillColor: '#10b981',
-      fillOpacity: 1,
-      weight: 2
-    }).addTo(map).bindPopup("<b>Destination:</b> Kempegowda Airport T2");
-
-    // Incident Marker LayerGroup
-    const incidentsLayer = L.layerGroup().addTo(map);
-    const incidentCoords = REAL_FASTEST[Math.floor(REAL_FASTEST.length * 0.35)];
-    L.circleMarker(incidentCoords, {
-      radius: 10,
-      color: '#ffffff',
-      fillColor: '#f43f5e',
-      fillOpacity: 1,
-      weight: 2
-    }).bindPopup("<b>Active Collision:</b> Hebbal Flyover (Severity 3)").addTo(incidentsLayer);
-
-    // Congestion Overlay
+    // 2. Map Layers
     const congestionLayer = L.layerGroup().addTo(map);
-    [0.2, 0.45, 0.7].forEach(ratio => {
-      const pt = REAL_SHORTEST[Math.floor(REAL_SHORTEST.length * ratio)];
-      L.circle(pt, {
-        radius: 650,
-        color: 'transparent',
-        fillColor: '#f59e0b',
-        fillOpacity: 0.28
-      }).addTo(congestionLayer);
+    const incidentsLayer = L.layerGroup().addTo(map);
+    const signalsLayer = L.layerGroup().addTo(map);
+
+    // Initial Path Polylines
+    let fastestPoly = L.polyline([], { color: '#3b82f6', weight: 6, opacity: 0.95 }).addTo(map);
+    let shortestPoly = L.polyline([], { color: '#a78bfa', weight: 4, opacity: 0.7, dashArray: '5, 8' }).addTo(map);
+    let emergencyPoly = L.polyline([], { color: '#10b981', weight: 8, opacity: 0.95 });
+
+    let clickedCoords = [15.8497, 74.5089];
+
+    // Map Click Interaction (Set Origin, Set Destination, or Report Incident)
+    map.on('click', function(e) {
+      clickedCoords = [e.latlng.lat, e.latlng.lng];
+      const popupHtml = `
+        <div style="font-size: 12px; font-weight: 600; margin-bottom: 4px;">Selected Point (${clickedCoords[0].toFixed(4)}, ${clickedCoords[1].toFixed(4)})</div>
+        <div class="popup-actions">
+          <button class="popup-btn" onclick="setOriginFromClick(${clickedCoords[0]}, ${clickedCoords[1]})">📍 Set as Route Origin</button>
+          <button class="popup-btn" onclick="setDestFromClick(${clickedCoords[0]}, ${clickedCoords[1]})">🏁 Set as Destination</button>
+          <button class="popup-btn" onclick="openIncidentAtClick(${clickedCoords[0]}, ${clickedCoords[1]})">⚠️ Report Obstruction Here</button>
+        </div>
+      `;
+      L.popup({ className: 'custom-map-popup' })
+        .setLatLng(e.latlng)
+        .setContent(popupHtml)
+        .openOn(map);
     });
 
-    // Adaptive Signals
-    const signalsLayer = L.layerGroup();
-    [0.15, 0.35, 0.55, 0.8].forEach(ratio => {
-      const pt = REAL_FASTEST[Math.floor(REAL_FASTEST.length * ratio)];
-      L.circleMarker(pt, {
-        radius: 6,
-        color: '#10b981',
-        fillColor: '#10b981',
-        fillOpacity: 0.9,
-        weight: 1
-      }).bindPopup("<b>Adaptive Signal:</b> Green-split active").addTo(signalsLayer);
-    });
+    let customOriginCoords = null;
+    let customDestCoords = null;
 
-    map.fitBounds(fastestPoly.getBounds(), { padding: [60, 60] });
+    function setOriginFromClick(lat, lng) {
+      customOriginCoords = { lat, lng };
+      map.closePopup();
+      switchView('routes');
+      runRouting();
+    }
 
-    // 3. Live Socket.IO Connection
-    let socket = null;
+    function setDestFromClick(lat, lng) {
+      customDestCoords = { lat, lng };
+      map.closePopup();
+      switchView('routes');
+      runRouting();
+    }
+
+    function openIncidentAtClick(lat, lng) {
+      clickedCoords = [lat, lng];
+      map.closePopup();
+      triggerIncidentModal();
+    }
+
+    // 3. Socket.IO Real-time Events
     try {
-      socket = io();
-      socket.on('connect', () => {
-        console.log('[Socket.io] Connected to PulseTraffic Engine');
-        document.getElementById('engine-status').innerText = 'Connected // Mapbox Dark HD';
-      });
-
-      socket.on('telemetry_tick', (data) => {
-        document.getElementById('engine-status').innerText = `Live Load: ${Math.round(data.networkLoad * 100)}% (${data.activeVehicles} veh) // Mapbox Dark`;
-      });
-
+      const socket = io();
       socket.on('incident:new', (inc) => {
-        console.log('[Socket.io] New network incident:', inc);
         L.circleMarker([inc.lat, inc.lng], {
-          radius: 11,
+          radius: 8,
           color: '#ffffff',
           fillColor: '#f43f5e',
           fillOpacity: 1,
           weight: 2
         }).bindPopup(`<b>${inc.type.toUpperCase()}:</b> ${inc.roadName}`).addTo(incidentsLayer);
+        
         document.getElementById('reroute-alert').style.display = 'flex';
         loadActiveIncidents();
       });
+
+      socket.on('reroute:triggered', () => {
+        runRouting();
+      });
     } catch (e) {
-      console.warn('Socket.io offline - running in standalone mode', e);
+      console.warn('Socket.IO in standalone mode');
     }
 
-    // 4. API Functions
+    // 4. Routing Engine API Call
     let currentDepartureOffset = 0;
 
     async function runRouting() {
-      const orig = document.getElementById('origin-select').value;
-      const dest = document.getElementById('dest-select').value;
-      
+      const orig = customOriginCoords || document.getElementById('origin-select').value;
+      const dest = customDestCoords || document.getElementById('dest-select').value;
+
       try {
         const res = await fetch('/api/routes/calculate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            originNodeId: orig,
-            destinationNodeId: dest,
+            origin: orig,
+            destination: dest,
             departureOffsetMinutes: currentDepartureOffset
           })
         });
         const json = await res.json();
         if (json.data && json.data.routes) {
-          const r0 = json.data.routes[0];
-          const r1 = json.data.routes[1];
+          const r0 = json.data.routes[0] || json.data.routes.astarFastest;
+          const r1 = json.data.routes[1] || json.data.routes.dijkstraShortest;
 
-          document.getElementById('fastest-eta').innerText = r0.etaMinutes + ' min';
-          document.getElementById('fastest-dist').innerText = r0.distanceKm + ' km';
-          document.getElementById('fastest-fuel').innerText = r0.fuelConsumptionLiters + ' L';
-          document.getElementById('fastest-cong').innerText = r0.congestionRisk;
-          document.getElementById('fastest-desc').innerText = r0.recommendationReason;
+          if (r0) {
+            document.getElementById('fastest-eta').innerText = r0.etaMinutes + ' min';
+            document.getElementById('fastest-dist').innerText = r0.distanceKm + ' km';
+            document.getElementById('fastest-fuel').innerText = (r0.fuelConsumptionLiters || r0.fuelConsumptionLitres) + ' L';
+            document.getElementById('fastest-cong').innerText = r0.congestionRisk || 'LOW';
+            document.getElementById('fastest-desc').innerText = r0.recommendationReason || r0.name;
 
-          document.getElementById('shortest-eta').innerText = r1.etaMinutes + ' min';
-          document.getElementById('shortest-dist').innerText = r1.distanceKm + ' km';
-          document.getElementById('shortest-fuel').innerText = r1.fuelConsumptionLiters + ' L';
-          document.getElementById('shortest-cong').innerText = r1.congestionRisk;
-          document.getElementById('shortest-desc').innerText = r1.recommendationReason;
+            if (r0.waypoints && r0.waypoints.length > 0) {
+              fastestPoly.setLatLngs(r0.waypoints);
+              map.fitBounds(fastestPoly.getBounds(), { padding: [60, 60] });
+            }
+          }
+
+          if (r1) {
+            document.getElementById('shortest-eta').innerText = r1.etaMinutes + ' min';
+            document.getElementById('shortest-dist').innerText = r1.distanceKm + ' km';
+            document.getElementById('shortest-fuel').innerText = (r1.fuelConsumptionLiters || r1.fuelConsumptionLitres) + ' L';
+            document.getElementById('shortest-cong').innerText = r1.congestionRisk || 'HIGH';
+            document.getElementById('shortest-desc').innerText = r1.recommendationReason || r1.name;
+
+            if (r1.waypoints && r1.waypoints.length > 0) {
+              shortestPoly.setLatLngs(r1.waypoints);
+            }
+          }
         }
       } catch (err) {
-        console.warn('API call failed, fallback local computation', err);
+        console.warn('API routing error', err);
       }
-
-      fastestPoly.setStyle({ weight: 8 });
-      setTimeout(() => fastestPoly.setStyle({ weight: 6 }), 300);
     }
 
     function setTime(el, minutes) {
@@ -1146,6 +1307,60 @@
       el.classList.add('selected');
       currentDepartureOffset = minutes;
       runRouting();
+    }
+
+    // 5. Incidents Lifecycle with SQLite API
+    async function loadActiveIncidents() {
+      try {
+        const res = await fetch('/api/incidents/active');
+        const json = await res.json();
+        if (json.data) {
+          document.getElementById('kpi-incidents').innerText = `${json.data.length} Logged`;
+          incidentsLayer.clearLayers();
+
+          const container = document.getElementById('admin-incident-list');
+          container.innerHTML = json.data.map(inc => {
+            // Draw on map
+            L.circleMarker([inc.lat, inc.lng], {
+              radius: 7,
+              color: '#ffffff',
+              fillColor: inc.severity >= 3 ? '#f43f5e' : '#f59e0b',
+              fillOpacity: 0.9,
+              weight: 2
+            }).bindPopup(`<b>${inc.type.toUpperCase()}:</b> ${inc.roadName} (${inc.status})`).addTo(incidentsLayer);
+
+            return `
+              <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 6px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-size: 12px; font-weight: 600; color: ${inc.severity >= 3 ? '#f43f5e' : '#f59e0b'};">● ${inc.type.toUpperCase()} (Sev ${inc.severity})</span>
+                  <span style="font-size: 10px; color: #34d399; font-family: 'Geist Mono'; text-transform: uppercase;">${inc.status}</span>
+                </div>
+                <p style="font-size: 11.5px; color: var(--text-muted);">${inc.roadName} — Capacity -${inc.capacityReductionPercent}%.</p>
+                <div style="display: flex; gap: 6px; margin-top: 4px;">
+                  <button class="reroute-btn" style="flex: 1; padding: 4px 6px; font-size: 11px; background: #2563eb;" onclick="updateIncidentStatus('${inc.id}', 'verified')">Verify</button>
+                  <button class="reroute-btn" style="flex: 1; padding: 4px 6px; font-size: 11px; background: #059669;" onclick="updateIncidentStatus('${inc.id}', 'resolved')">Resolve</button>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      } catch (e) {
+        console.warn('Failed to load incidents', e);
+      }
+    }
+
+    async function updateIncidentStatus(id, newStatus) {
+      try {
+        await fetch(`/api/incidents/${id}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+        loadActiveIncidents();
+        runRouting();
+      } catch (err) {
+        console.warn('Status update failed', err);
+      }
     }
 
     async function submitIncident() {
@@ -1162,46 +1377,18 @@
             type,
             severity,
             description: desc,
-            location: { lat: incidentCoords[0], lng: incidentCoords[1], roadSegmentId: "Hebbal Expressway North" }
+            location: { lat: clickedCoords[0], lng: clickedCoords[1], roadSegmentId: "BEL-PB-ROAD" }
           })
         });
         const result = await res.json();
-        const data = result.data;
-
-        document.getElementById('reroute-alert').style.display = 'flex';
-        document.getElementById('reroute-title').innerText = `⚠ ${type.toUpperCase()} (Severity ${severity})`;
-        document.getElementById('reroute-delay').innerText = `+${data.networkImpact.timePenaltyAddedMinutes} min delay`;
-        document.getElementById('reroute-msg').innerText = `${desc}. BPR capacity reduction: -${data.networkImpact.capacityReductionPercent}%.`;
         loadActiveIncidents();
+        runRouting();
       } catch (e) {
-        console.warn('Failed to submit incident to server:', e);
+        console.warn('Incident submit failed', e);
       }
     }
 
-    async function loadActiveIncidents() {
-      try {
-        const res = await fetch('/api/incidents/active');
-        const json = await res.json();
-        if (json.data) {
-          const container = document.getElementById('admin-incident-list');
-          container.innerHTML = json.data.map(inc => `
-            <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 6px;">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 12px; font-weight: 600; color: ${inc.severity >= 3 ? '#f43f5e' : '#f59e0b'};">● ${inc.type.toUpperCase()} (Severity ${inc.severity})</span>
-                <span style="font-size: 11px; color: var(--text-muted); font-family: 'Geist Mono';">${inc.id}</span>
-              </div>
-              <p style="font-size: 11.5px; color: var(--text-muted);">${inc.roadName} — Capacity -${inc.capacityReductionPercent}%.</p>
-              <div style="display: flex; gap: 8px; margin-top: 4px;">
-                <button class="reroute-btn" style="flex: 1;" onclick="applyReroute()">Dispatch Diversion</button>
-              </div>
-            </div>
-          `).join('');
-        }
-      } catch (e) {
-        console.warn('Failed to load incidents', e);
-      }
-    }
-
+    // 6. Signal Simulation
     async function optimizeSignalTiming() {
       const north = parseInt(document.getElementById('slider-north').value, 10);
       const east = parseInt(document.getElementById('slider-east').value, 10);
@@ -1221,41 +1408,50 @@
           document.getElementById('signal-times').innerText = `${json.data.baselineFixedTiming.avgWaitTimeSec}s ➔ ${json.data.optimizedAdaptiveTiming.avgWaitTimeSec}s`;
         }
       } catch (e) {
-        console.warn('Signal API failed', e);
+        console.warn('Signal API error', e);
       }
     }
 
+    // 7. Emergency Green Wave
     async function activateGreenWave() {
       emergencyPoly.setStyle({ color: '#34d399', weight: 8 });
       try {
         const res = await fetch('/api/emergency/corridor', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ vehicleType: "ambulance", priorityLevel: 1 })
+          body: JSON.stringify({ vehicleType: "ambulance", priorityLevel: 1, originNode: "chennamma_circle", hospitalDestinationNode: "bims_hospital" })
         });
         const json = await res.json();
         if (json.data) {
           document.getElementById('emg-saved').innerText = json.data.timeSavedMin;
+          if (json.data.waypoints) {
+            emergencyPoly.setLatLngs(json.data.waypoints).addTo(map);
+            map.fitBounds(emergencyPoly.getBounds(), { padding: [60, 60] });
+          }
         }
       } catch (e) {
-        console.warn('Emergency API failed', e);
+        console.warn('Emergency API error', e);
       }
     }
 
+    // 8. Navigation & UI Controls
     function switchView(tabKey) {
       document.querySelectorAll('.tab-item').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
+      const activeBtn = Array.from(document.querySelectorAll('.tab-item')).find(b => b.onclick.toString().includes(tabKey));
+      if (activeBtn) activeBtn.classList.add('active');
 
       document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
       const targetPanel = document.getElementById('panel-' + tabKey);
       if (targetPanel) targetPanel.classList.add('active');
 
       const titleMap = {
-        'routes': ['Commuter Routing', 'BPR Cost + A*'],
-        'emergency': ['Emergency Corridor', 'Priority Green Wave'],
-        'signals': ['Signal Lab', 'Adaptive Queue Balancing'],
-        'admin': ['Admin Incident Queue', 'Network Impact Analysis']
+        'dashboard': ['City Command Overview', 'Executive Traffic Intelligence'],
+        'routes': ['Commuter Routing', 'BPR Cost + A* vs Dijkstra'],
+        'emergency': ['Emergency Green Wave', 'Priority Corridor Preemption'],
+        'signals': ['Signal Lab', 'Adaptive Queue Simulation'],
+        'admin': ['Admin Incident Queue', 'Network Impact & SQLite']
       };
+
       if (titleMap[tabKey]) {
         document.getElementById('drawer-title').innerText = titleMap[tabKey][0];
         document.getElementById('drawer-subtitle').innerText = titleMap[tabKey][1];
@@ -1265,19 +1461,17 @@
         if (!map.hasLayer(emergencyPoly)) emergencyPoly.addTo(map);
         fastestPoly.setStyle({ opacity: 0.2 });
         shortestPoly.setStyle({ opacity: 0.2 });
-        map.fitBounds(emergencyPoly.getBounds(), { padding: [60, 60] });
       } else {
         if (map.hasLayer(emergencyPoly)) map.removeLayer(emergencyPoly);
         fastestPoly.setStyle({ opacity: 0.95 });
         shortestPoly.setStyle({ opacity: 0.7 });
-        map.fitBounds(fastestPoly.getBounds(), { padding: [60, 60] });
       }
     }
 
-    function selectRoute(index) {
-      document.getElementById('card-route-0').classList.toggle('active-fastest', index === 0);
-      document.getElementById('card-route-1').classList.toggle('active-shortest', index === 1);
-      if (index === 0) {
+    function selectRoute(idx) {
+      document.getElementById('card-route-0').classList.toggle('active-fastest', idx === 0);
+      document.getElementById('card-route-1').classList.toggle('active-shortest', idx === 1);
+      if (idx === 0) {
         fastestPoly.bringToFront();
         fastestPoly.setStyle({ opacity: 1, weight: 7 });
         shortestPoly.setStyle({ opacity: 0.35, weight: 3 });
@@ -1286,11 +1480,6 @@
         shortestPoly.setStyle({ opacity: 1, weight: 7 });
         fastestPoly.setStyle({ opacity: 0.35, weight: 3 });
       }
-    }
-
-    function applyReroute() {
-      document.getElementById('reroute-alert').style.display = 'none';
-      fastestPoly.setStyle({ color: '#10b981' });
     }
 
     function toggleLayers() {
@@ -1303,6 +1492,46 @@
       if (sig) map.addLayer(signalsLayer); else map.removeLayer(signalsLayer);
     }
 
+    function loadDemoScenario(key) {
+      customOriginCoords = null;
+      customDestCoords = null;
+
+      if (key === 'kle_airport') {
+        document.getElementById('origin-select').value = 'kle_tech';
+        document.getElementById('dest-select').value = 'sambre_airport';
+        switchView('routes');
+        runRouting();
+      } else if (key === 'station_hospital') {
+        switchView('emergency');
+        activateGreenWave();
+      } else if (key === 'chennamma_suvarna') {
+        document.getElementById('origin-select').value = 'chennamma_circle';
+        document.getElementById('dest-select').value = 'suvarna_soudha';
+        switchView('routes');
+        runRouting();
+      }
+    }
+
+    function handleSearchKey(event) {
+      if (event.key === 'Enter') {
+        const query = event.target.value;
+        if (!query) return;
+        // Search Belagavi landmarks or geocode
+        fetch(`/api/routes/calculate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ origin: 'chennamma_circle', destination: query })
+        })
+        .then(res => res.json())
+        .then(json => {
+          if (json.data) {
+            switchView('routes');
+            runRouting();
+          }
+        });
+      }
+    }
+
     function triggerIncidentModal() {
       document.getElementById('incident-modal').style.display = 'flex';
     }
@@ -1311,12 +1540,30 @@
       document.getElementById('incident-modal').style.display = 'none';
     }
 
-    function updateQueue(direction, val) {
-      document.getElementById('val-q-' + direction).innerText = val;
+    function updateQueue(dir, val) {
+      document.getElementById('val-q-' + dir).innerText = val;
     }
 
-    // Initial load
+    // Pre-populate Signal Markers
+    fetch('/api/signals/junctions')
+      .then(r => r.json())
+      .then(res => {
+        if (res.data) {
+          res.data.forEach(jnc => {
+            L.circleMarker([jnc.lat, jnc.lng], {
+              radius: 6,
+              color: '#34d399',
+              fillColor: '#059669',
+              fillOpacity: 0.9,
+              weight: 2
+            }).bindPopup(`<b>${jnc.name}</b><br>Signal Wait: ${jnc.baseline_wait_sec}s ➔ ${jnc.optimized_wait_sec}s`).addTo(signalsLayer);
+          });
+        }
+      });
+
+    // Initial Load
     loadActiveIncidents();
+    runRouting();
   </script>
 </body>
 </html>
