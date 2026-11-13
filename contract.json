@@ -1,5 +1,5 @@
 {
-  "project": "PulseTraffic - Intelligent Traffic Management & Route Optimization System",
+  "project": "Smart Routes - Intelligent Traffic Management & Route Optimization System",
   "version": "1.0.0",
   "problemStatement": "PS 01: Intelligent Traffic Management and Route Optimization System",
   "endpoints": [
@@ -19,8 +19,8 @@
       "response": {
         "status": 200,
         "data": {
-          "origin": { "id": 1, "name": "Central Railway Station", "lat": 12.9716, "lng": 77.5946 },
-          "destination": { "id": 98, "name": "Airport Terminal 2", "lat": 13.1986, "lng": 77.7066 },
+          "origin": { "id": 1, "name": "KLE Tech Campus", "lat": 15.8911, "lng": 74.5244 },
+          "destination": { "id": 98, "name": "Belagavi Sambre Airport", "lat": 15.8593, "lng": 74.6183 },
           "predictionWindow": "+15 min (AI Congestion Forecast)",
           "routes": [
             {
@@ -28,18 +28,18 @@
               "algorithm": "A* Dynamic Heuristic",
               "label": "Fastest Route",
               "isRecommended": true,
-              "recommendationReason": "Bypasses predicted bottleneck at Node 42; 24% faster than downtown arterial.",
-              "distanceKm": 12.8,
-              "etaMinutes": 18.4,
-              "fuelConsumptionLiters": 0.88,
+              "recommendationReason": "Bypasses predicted bottleneck at Rani Chennamma Circle; 24% faster via NH-48 bypass.",
+              "distanceKm": 14.8,
+              "etaMinutes": 17.2,
+              "fuelConsumptionLiters": 1.05,
               "congestionRisk": "Low",
               "reliabilityScore": 0.94,
               "color": "#3b82f6",
               "waypoints": [
-                { "lat": 12.9716, "lng": 77.5946, "name": "Central Station" },
-                { "lat": 12.992, "lng": 77.615, "name": "West Expressway Entry" },
-                { "lat": 13.05, "lng": 77.64, "name": "Ring Flyover Junction" },
-                { "lat": 13.1986, "lng": 77.7066, "name": "Airport Terminal 2" }
+                { "lat": 15.8911, "lng": 74.5244, "name": "KLE Tech Campus" },
+                { "lat": 15.885, "lng": 74.53, "name": "NH-48 Bypass Entry" },
+                { "lat": 15.8674, "lng": 74.5681, "name": "Suvarna Soudha Junction" },
+                { "lat": 15.8593, "lng": 74.6183, "name": "Belagavi Sambre Airport" }
               ]
             },
             {
@@ -47,7 +47,20 @@
               "algorithm": "Dijkstra Minimum Distance",
               "label": "Shortest Distance",
               "isRecommended": false,
-              "recommendationReason": "Shortest path in distance, but passes through high-density Civic Square.",
+              "recommendationReason": "Shortest path in physical distance, but traverses heavy PB Road urban arterials.",
+              "distanceKm": 13.1,
+              "etaMinutes": 23.4,
+              "fuelConsumptionLiters": 1.18,
+              "congestionRisk": "High",
+              "reliabilityScore": 0.72,
+              "color": "#a855f7",
+              "waypoints": [
+                { "lat": 15.8911, "lng": 74.5244, "name": "KLE Tech Campus" },
+                { "lat": 15.864, "lng": 74.512, "name": "College Road" },
+                { "lat": 15.8497, "lng": 74.5089, "name": "Rani Chennamma Circle" },
+                { "lat": 15.8593, "lng": 74.6183, "name": "Belagavi Sambre Airport" }
+              ]
+            }
               "distanceKm": 10.4,
               "etaMinutes": 25.1,
               "fuelConsumptionLiters": 1.25,
@@ -73,8 +86,8 @@
         "body": {
           "type": "accident",
           "severity": 3,
-          "location": { "lat": 12.985, "lng": 77.602, "roadSegmentId": "SEG-42" },
-          "description": "Multi-car collision blocking 2 outbound lanes",
+          "location": { "lat": 15.8497, "lng": 74.5089, "roadSegmentId": "BEL-PB-ROAD" },
+          "description": "Multi-car collision blocking outbound lanes near Rani Chennamma Circle",
           "reportedBy": "Citizen-4819"
         }
       },
@@ -86,10 +99,10 @@
           "clusterIncidentId": null,
           "estimatedClearanceTimeMin": 45,
           "networkImpact": {
-            "affectedRoads": ["Central Arterial North", "Civic Avenue East"],
+            "affectedRoads": ["PB Road Arterial", "College Road"],
             "capacityReductionPercent": 65,
             "diversionRecommended": true,
-            "diversionRouteId": "BYPASS-RING-01",
+            "diversionRouteId": "BYPASS-NH48",
             "timePenaltyAddedMinutes": 9.2
           }
         }
@@ -110,9 +123,9 @@
             "id": "INC-8891",
             "type": "accident",
             "severity": 3,
-            "lat": 12.985,
-            "lng": 77.602,
-            "roadName": "Civic Square Arterial",
+            "lat": 15.8497,
+            "lng": 74.5089,
+            "roadName": "Rani Chennamma Circle",
             "delayImpactMin": 9.2,
             "timestamp": "2026-11-13T11:45:00Z"
           },
@@ -120,9 +133,9 @@
             "id": "INC-8874",
             "type": "roadblock",
             "severity": 2,
-            "lat": 13.012,
-            "lng": 77.625,
-            "roadName": "Metro Construction Pillar 14",
+            "lat": 15.8642,
+            "lng": 74.5178,
+            "roadName": "BIMS Hospital Gate Construction",
             "delayImpactMin": 4.5,
             "timestamp": "2026-11-13T10:30:00Z"
           }

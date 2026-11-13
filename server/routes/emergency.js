@@ -8,12 +8,14 @@ router.post('/corridor', (req, res) => {
   const { 
     vehicleType = "ambulance", 
     priorityLevel = 1, 
-    originNode = "chennamma_circle", 
-    hospitalDestinationNode = "bims_hospital" 
+    originNode,
+    originNodeId,
+    hospitalDestinationNode,
+    hospitalDestinationNodeId
   } = req.body;
 
-  const startKey = resolveNodeKey(originNode);
-  const destKey = resolveNodeKey(hospitalDestinationNode || "bims_hospital");
+  const startKey = resolveNodeKey(originNode || originNodeId || "chennamma_circle");
+  const destKey = resolveNodeKey(hospitalDestinationNode || hospitalDestinationNodeId || "bims_hospital");
 
   // Run routing along graph
   const normalRoute = runAStar(startKey, destKey, 0);

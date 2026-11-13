@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PulseTraffic OS // Intelligent Traffic Management (PS 01)</title>
+  <title>Smart Routes // Intelligent Traffic Management (PS 01)</title>
   
   <!-- Typography & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,19 +16,21 @@
   <style>
     :root {
       --bg: #090a0f;
-      --sidebar: #11141c;
-      --sidebar-card: #161a24;
+      --panel: #11141c;
+      --panel-elevated: #161a24;
+      --panel-glass: rgba(17, 20, 28, 0.94);
       --border: rgba(255, 255, 255, 0.08);
-      --border-focus: rgba(59, 130, 246, 0.5);
+      --border-focus: rgba(255, 255, 255, 0.2);
       --text: #f8fafc;
       --text-muted: #8b95a5;
       --text-dim: #4b5565;
       --accent-blue: #3b82f6;
+      --accent-cyan: #06b6d4;
       --accent-emerald: #10b981;
       --accent-amber: #f59e0b;
       --accent-rose: #f43f5e;
-      --radius: 10px;
-      --radius-sm: 6px;
+      --radius: 12px;
+      --radius-sm: 8px;
     }
 
     * {
@@ -48,17 +50,16 @@
       flex-direction: column;
     }
 
-    /* Top Navigation Header */
+    /* Top Navigation Bar */
     header {
       height: 54px;
       border-bottom: 1px solid var(--border);
-      background: var(--sidebar);
+      background: var(--panel);
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 20px;
       z-index: 1000;
-      flex-shrink: 0;
     }
 
     .brand-section {
@@ -68,17 +69,18 @@
     }
 
     .brand-badge {
-      width: 28px;
-      height: 28px;
-      background: #ffffff;
-      color: #090a0f;
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      color: #ffffff;
       font-weight: 700;
-      font-size: 13.5px;
+      font-size: 14px;
       font-family: 'Geist Mono', monospace;
-      border-radius: 6px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
     }
 
     .brand-title {
@@ -101,7 +103,7 @@
       border-radius: 9999px;
     }
 
-    /* Mode Navigation Tabs */
+    /* Navigation Tabs */
     .nav-tabs {
       display: flex;
       background: var(--bg);
@@ -121,12 +123,18 @@
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       background: transparent;
       border: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .tab-item:hover { color: #fff; }
+    .tab-item:hover {
+      color: #ffffff;
+    }
+
     .tab-item.active {
-      background: var(--sidebar-card);
-      color: #fff;
+      background: var(--panel-elevated);
+      color: #ffffff;
       border: 1px solid rgba(255, 255, 255, 0.12);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
@@ -138,6 +146,12 @@
       font-size: 12px;
       font-family: 'Geist Mono', monospace;
       color: var(--text-muted);
+    }
+
+    .system-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .status-dot {
@@ -155,11 +169,11 @@
     }
 
     .reset-btn {
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border);
       color: var(--text-muted);
       font-size: 11px;
-      padding: 4px 8px;
+      padding: 4px 10px;
       border-radius: 6px;
       cursor: pointer;
       font-family: 'Geist Mono', monospace;
@@ -171,31 +185,37 @@
       border-color: var(--accent-blue);
     }
 
-    /* App 70/30 Layout */
-    .app-layout {
+    /* Main Workspace Layout (70/30) */
+    .app-main {
       flex: 1;
       display: flex;
-      height: calc(100vh - 54px);
       position: relative;
+      overflow: hidden;
+      height: calc(100vh - 54px);
+    }
+
+    /* Left Control Drawer (30% docked panel) */
+    .control-drawer {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      bottom: 14px;
+      width: 440px;
+      max-width: calc(100vw - 28px);
+      background: var(--panel-glass);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      z-index: 1000;
+      box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.75);
+      display: flex;
+      flex-direction: column;
       overflow: hidden;
     }
 
-    /* 30% Docked Left Sidebar */
-    .sidebar {
-      width: 400px;
-      min-width: 380px;
-      max-width: 440px;
-      background: var(--sidebar);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      z-index: 10;
-      flex-shrink: 0;
-    }
-
-    .sidebar-header {
-      padding: 16px 20px;
+    .drawer-header {
+      padding: 14px 18px;
       border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
@@ -203,210 +223,298 @@
       background: rgba(255, 255, 255, 0.015);
     }
 
-    .sidebar-body {
-      flex: 1;
-      overflow-y: auto;
-      padding: 18px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
+    .drawer-title-group h2 {
+      font-size: 14.5px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
     }
 
-    .sidebar-body::-webkit-scrollbar { width: 4px; }
-    .sidebar-body::-webkit-scrollbar-thumb {
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .drawer-body::-webkit-scrollbar { width: 4px; }
+    .drawer-body::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.1);
       border-radius: 4px;
     }
 
-    /* 70% Map Viewport */
-    .map-container {
-      flex: 1;
-      height: 100%;
-      position: relative;
-      background: #090a0f;
-    }
-
-    #city-map {
-      width: 100%;
-      height: 100%;
-      background: #090a0f;
-    }
-
-    /* Panels */
+    /* View Panels */
     .view-panel {
       display: none;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
     }
     .view-panel.active {
       display: flex;
     }
 
-    /* Inputs & Selects */
+    /* --- View 0: Executive City Dashboard --- */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .kpi-card {
+      background: var(--panel-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.6), transparent);
+    }
+
+    .kpi-title {
+      font-size: 10.5px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .kpi-val {
+      font-size: 19px;
+      font-weight: 700;
+      font-family: 'Geist Mono', monospace;
+      color: #ffffff;
+    }
+
+    .kpi-status {
+      font-size: 10.5px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .quick-preset-label {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-top: 4px;
+    }
+
+    .quick-preset-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .preset-chip {
+      background: var(--panel-elevated);
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s ease;
+    }
+
+    .preset-chip:hover {
+      background: rgba(59, 130, 246, 0.12);
+      border-color: rgba(59, 130, 246, 0.4);
+      transform: translateX(3px);
+    }
+
+    /* Reroute Alert Banner */
+    .alert-banner {
+      background: rgba(244, 63, 94, 0.1);
+      border: 1px solid rgba(244, 63, 94, 0.35);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .alert-text {
+      font-size: 11.5px;
+      color: #fda4af;
+      line-height: 1.4;
+    }
+
+    .reroute-btn {
+      background: var(--accent-rose);
+      border: none;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+    .reroute-btn:hover { opacity: 0.85; }
+
+    /* Inputs & Routing Controls */
     .route-input-group {
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
       padding: 4px;
-      display: flex;
-      flex-direction: column;
     }
 
     .input-row {
       display: flex;
       align-items: center;
-      padding: 8px 12px;
+      padding: 6px 10px;
       gap: 10px;
     }
-
-    .node-pin {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      flex-shrink: 0;
+    .input-row:not(:last-child) {
+      border-bottom: 1px solid var(--border);
     }
-    .pin-source { background: var(--accent-blue); box-shadow: 0 0 8px var(--accent-blue); }
-    .pin-dest { background: var(--accent-emerald); box-shadow: 0 0 8px var(--accent-emerald); }
 
-    .node-select {
+    .input-row select {
+      flex: 1;
       background: transparent;
       border: none;
       color: var(--text);
       font-size: 12.5px;
-      font-weight: 500;
-      width: 100%;
       outline: none;
       cursor: pointer;
     }
-
-    .node-select option {
-      background: var(--sidebar-card);
+    .input-row select option {
+      background: var(--panel);
       color: var(--text);
     }
 
-    .input-divider {
-      height: 1px;
-      background: var(--border);
-      margin: 0 12px;
-    }
-
-    /* Controls Rows */
-    .control-row {
+    /* Time & Weather Pills */
+    .control-row-pills {
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      align-items: center;
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .pill-group {
-      display: flex;
-      gap: 6px;
-    }
-
-    .pill-btn {
-      background: var(--sidebar-card);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      font-family: 'Geist Mono', monospace;
-      font-size: 11px;
-      padding: 4px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .pill-btn.selected {
-      background: rgba(59, 130, 246, 0.15);
-      border-color: var(--accent-blue);
-      color: #93c5fd;
-    }
-
-    /* Primary Action Buttons */
-    .action-btn-primary {
-      width: 100%;
-      padding: 12px;
-      background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 8px;
-      color: #ffffff;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
       gap: 8px;
     }
 
-    .action-btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.45);
+    .time-pills {
+      display: flex;
+      gap: 4px;
+      flex: 1;
     }
 
-    /* Route Cards */
-    .routes-container {
+    .pill-btn {
+      flex: 1;
+      background: var(--panel-elevated);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 11px;
+      padding: 6px 4px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      font-family: 'Geist Mono', monospace;
+      transition: all 0.2s;
+    }
+    .pill-btn:hover { color: #fff; border-color: rgba(255, 255, 255, 0.2); }
+    .pill-btn.selected {
+      background: var(--accent-blue);
+      color: #fff;
+      border-color: var(--accent-blue);
+      font-weight: 600;
+    }
+
+    .weather-toggle {
+      display: flex;
+      background: var(--panel-elevated);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2px;
+    }
+    .weather-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .weather-btn.active {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* Comparison Specular Cards */
+    .routes-comparison-list {
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
 
     .specular-card {
-      background: var(--sidebar-card);
+      background: var(--panel-elevated);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      padding: 14px;
-      position: relative;
+      padding: 12px 14px;
       cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.2s ease;
+      position: relative;
     }
-
     .specular-card:hover {
       border-color: rgba(255, 255, 255, 0.2);
     }
-
     .specular-card.active-fastest {
-      border-color: rgba(59, 130, 246, 0.6);
-      background: linear-gradient(180deg, rgba(37, 99, 235, 0.08) 0%, rgba(22, 26, 36, 0.9) 100%);
-      box-shadow: 0 8px 24px -6px rgba(37, 99, 235, 0.25);
+      border-color: var(--accent-blue);
+      background: rgba(59, 130, 246, 0.08);
+      box-shadow: 0 0 16px rgba(59, 130, 246, 0.15);
     }
-
     .specular-card.active-shortest {
-      border-color: rgba(168, 85, 247, 0.6);
-      background: linear-gradient(180deg, rgba(168, 85, 247, 0.08) 0%, rgba(22, 26, 36, 0.9) 100%);
+      border-color: #a855f7;
+      background: rgba(168, 85, 247, 0.08);
+      box-shadow: 0 0 16px rgba(168, 85, 247, 0.15);
     }
 
     .route-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 6px;
     }
 
     .route-name-badge {
-      font-size: 13px;
-      font-weight: 600;
       display: flex;
       align-items: center;
-      gap: 8px;
-    }
-
-    .rec-badge {
-      font-size: 10px;
-      font-family: 'Geist Mono', monospace;
-      padding: 2px 6px;
-      border-radius: 4px;
-      background: rgba(16, 185, 129, 0.15);
-      color: #34d399;
-      border: 1px solid rgba(16, 185, 129, 0.3);
+      gap: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
     }
 
     .route-eta {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 700;
       font-family: 'Geist Mono', monospace;
+      color: #fff;
+    }
+
+    .route-desc {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      line-height: 1.35;
     }
 
     .route-stats-grid {
@@ -414,7 +522,7 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 8px;
       margin-top: 10px;
-      padding-top: 10px;
+      padding-top: 8px;
       border-top: 1px solid var(--border);
     }
 
@@ -426,10 +534,9 @@
 
     .stat-label {
       font-size: 10px;
-      font-weight: 500;
       color: var(--text-dim);
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      font-family: 'Geist Mono', monospace;
     }
 
     .stat-val {
@@ -439,160 +546,116 @@
       color: var(--text);
     }
 
-    /* Reroute Alert Banner */
-    .reroute-banner {
-      background: rgba(244, 63, 94, 0.12);
-      border: 1px solid rgba(244, 63, 94, 0.35);
-      border-radius: 8px;
-      padding: 12px;
-      display: none;
-      flex-direction: column;
-      gap: 6px;
-      animation: alertPulse 2s infinite ease-in-out;
-    }
-
-    @keyframes alertPulse {
-      0%, 100% { border-color: rgba(244, 63, 94, 0.35); }
-      50% { border-color: rgba(244, 63, 94, 0.7); }
-    }
-
-    .reroute-btn {
-      background: var(--accent-rose);
-      color: white;
+    /* Buttons */
+    .action-btn-primary {
+      background: var(--accent-blue);
       border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 11.5px;
+      color: #fff;
+      font-size: 12.5px;
       font-weight: 600;
-      cursor: pointer;
-      margin-top: 4px;
-    }
-
-    /* Quick Preset Chips */
-    .quick-preset-container {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .preset-chip {
-      background: var(--sidebar-card);
-      border: 1px solid var(--border);
-      padding: 9px 12px;
-      border-radius: 6px;
-      font-size: 12px;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
       cursor: pointer;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: center;
+      gap: 8px;
       transition: all 0.2s;
     }
-    .preset-chip:hover {
-      border-color: var(--accent-blue);
-      background: rgba(59, 130, 246, 0.1);
+    .action-btn-primary:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+    }
+    .action-btn-emerald {
+      background: var(--accent-emerald);
+    }
+    .action-btn-emerald:hover {
+      background: #059669;
     }
 
-    /* Modern Floating Overlays on Map */
-    .map-controls-hud {
+    /* 70% Map Viewport */
+    #city-map {
+      flex: 1;
+      height: 100%;
+      width: 100%;
+      background: #090a0f;
+    }
+
+    /* Floating HUD iOS Toggle Switches */
+    .map-hud {
       position: absolute;
-      top: 16px;
-      right: 16px;
-      background: rgba(17, 20, 28, 0.94);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      top: 14px;
+      right: 14px;
+      background: var(--panel-glass);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 12px 16px;
+      padding: 12px 14px;
+      z-index: 1000;
       display: flex;
       flex-direction: column;
       gap: 10px;
-      z-index: 1000;
+      min-width: 190px;
       box-shadow: 0 16px 32px rgba(0, 0, 0, 0.5);
-      min-width: 210px;
     }
 
     .hud-title {
       font-size: 11px;
       font-weight: 600;
-      color: var(--text-dim);
       text-transform: uppercase;
       letter-spacing: 0.05em;
+      color: var(--text-dim);
       border-bottom: 1px solid var(--border);
-      padding-bottom: 4px;
+      padding-bottom: 6px;
     }
 
-    .hud-toggle-row {
+    .hud-row {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      font-size: 12px;
-      color: var(--text);
-    }
-
-    /* iOS Animated Switch Slider */
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 36px;
-      height: 20px;
-    }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider {
-      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-      background-color: rgba(255, 255, 255, 0.12);
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .slider:before {
-      position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 2px;
-      background-color: #fff;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      border-radius: 50%;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.4);
-    }
-    input:checked + .slider {
-      background-color: var(--accent-blue);
-      border-color: #60a5fa;
-    }
-    input:checked + .slider.green {
-      background-color: var(--accent-emerald);
-      border-color: #34d399;
-    }
-    input:checked + .slider:before { transform: translateX(16px); }
-
-    /* Map Traffic Legend (Bottom-Right) */
-    .map-legend {
-      position: absolute;
-      bottom: 24px;
-      right: 24px;
-      background: rgba(17, 20, 28, 0.92);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      z-index: 1000;
-      font-size: 11px;
-    }
-
-    .legend-row {
-      display: flex;
       align-items: center;
-      gap: 8px;
+      font-size: 12px;
       color: var(--text-muted);
     }
 
-    .legend-bar {
-      width: 18px;
-      height: 4px;
-      border-radius: 2px;
+    /* iOS Style Switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 32px;
+      height: 18px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(255, 255, 255, 0.15);
+      transition: .3s;
+      border-radius: 18px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 14px;
+      width: 14px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: var(--accent-blue);
+    }
+    input:checked + .slider-emerald {
+      background-color: var(--accent-emerald);
+    }
+    input:checked + .slider:before {
+      transform: translateX(14px);
     }
 
-    /* Modal */
+    /* Modal Dialog */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -603,394 +666,452 @@
       align-items: center;
       justify-content: center;
     }
-    .modal-box {
-      width: 420px;
-      background: var(--sidebar);
+    .modal-card {
+      background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px;
+      border-radius: var(--radius);
+      width: 420px;
+      max-width: 90vw;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       gap: 14px;
-      box-shadow: 0 32px 64px rgba(0,0,0,0.8);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8);
     }
-    .modal-box input, .modal-box select {
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-group label {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .form-group select, .form-group input {
       background: var(--bg);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 8px 12px;
       color: var(--text);
-      font-size: 13px;
+      font-size: 12.5px;
+      padding: 8px 10px;
+      border-radius: 6px;
       outline: none;
+    }
+    .form-group select:focus, .form-group input:focus {
+      border-color: var(--accent-blue);
+    }
+
+    /* Toast Notification */
+    #toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 3000;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .toast {
+      background: var(--panel-glass);
+      border: 1px solid var(--border);
+      color: #fff;
+      font-size: 12px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.6);
+      animation: fadeInToast 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    @keyframes fadeInToast {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Navigation Header -->
+  <!-- Top Navigation Bar -->
   <header>
     <div class="brand-section">
-      <div class="brand-badge">PT</div>
+      <div class="brand-badge">SR</div>
       <div class="brand-title">
-        <span>PulseTraffic OS</span>
+        <span>Smart Routes</span>
         <span class="simulated-pill">Simulated Traffic Platform</span>
       </div>
     </div>
 
-    <!-- Mode Tabs -->
+    <!-- Central Navigation Tabs -->
     <div class="nav-tabs">
-      <button class="tab-item active" onclick="switchTab('routes')">
-        <span>🧭 Route Search</span>
+      <button class="tab-item active" onclick="switchView('dashboard')">
+        <span>📊 Overview</span>
       </button>
-      <button class="tab-item" onclick="switchTab('emergency')">
-        <span>🚨 Emergency Corridor</span>
+      <button class="tab-item" onclick="switchView('routes')">
+        <span>🚗 Commuter Routes</span>
       </button>
-      <button class="tab-item" onclick="switchTab('signals')">
+      <button class="tab-item" onclick="switchView('emergency')">
+        <span>🚨 Green Wave</span>
+      </button>
+      <button class="tab-item" onclick="switchView('signals')">
         <span>🚦 Signal Lab</span>
       </button>
-      <button class="tab-item" onclick="switchTab('incidents')">
-        <span>⚠️ Incident Triage</span>
+      <button class="tab-item" onclick="switchView('admin')">
+        <span>⚠️ Incident Queue</span>
       </button>
     </div>
 
+    <!-- Top Right Meta & Reset -->
     <div class="top-meta">
-      <div style="display: flex; align-items: center; gap: 6px;">
+      <button class="reset-btn" onclick="resetDemoData()">↺ Reset Demo</button>
+      <div class="system-status">
         <span class="status-dot"></span>
-        <span>Belagavi Network (23 Nodes)</span>
+        <span id="socket-status">SQLite & BPR Engine Live</span>
       </div>
-      <button class="reset-btn" onclick="resetDemo()">↺ Reset Demo</button>
+      <span>Belagavi Grid (15.85°N, 74.51°E)</span>
     </div>
   </header>
 
-  <!-- 70/30 Application Layout -->
-  <div class="app-layout">
+  <!-- Main 70/30 Workspace -->
+  <main class="app-main">
     
-    <!-- 30% Solid Docked Control Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <div>
-          <h2 style="font-size: 14.5px; font-weight: 600;" id="sidebar-title">Commuter Route Optimizer</h2>
-          <span style="font-family: 'Geist Mono'; font-size: 11px; color: var(--text-dim);" id="sidebar-sub">BPR Cost + A* vs Dijkstra</span>
+    <!-- Left Docked Control Drawer (30%) -->
+    <div class="control-drawer" id="main-drawer">
+      <div class="drawer-header">
+        <div class="drawer-title-group">
+          <h2 id="drawer-title">City Command Overview</h2>
+          <span style="font-family: 'Geist Mono'; font-size: 11px; color: var(--text-dim);" id="drawer-subtitle">Executive Traffic Intelligence</span>
         </div>
       </div>
 
-      <div class="sidebar-body">
+      <div class="drawer-body">
 
-        <!-- TAB 1: ROUTE SEARCH -->
-        <div class="view-panel active" id="panel-routes">
+        <!-- VIEW 0: EXECUTIVE STARTING DASHBOARD -->
+        <div class="view-panel active" id="panel-dashboard">
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <span class="kpi-title">Network Fluidity</span>
+              <span class="kpi-val" style="color: #34d399;" id="kpi-fluidity">86.4%</span>
+              <span class="kpi-status" style="color: #34d399;">● Nominal Freeflow</span>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-title">BPR Impedance</span>
+              <span class="kpi-val" style="color: #60a5fa;" id="kpi-bpr">1.12x</span>
+              <span class="kpi-status" style="color: #60a5fa;">● Low Delay Index</span>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-title">Active Incidents</span>
+              <span class="kpi-val" style="color: #f59e0b;" id="kpi-incidents">2 Logged</span>
+              <span class="kpi-status" style="color: #f59e0b;">● SQLite Synchronized</span>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-title">Smart Signals</span>
+              <span class="kpi-val" style="color: #a78bfa;" id="kpi-signals">5 Hubs</span>
+              <span class="kpi-status" style="color: #a78bfa;">● Dynamic Queue Balancer</span>
+            </div>
+          </div>
+
+          <span class="quick-preset-label">Belagavi Live Demo Scenarios</span>
+          <div class="quick-preset-group">
+            <div class="preset-chip" onclick="loadDemoScenario('kle_airport')">
+              <div>
+                <b>KLE Tech ➔ Sambre Airport</b>
+                <div style="font-size: 11px; color: var(--text-muted);">Highway NH-48 vs PB Road downtown</div>
+              </div>
+              <span style="color: #60a5fa; font-weight: 600;">Run A* →</span>
+            </div>
+
+            <div class="preset-chip" onclick="loadDemoScenario('station_hospital')">
+              <div>
+                <b>Railway Station ➔ BIMS Hospital</b>
+                <div style="font-size: 11px; color: var(--text-muted);">Critical emergency civil hospital link</div>
+              </div>
+              <span style="color: #34d399; font-weight: 600;">Run Green Wave →</span>
+            </div>
+
+            <div class="preset-chip" onclick="loadDemoScenario('chennamma_suvarna')">
+              <div>
+                <b>Chennamma Circle ➔ Suvarna Soudha</b>
+                <div style="font-size: 11px; color: var(--text-muted);">State Secretariat express corridor</div>
+              </div>
+              <span style="color: #f59e0b; font-weight: 600;">Analyze BPR →</span>
+            </div>
+          </div>
+
+          <button class="action-btn-primary" onclick="switchView('routes')">
+            <span>Open Commuter Route Optimizer →</span>
+          </button>
+        </div>
+        
+        <!-- VIEW 1: COMMUTER ROUTE SEARCH -->
+        <div class="view-panel" id="panel-routes">
+          
+          <!-- Reroute Alert Banner -->
+          <div class="alert-banner" id="reroute-alert" style="display: none;">
+            <div class="alert-text">
+              <b>⚠️ Incident Detected:</b> Active roadblock ahead on PB Road arterial.
+            </div>
+            <button class="reroute-btn" onclick="runRouting()">Reroute A*</button>
+          </div>
+
           <div class="route-input-group">
             <div class="input-row">
-              <span class="node-pin pin-source"></span>
-              <select class="node-select" id="origin-select" onchange="runRouting()">
-                <option value="kle_tech" selected>KLE Technological University (Belagavi)</option>
-                <option value="chennamma_circle">Rani Chennamma Circle Hub</option>
-                <option value="railway_station">Belagavi Central Railway Station</option>
-                <option value="bims_hospital">BIMS District Civil Hospital</option>
-                <option value="rpd_cross">RPD College Cross Junction</option>
-                <option value="tilakwadi">Tilakwadi 1st Gate</option>
-                <option value="peeranwadi">Peeranwadi Industrial Bypass</option>
-                <option value="nehru_nagar">Nehru Nagar Circle</option>
-              </select>
-            </div>
-            <div class="input-divider"></div>
-            <div class="input-row">
-              <span class="node-pin pin-dest"></span>
-              <select class="node-select" id="dest-select" onchange="runRouting()">
-                <option value="sambre_airport" selected>Belagavi Sambre Airport (IXG)</option>
-                <option value="bims_hospital">BIMS Civil Hospital Emergency</option>
+              <span style="color: #3b82f6;">●</span>
+              <select id="origin-select" onchange="runRouting()">
+                <option value="kle_tech">KLE Tech Campus (Vidya Nagar)</option>
+                <option value="belagavi_station">Belagavi Central Railway Station</option>
+                <option value="chennamma_circle" selected>Rani Chennamma Circle Hub</option>
+                <option value="bims_hospital">BIMS Civil Hospital Gate</option>
                 <option value="suvarna_soudha">Suvarna Vidhana Soudha</option>
-                <option value="auto_nagar">Auto Nagar Industrial Hub</option>
-                <option value="rpd_cross">RPD College Cross</option>
-                <option value="shahapur">Shahapur Market Square</option>
-                <option value="machhe">Machhe Industrial Estate</option>
+                <option value="sambre_airport">Belagavi Sambre Airport</option>
+              </select>
+            </div>
+            <div class="input-row">
+              <span style="color: #f43f5e;">■</span>
+              <select id="dest-select" onchange="runRouting()">
+                <option value="kle_tech">KLE Tech Campus (Vidya Nagar)</option>
+                <option value="belagavi_station">Belagavi Central Railway Station</option>
+                <option value="chennamma_circle">Rani Chennamma Circle Hub</option>
+                <option value="bims_hospital">BIMS Civil Hospital Gate</option>
+                <option value="suvarna_soudha">Suvarna Vidhana Soudha</option>
+                <option value="sambre_airport" selected>Belagavi Sambre Airport</option>
               </select>
             </div>
           </div>
 
-          <div class="control-row">
-            <span>Forecast Window:</span>
-            <div class="pill-group">
-              <button class="pill-btn selected" onclick="setTimePill(this, 0)">Now</button>
-              <button class="pill-btn" onclick="setTimePill(this, 15)">+15 min</button>
-              <button class="pill-btn" onclick="setTimePill(this, 30)">+30 min</button>
+          <div class="control-row-pills">
+            <div class="time-pills">
+              <div class="pill-btn selected" onclick="setTimePill(this, 0)">Now</div>
+              <div class="pill-btn" onclick="setTimePill(this, 15)">+15m</div>
+              <div class="pill-btn" onclick="setTimePill(this, 30)">+30m</div>
+              <div class="pill-btn" onclick="setTimePill(this, 60)">+60m</div>
+            </div>
+            <div class="weather-toggle">
+              <button class="weather-btn active" id="btn-weather-clear" onclick="setWeather('clear')">☀️ Clear</button>
+              <button class="weather-btn" id="btn-weather-rain" onclick="setWeather('rain')">🌧️ Rain</button>
             </div>
           </div>
 
-          <div class="control-row">
-            <span>Weather Condition:</span>
-            <div class="pill-group">
-              <button class="pill-btn selected" id="weather-clear" onclick="setWeather('clear')">☀️ Clear</button>
-              <button class="pill-btn" id="weather-rain" onclick="setWeather('rain')">🌧️ Rain (+25% Delay)</button>
-            </div>
-          </div>
-
-          <button class="action-btn-primary" onclick="runRouting()">
-            <span>Calculate A* vs Dijkstra Routes</span>
-          </button>
-
-          <!-- Dynamic Reroute Alert -->
-          <div class="reroute-banner" id="reroute-alert">
-            <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: #fb7185;">
-              <span id="reroute-title">⚠️ Disruption on Corridor</span>
-              <span id="reroute-delay">+5.4 min</span>
-            </div>
-            <p style="font-size: 11px; color: #fecdd3;" id="reroute-msg">Active incident detected. Switch to dynamic perimeter alternate.</p>
-            <button class="reroute-btn" onclick="applyAlternateRoute()">Switch to Bypass Alternate</button>
-          </div>
-
-          <!-- Quick Belagavi Scenarios -->
-          <div class="quick-preset-container">
-            <span style="font-size: 11px; font-weight: 600; color: var(--text-dim); text-transform: uppercase;">Benchmark Corridor Demos</span>
-            <div class="preset-chip" onclick="loadBenchmark('kle_airport')">
-              <span><b>KLE Tech ➔ Sambre Airport</b></span>
-              <span style="color: var(--accent-blue);">Run A* →</span>
-            </div>
-            <div class="preset-chip" onclick="loadBenchmark('station_bims')">
-              <span><b>Railway Station ➔ BIMS Hospital</b></span>
-              <span style="color: var(--accent-emerald);">Run Green Wave →</span>
-            </div>
-            <div class="preset-chip" onclick="loadBenchmark('chennamma_suvarna')">
-              <span><b>Chennamma Circle ➔ Suvarna Soudha</b></span>
-              <span style="color: var(--accent-amber);">Analyze BPR →</span>
-            </div>
-          </div>
-
-          <!-- Route Comparison Cards -->
-          <div class="routes-container">
+          <div class="routes-comparison-list">
             <!-- A* Fastest Card -->
-            <div class="specular-card active-fastest" id="card-astar" onclick="selectRoute(0)">
+            <div class="specular-card active-fastest" id="card-route-0" onclick="selectRoute(0)">
               <div class="route-header">
                 <div class="route-name-badge">
-                  <span style="color: #60a5fa;">● A* Optimal Path</span>
-                  <span class="rec-badge">Recommended</span>
+                  <span style="color: #3b82f6;">● A* Dynamic (Fastest)</span>
+                  <span style="font-size: 10px; background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 2px 6px; border-radius: 4px;">RECOMMENDED</span>
                 </div>
-                <span class="route-eta" id="astar-eta">11.4 min</span>
+                <span class="route-eta" id="fastest-eta">17.2 min</span>
               </div>
-              <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;" id="astar-desc">Bypasses bottleneck delays via PB Road spine.</p>
+              <p class="route-desc" id="fastest-desc">Bypasses predicted bottleneck via NH-48 bypass corridor.</p>
               <div class="route-stats-grid">
                 <div class="stat-col">
                   <span class="stat-label">Distance</span>
-                  <span class="stat-val" id="astar-dist">13.1 km</span>
+                  <span class="stat-val" id="fastest-dist">14.8 km</span>
                 </div>
                 <div class="stat-col">
                   <span class="stat-label">Fuel Est.</span>
-                  <span class="stat-val" id="astar-fuel">0.89 L</span>
+                  <span class="stat-val" id="fastest-fuel">1.05 L</span>
                 </div>
                 <div class="stat-col">
                   <span class="stat-label">Reliability</span>
-                  <span class="stat-val" style="color: #34d399;" id="astar-rel">95%</span>
+                  <span class="stat-val" style="color: #34d399;" id="fastest-rel">94%</span>
                 </div>
               </div>
             </div>
 
             <!-- Dijkstra Shortest Card -->
-            <div class="specular-card" id="card-dijkstra" onclick="selectRoute(1)">
+            <div class="specular-card" id="card-route-1" onclick="selectRoute(1)">
               <div class="route-header">
                 <div class="route-name-badge">
-                  <span style="color: #c084fc;">● Dijkstra Shortest</span>
+                  <span style="color: #a855f7;">● Dijkstra (Shortest)</span>
                 </div>
-                <span class="route-eta" id="dijkstra-eta">11.4 min</span>
+                <span class="route-eta" id="shortest-eta">23.4 min</span>
               </div>
-              <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;" id="dijkstra-desc">Direct physical distance through downtown corridors.</p>
+              <p class="route-desc" id="shortest-desc">Direct line through Central College Road; high bottleneck delay.</p>
               <div class="route-stats-grid">
                 <div class="stat-col">
                   <span class="stat-label">Distance</span>
-                  <span class="stat-val" id="dijkstra-dist">13.1 km</span>
+                  <span class="stat-val" id="shortest-dist">13.1 km</span>
                 </div>
                 <div class="stat-col">
                   <span class="stat-label">Fuel Est.</span>
-                  <span class="stat-val" id="dijkstra-fuel">1.03 L</span>
+                  <span class="stat-val" id="shortest-fuel">1.18 L</span>
                 </div>
                 <div class="stat-col">
-                  <span class="stat-label">Reliability</span>
-                  <span class="stat-val" style="color: #f59e0b;" id="dijkstra-rel">82%</span>
+                  <span class="stat-label">Congestion Risk</span>
+                  <span class="stat-val" style="color: #f43f5e;" id="shortest-risk">HIGH</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- TAB 2: EMERGENCY CORRIDOR -->
+        <!-- VIEW 2: EMERGENCY GREEN WAVE -->
         <div class="view-panel" id="panel-emergency">
           <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 8px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-size: 13px; font-weight: 600; color: #34d399;">Ambulance Corridor #EMS-901</span>
-              <span style="font-size: 11px; background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 2px 6px; border-radius: 4px; font-weight: 700;">ACTIVE</span>
+              <span style="font-size: 11px; background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 2px 6px; border-radius: 4px;">ACTIVE</span>
             </div>
-            <p style="font-size: 12px; color: var(--text-muted);">Target: BIMS Civil Hospital Emergency ICU Gate. Intersections preempted dynamically.</p>
-            <div style="font-size: 24px; font-weight: 700; font-family: 'Geist Mono'; color: #ffffff;">
-              <span id="emg-saved">1.9</span> min saved (50%)
+            <p style="font-size: 12px; color: var(--text-muted);">Target: BIMS Civil Hospital Emergency ICU Gate. Cascading junction preemption ready.</p>
+            <div style="font-size: 22px; font-weight: 700; font-family: 'Geist Mono'; color: #ffffff;">
+              <span id="emg-saved">10.3</span> min saved
             </div>
           </div>
-          <button class="action-btn-primary" style="background: linear-gradient(180deg, #059669 0%, #047857 100%);" onclick="activateGreenWave()">
-            <span>⚡ Dispatch & Lock Green Corridor</span>
+          <button class="action-btn-primary action-btn-emerald" onclick="activateGreenWave()">
+            <span>Dispatch & Preempt Next Signals 🚨</span>
           </button>
-          <div id="emg-steps-box" style="display: flex; flex-direction: column; gap: 6px;"></div>
         </div>
 
-        <!-- TAB 3: SIGNAL LAB -->
+        <!-- VIEW 3: SIGNAL LAB -->
         <div class="view-panel" id="panel-signals">
-          <div style="background: var(--sidebar-card); border: 1px solid var(--border); border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 12px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span style="font-size: 12.5px; font-weight: 600;">Rani Chennamma Circle (JNC-14)</span>
-              <span style="font-size: 10.5px; color: var(--text-dim); font-family: 'Geist Mono';">Webster HCM Model</span>
-            </div>
+          <div style="background: var(--panel-elevated); border: 1px solid var(--border); border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 12px;">
+            <span style="font-size: 12.5px; font-weight: 600;">Rani Chennamma Circle (JNC-14)</span>
             
-            <div style="display: flex; flex-direction: column; gap: 4px;">
-              <div style="display: flex; justify-content: space-between; font-size: 12px;">
-                <span>Northbound Queue (College Rd):</span>
-                <strong id="val-q-north">55 veh</strong>
-              </div>
-              <input type="range" id="slider-north" min="5" max="80" value="55" oninput="runSignalLab()">
+            <div class="form-group">
+              <label>Northbound Queue (College Rd): <span id="val-q-north">38</span> veh</label>
+              <input type="range" id="slider-north" min="5" max="80" value="38" oninput="updateQueue('north', this.value); optimizeSignalTiming();">
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 4px;">
-              <div style="display: flex; justify-content: space-between; font-size: 12px;">
-                <span>Eastbound Queue (Hospital Rd):</span>
-                <strong id="val-q-east">18 veh</strong>
-              </div>
-              <input type="range" id="slider-east" min="5" max="80" value="18" oninput="runSignalLab()">
+            <div class="form-group">
+              <label>Eastbound Queue (Civil Hospital Rd): <span id="val-q-east">44</span> veh</label>
+              <input type="range" id="slider-east" min="5" max="80" value="44" oninput="updateQueue('east', this.value); optimizeSignalTiming();">
             </div>
 
             <div style="display: flex; justify-content: space-between; padding-top: 8px; border-top: 1px solid var(--border);">
               <span style="font-size: 12px; color: var(--text-muted);">Wait Time Reduction:</span>
-              <span style="font-size: 13.5px; font-weight: 700; color: #34d399;" id="signal-reduction">-36.2%</span>
+              <span style="font-size: 13px; font-weight: 700; color: #34d399;" id="signal-reduction">-36.2%</span>
             </div>
             <div style="display: flex; justify-content: space-between;">
               <span style="font-size: 12px; color: var(--text-muted);">Baseline vs Adaptive:</span>
-              <span style="font-size: 12px; font-family: 'Geist Mono';" id="signal-times">76.7s ➔ 48.9s</span>
+              <span style="font-size: 12px; font-family: 'Geist Mono';" id="signal-times">68.4s ➔ 43.6s</span>
             </div>
           </div>
         </div>
 
-        <!-- TAB 4: INCIDENT TRIAGE -->
-        <div class="view-panel" id="panel-incidents">
+        <!-- VIEW 4: ADMIN INCIDENT QUEUE -->
+        <div class="view-panel" id="panel-admin">
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Active Incidents (SQLite)</span>
-            <button class="reset-btn" onclick="openIncidentModal()">+ Report Incident</button>
+            <span style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Active Roadway Events</span>
+            <button class="reroute-btn" style="padding: 4px 8px; font-size: 11px;" onclick="triggerIncidentModal()">+ Report New</button>
           </div>
-          <div id="incidents-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+          <div id="admin-incident-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
         </div>
 
       </div>
-    </aside>
+    </div>
 
-    <!-- 70% Leaflet Map Container -->
-    <main class="map-container">
-      <div id="city-map"></div>
+    <!-- 70% Map Viewport -->
+    <div id="city-map"></div>
 
-      <!-- Floating HUD Overlays -->
-      <div class="map-controls-hud">
-        <div class="hud-title">Map Overlays</div>
-        <div class="hud-toggle-row">
-          <span>Congestion Flow</span>
-          <label class="switch">
-            <input type="checkbox" id="layer-congestion" checked onchange="toggleLayers()">
-            <span class="slider green"></span>
-          </label>
-        </div>
-        <div class="hud-toggle-row">
-          <span>Incident Markers</span>
-          <label class="switch">
-            <input type="checkbox" id="layer-incidents" checked onchange="toggleLayers()">
-            <span class="slider"></span>
-          </label>
-        </div>
-        <div class="hud-toggle-row">
-          <span>Signal Hubs</span>
-          <label class="switch">
-            <input type="checkbox" id="layer-signals" checked onchange="toggleLayers()">
-            <span class="slider green"></span>
-          </label>
-        </div>
+    <!-- Floating HUD iOS Toggle Switches -->
+    <div class="map-hud">
+      <div class="hud-title">Map Overlays</div>
+      
+      <div class="hud-row">
+        <span>Traffic Congestion</span>
+        <label class="switch">
+          <input type="checkbox" id="layer-congestion" checked onchange="toggleLayers()">
+          <span class="slider"></span>
+        </label>
       </div>
 
-      <!-- Legend -->
-      <div class="map-legend">
-        <div style="font-size: 10px; font-weight: 700; color: var(--text-dim); text-transform: uppercase;">Forecast (Simulated)</div>
-        <div class="legend-row">
-          <span class="legend-bar" style="background: #10b981;"></span>
-          <span>Clear / Freeflow</span>
-        </div>
-        <div class="legend-row">
-          <span class="legend-bar" style="background: #f59e0b;"></span>
-          <span>Moderate / Saturated</span>
-        </div>
-        <div class="legend-row">
-          <span class="legend-bar" style="background: #ef4444;"></span>
-          <span>Heavy Bottleneck</span>
-        </div>
+      <div class="hud-row">
+        <span>Active Incidents</span>
+        <label class="switch">
+          <input type="checkbox" id="layer-incidents" checked onchange="toggleLayers()">
+          <span class="slider"></span>
+        </label>
       </div>
-    </main>
 
-  </div>
+      <div class="hud-row">
+        <span>Signal Hubs</span>
+        <label class="switch">
+          <input type="checkbox" id="layer-signals" checked onchange="toggleLayers()">
+          <span class="slider slider-emerald"></span>
+        </label>
+      </div>
 
-  <!-- Incident Modal -->
+      <div class="hud-row">
+        <span>Satellite / Dark</span>
+        <label class="switch">
+          <input type="checkbox" id="layer-satellite" onchange="toggleBasemap()">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Incident Reporting Modal -->
   <div class="modal-overlay" id="incident-modal">
-    <div class="modal-box">
-      <h3 style="font-size: 15px; font-weight: 600;">Report Road Disruption</h3>
-      <div>
-        <label style="font-size: 12px; color: var(--text-muted);">Disruption Type</label>
-        <select id="report-type" style="width: 100%; margin-top: 4px;">
+    <div class="modal-card">
+      <h3 style="font-size: 15px; font-weight: 600;">Report Traffic Incident</h3>
+      <div class="form-group">
+        <label>Incident Type</label>
+        <select id="report-type">
           <option value="accident">Accident / Collision</option>
           <option value="roadblock">Roadblock / Construction</option>
-          <option value="hazard">Flooding / Road Hazard</option>
-          <option value="congestion">Severe Congestion Gridlock</option>
+          <option value="hazard">Waterlogging / Hazard</option>
+          <option value="congestion">Severe Bottleneck</option>
         </select>
       </div>
-      <div>
-        <label style="font-size: 12px; color: var(--text-muted);">Severity Level (1-4)</label>
-        <select id="report-severity" style="width: 100%; margin-top: 4px;">
+      <div class="form-group">
+        <label>Severity Level (1-5)</label>
+        <select id="report-severity">
           <option value="1">1 - Minor Shoulder Delay</option>
           <option value="2">2 - Single Lane Blocked</option>
-          <option value="3" selected>3 - Severe Multi-Lane Blockage</option>
-          <option value="4">4 - Road Fully Impassable</option>
+          <option value="3" selected>3 - Multi-lane Severe Blockage</option>
+          <option value="4">4 - Complete Segment Closure</option>
+          <option value="5">5 - Critical Emergency Gridlock</option>
         </select>
       </div>
-      <div>
-        <label style="font-size: 12px; color: var(--text-muted);">Landmark Description</label>
-        <input type="text" id="report-desc" value="College Road near Rani Chennamma Circle" style="width: 100%; margin-top: 4px;">
+      <div class="form-group">
+        <label>Location / Landmark Note</label>
+        <input type="text" id="report-desc" placeholder="e.g. Near Chennamma Circle PB Road Flyover" value="Rani Chennamma Circle Arterial">
       </div>
-      <div style="display: flex; gap: 8px; margin-top: 8px;">
-        <button class="action-btn-primary" style="flex: 1;" onclick="submitIncident()">Submit to SQLite</button>
-        <button class="action-btn-primary" style="flex: 1; background: var(--sidebar-card);" onclick="closeIncidentModal()">Cancel</button>
+      <div style="display: flex; gap: 8px; margin-top: 6px;">
+        <button class="action-btn-primary" id="btn-submit-incident" style="flex: 1;" onclick="submitIncident()">Submit to SQLite</button>
+        <button class="action-btn-primary" style="flex: 1; background: var(--panel-elevated);" onclick="closeIncidentModal()">Cancel</button>
       </div>
     </div>
   </div>
 
-  <!-- Scripts -->
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- Leaflet & Socket.IO Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="/socket.io/socket.io.js"></script>
 
   <script>
-    // 1. Initialize Map centered on Belagavi
+    let MAPBOX_TOKEN = '';
+
+    // 1. Initialize Map centered on Belagavi with bounds constraints (Zero blank screens)
     const map = L.map('city-map', {
       center: [15.855, 74.515],
       zoom: 13,
+      minZoom: 11,
+      maxZoom: 18,
       zoomControl: false
     });
 
     L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
-    // High-contrast Dark Basemap with zero watermarks (Esri Dark Canvas + Mapbox upgrade)
+    // Dark Basemaps (Esri Dark Canvas + Mapbox Dark)
     const esriDarkUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
-    let currentBaseLayer = L.tileLayer(esriDarkUrl, {
-      maxZoom: 18,
-      attribution: '© Esri, HERE, Garmin, © OpenStreetMap'
-    }).addTo(map);
+    const satUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+    let currentBaseLayer = L.tileLayer(esriDarkUrl, { attribution: '© Esri & OSM', maxZoom: 18 }).addTo(map);
 
-    // Dynamic upgrade to Mapbox Dark v11 if token is available
+    // Fetch Mapbox token dynamically from server
     fetch('/api/config')
       .then(res => res.json())
-      .then(cfg => {
-        if (cfg && cfg.mapboxToken) {
-          const mapboxDark = `https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/512/{z}/{x}/{y}?access_token=${cfg.mapboxToken}`;
-          const mbLayer = L.tileLayer(mapboxDark, {
-            tileSize: 512,
-            zoomOffset: -1,
-            maxZoom: 19,
-            attribution: '© Mapbox © OpenStreetMap'
-          });
+      .then(config => {
+        if (config && config.mapboxToken) {
+          MAPBOX_TOKEN = config.mapboxToken;
+          const mapboxDarkUrl = `https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`;
+          const mbLayer = L.tileLayer(mapboxDarkUrl, { attribution: '© Mapbox © OpenStreetMap', maxZoom: 19 });
           mbLayer.on('load', () => {
             if (currentBaseLayer) {
               map.removeLayer(currentBaseLayer);
@@ -1000,62 +1121,113 @@
           mbLayer.addTo(map);
         }
       })
-      .catch(err => console.log('Using default Esri Dark Canvas basemap'));
+      .catch(e => console.log('Using Esri fallback basemap'));
 
-    // Re-invalidate size to guarantee zero blank screens
-    setTimeout(() => { map.invalidateSize(); }, 250);
-    window.addEventListener('resize', () => { map.invalidateSize(); });
+    function toggleBasemap() {
+      const isSat = document.getElementById('layer-satellite').checked;
+      map.removeLayer(currentBaseLayer);
+      if (isSat) {
+        currentBaseLayer = L.tileLayer(satUrl, { attribution: '© Esri Satellite', maxZoom: 18 }).addTo(map);
+      } else {
+        const url = MAPBOX_TOKEN 
+          ? `https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`
+          : esriDarkUrl;
+        currentBaseLayer = L.tileLayer(url, { maxZoom: 18, attribution: '© Mapbox & OSM' }).addTo(map);
+      }
+    }
 
-    // Layers
+    // Auto-fix Leaflet container size on zoom and window resize
+    if (window.ResizeObserver) {
+      new ResizeObserver(() => {
+        map.invalidateSize();
+      }).observe(document.getElementById('city-map'));
+    }
+    map.on('zoomend moveend resize', () => {
+      map.invalidateSize();
+    });
+    setTimeout(() => { map.invalidateSize(); }, 300);
+
+    // 2. Map Layers
     const congestionLayer = L.layerGroup().addTo(map);
     const incidentsLayer = L.layerGroup().addTo(map);
     const signalsLayer = L.layerGroup().addTo(map);
 
-    // Route Polylines
-    let astarPoly = L.polyline([], { color: '#3b82f6', weight: 6, opacity: 0.95 }).addTo(map);
-    let dijkstraPoly = L.polyline([], { color: '#a855f7', weight: 4, opacity: 0.75, dashArray: '6, 8' }).addTo(map);
+    // Initial Path Polylines
+    let fastestPoly = L.polyline([], { color: '#3b82f6', weight: 6, opacity: 0.95 }).addTo(map);
+    let shortestPoly = L.polyline([], { color: '#a855f7', weight: 4, opacity: 0.7, dashArray: '5, 8' }).addTo(map);
     let emergencyPoly = L.polyline([], { color: '#10b981', weight: 8, opacity: 0.95 });
     let ambulanceMarker = null;
 
     let clickedCoords = [15.8497, 74.5089];
-    let departureOffsetMin = 0;
+    let customOriginCoords = null;
+    let customDestCoords = null;
+    let currentDepartureOffset = 0;
     let currentWeather = 'clear';
 
-    // Interactive Map Click
+    // Map Click Interaction (Set Origin, Set Destination, or Report Incident)
     map.on('click', function(e) {
       clickedCoords = [e.latlng.lat, e.latlng.lng];
-      const html = `
+      const popupHtml = `
         <div style="font-size: 12px; font-weight: 600; color: #fff; margin-bottom: 6px;">Coordinate (${clickedCoords[0].toFixed(4)}, ${clickedCoords[1].toFixed(4)})</div>
         <div style="display: flex; flex-direction: column; gap: 4px;">
-          <button style="background: #2563eb; color: #fff; border: none; padding: 5px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;" onclick="setPointAsOrigin(${clickedCoords[0]}, ${clickedCoords[1]})">📍 Set as Route Origin</button>
-          <button style="background: #059669; color: #fff; border: none; padding: 5px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;" onclick="setPointAsDest(${clickedCoords[0]}, ${clickedCoords[1]})">🏁 Set as Destination</button>
-          <button style="background: #f43f5e; color: #fff; border: none; padding: 5px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;" onclick="openIncidentModal()">⚠️ Report Incident Here</button>
+          <button style="background: #2563eb; color: #fff; border: none; padding: 5px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;" onclick="setOriginFromClick(${clickedCoords[0]}, ${clickedCoords[1]})">📍 Set as Route Origin</button>
+          <button style="background: #059669; color: #fff; border: none; padding: 5px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;" onclick="setDestFromClick(${clickedCoords[0]}, ${clickedCoords[1]})">🏁 Set as Destination</button>
+          <button style="background: #f43f5e; color: #fff; border: none; padding: 5px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;" onclick="openIncidentAtClick(${clickedCoords[0]}, ${clickedCoords[1]})">⚠️ Report Incident Here</button>
         </div>
       `;
-      L.popup().setLatLng(e.latlng).setContent(html).openOn(map);
+      L.popup().setLatLng(e.latlng).setContent(popupHtml).openOn(map);
     });
 
-    let customOrigin = null;
-    let customDest = null;
-
-    function setPointAsOrigin(lat, lng) {
-      customOrigin = { lat, lng };
+    function setOriginFromClick(lat, lng) {
+      customOriginCoords = { lat, lng };
       map.closePopup();
-      switchTab('routes');
+      switchView('routes');
       runRouting();
+      showToast(`Origin set to (${lat.toFixed(4)}, ${lng.toFixed(4)})`);
     }
 
-    function setPointAsDest(lat, lng) {
-      customDest = { lat, lng };
+    function setDestFromClick(lat, lng) {
+      customDestCoords = { lat, lng };
       map.closePopup();
-      switchTab('routes');
+      switchView('routes');
       runRouting();
+      showToast(`Destination set to (${lat.toFixed(4)}, ${lng.toFixed(4)})`);
     }
 
-    // 2. Heatmap Overlay from Server
+    function openIncidentAtClick(lat, lng) {
+      clickedCoords = [lat, lng];
+      map.closePopup();
+      triggerIncidentModal();
+    }
+
+    // 3. Socket.IO Real-time Events
+    try {
+      const socket = io();
+      socket.on('incident:new', (inc) => {
+        L.circleMarker([inc.lat, inc.lng], {
+          radius: 8,
+          color: '#ffffff',
+          fillColor: '#f43f5e',
+          fillOpacity: 1,
+          weight: 2
+        }).bindPopup(`<b>${inc.type.toUpperCase()}:</b> ${inc.roadName}`).addTo(incidentsLayer);
+        
+        document.getElementById('reroute-alert').style.display = 'flex';
+        showToast(`🚨 New road alert: ${inc.roadName}`);
+        loadActiveIncidents();
+      });
+
+      socket.on('reroute:triggered', () => {
+        runRouting();
+      });
+    } catch (e) {
+      console.log('Socket.IO running in standalone mode');
+    }
+
+    // 4. Congestion Heatmap Overlay
     async function loadHeatmapOverlay() {
       try {
-        const res = await fetch(`/api/routes/heatmap?window=${departureOffsetMin}&weather=${currentWeather}`);
+        const res = await fetch(`/api/routes/heatmap?window=${currentDepartureOffset}&weather=${currentWeather}`);
         const json = await res.json();
         if (json.data && json.data.edgePredictions) {
           congestionLayer.clearLayers();
@@ -1065,7 +1237,7 @@
                 color: edge.color,
                 weight: 5,
                 opacity: 0.85
-              }).bindPopup(`<b>${edge.name}</b><br>Congestion: ${(edge.congestionIndex * 100).toFixed(0)}% (${edge.riskLevel})<br>Speed: ~${edge.predictedSpeedKmh} km/h`).addTo(congestionLayer);
+              }).bindPopup(`<b>${edge.name}</b><br>Congestion: ${(edge.congestionIndex * 100).toFixed(0)}% (${edge.riskLevel})<br>Predicted Speed: ~${edge.predictedSpeedKmh} km/h`).addTo(congestionLayer);
             }
           });
         }
@@ -1074,10 +1246,10 @@
       }
     }
 
-    // 3. Routing Engine Execution
+    // 5. Routing Engine API Call
     async function runRouting() {
-      const orig = customOrigin || document.getElementById('origin-select').value;
-      const dest = customDest || document.getElementById('dest-select').value;
+      const orig = customOriginCoords || document.getElementById('origin-select').value;
+      const dest = customDestCoords || document.getElementById('dest-select').value;
 
       try {
         const res = await fetch('/api/routes/calculate', {
@@ -1086,220 +1258,176 @@
           body: JSON.stringify({
             origin: orig,
             destination: dest,
-            departureOffsetMinutes: departureOffsetMin
+            originNodeId: orig,
+            destinationNodeId: dest,
+            departureOffsetMinutes: currentDepartureOffset,
+            vehicleType: 'car'
           })
         });
         const json = await res.json();
         if (json.data && json.data.routes) {
-          const r0 = json.data.routes[0];
-          const r1 = json.data.routes[1];
+          const r0 = json.data.routes[0] || json.data.routes.astarFastest;
+          const r1 = json.data.routes[1] || json.data.routes.dijkstraShortest;
 
           if (r0) {
-            document.getElementById('astar-eta').innerText = r0.etaMinutes + ' min';
-            document.getElementById('astar-dist').innerText = r0.distanceKm + ' km';
-            document.getElementById('astar-fuel').innerText = (r0.fuelConsumptionLiters || 0.89) + ' L';
-            document.getElementById('astar-rel').innerText = ((r0.reliabilityScore || 0.95) * 100).toFixed(0) + '%';
-            document.getElementById('astar-desc').innerText = r0.recommendationReason || r0.name;
+            document.getElementById('fastest-eta').innerText = r0.etaMinutes + ' min';
+            document.getElementById('fastest-dist').innerText = r0.distanceKm + ' km';
+            document.getElementById('fastest-fuel').innerText = (r0.fuelConsumptionLiters || 1.05) + ' L';
+            document.getElementById('fastest-rel').innerText = ((r0.reliabilityScore || 0.94) * 100).toFixed(0) + '%';
+            document.getElementById('fastest-desc').innerText = r0.recommendationReason || r0.name;
 
             if (r0.waypoints && r0.waypoints.length > 0) {
-              astarPoly.setLatLngs(r0.waypoints);
-              map.fitBounds(astarPoly.getBounds(), { padding: [50, 50] });
+              fastestPoly.setLatLngs(r0.waypoints);
+              const b = fastestPoly.getBounds();
+              if (b && b.isValid()) {
+                map.fitBounds(b, { padding: [50, 50], maxZoom: 16 });
+              }
             }
           }
 
           if (r1) {
-            document.getElementById('dijkstra-eta').innerText = r1.etaMinutes + ' min';
-            document.getElementById('dijkstra-dist').innerText = r1.distanceKm + ' km';
-            document.getElementById('dijkstra-fuel').innerText = (r1.fuelConsumptionLiters || 1.03) + ' L';
-            document.getElementById('dijkstra-rel').innerText = ((r1.reliabilityScore || 0.82) * 100).toFixed(0) + '%';
-            document.getElementById('dijkstra-desc').innerText = r1.recommendationReason || r1.name;
+            document.getElementById('shortest-eta').innerText = r1.etaMinutes + ' min';
+            document.getElementById('shortest-dist').innerText = r1.distanceKm + ' km';
+            document.getElementById('shortest-fuel').innerText = (r1.fuelConsumptionLiters || 1.18) + ' L';
+            document.getElementById('shortest-risk').innerText = r1.congestionRisk || 'HIGH';
+            document.getElementById('shortest-desc').innerText = r1.recommendationReason || r1.name;
 
             if (r1.waypoints && r1.waypoints.length > 0) {
-              dijkstraPoly.setLatLngs(r1.waypoints);
+              shortestPoly.setLatLngs(r1.waypoints);
             }
           }
         }
       } catch (err) {
-        console.warn('Routing error', err);
+        showToast('Route calculation failed', 'error');
       }
     }
 
     function selectRoute(idx) {
-      document.getElementById('card-astar').classList.toggle('active-fastest', idx === 0);
-      document.getElementById('card-dijkstra').classList.toggle('active-fastest', idx === 1);
+      document.getElementById('card-route-0').classList.toggle('active-fastest', idx === 0);
+      document.getElementById('card-route-1').classList.toggle('active-shortest', idx === 1);
       if (idx === 0) {
-        astarPoly.bringToFront();
-        astarPoly.setStyle({ opacity: 1, weight: 7 });
-        dijkstraPoly.setStyle({ opacity: 0.35, weight: 3 });
+        fastestPoly.bringToFront();
+        fastestPoly.setStyle({ opacity: 1, weight: 6 });
+        shortestPoly.setStyle({ opacity: 0.35, weight: 3 });
       } else {
-        dijkstraPoly.bringToFront();
-        dijkstraPoly.setStyle({ opacity: 1, weight: 7 });
-        astarPoly.setStyle({ opacity: 0.35, weight: 3 });
+        shortestPoly.bringToFront();
+        shortestPoly.setStyle({ opacity: 1, weight: 6 });
+        fastestPoly.setStyle({ opacity: 0.35, weight: 3 });
       }
     }
 
-    function setTimePill(el, min) {
+    function setTimePill(el, minutes) {
       document.querySelectorAll('.pill-btn').forEach(p => p.classList.remove('selected'));
       el.classList.add('selected');
-      departureOffsetMin = min;
+      currentDepartureOffset = minutes;
       runRouting();
       loadHeatmapOverlay();
     }
 
     function setWeather(w) {
       currentWeather = w;
-      document.getElementById('weather-clear').classList.toggle('selected', w === 'clear');
-      document.getElementById('weather-rain').classList.toggle('selected', w === 'rain');
-      loadHeatmapOverlay();
+      document.getElementById('btn-weather-clear').classList.toggle('active', w === 'clear');
+      document.getElementById('btn-weather-rain').classList.toggle('active', w === 'rain');
       runRouting();
+      loadHeatmapOverlay();
+      showToast(`Weather set to ${w === 'rain' ? '🌧️ Rain' : '☀️ Clear'}`);
     }
 
-    // 4. Incident Management with SQLite
-    async function loadIncidents() {
+    // 6. Incidents Lifecycle with SQLite API
+    async function loadActiveIncidents() {
       try {
         const res = await fetch('/api/incidents/active');
         const json = await res.json();
         if (json.data) {
+          document.getElementById('kpi-incidents').innerText = `${json.data.length} Logged`;
           incidentsLayer.clearLayers();
-          const list = document.getElementById('incidents-list');
-          list.innerHTML = json.data.map(inc => {
+
+          const container = document.getElementById('admin-incident-list');
+          container.innerHTML = json.data.map(inc => {
             L.circleMarker([inc.lat, inc.lng], {
               radius: 7,
               color: '#ffffff',
               fillColor: inc.severity >= 3 ? '#f43f5e' : '#f59e0b',
-              fillOpacity: 0.95,
+              fillOpacity: 0.9,
               weight: 2
             }).bindPopup(`<b>${inc.type.toUpperCase()}:</b> ${inc.roadName} (${inc.status})`).addTo(incidentsLayer);
 
             return `
-              <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 4px;">
-                <div style="display: flex; justify-content: space-between;">
-                  <span style="font-weight: 600; font-size: 11.5px; color: ${inc.severity >= 3 ? '#fb7185' : '#fcd34d'};">● ${inc.type.toUpperCase()} (Sev ${inc.severity})</span>
-                  <span style="font-size: 10px; color: #34d399; font-family: 'Geist Mono';">${inc.status}</span>
+              <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 6px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-size: 12px; font-weight: 600; color: ${inc.severity >= 3 ? '#f43f5e' : '#f59e0b'};">● ${inc.type.toUpperCase()} (Sev ${inc.severity})</span>
+                  <span style="font-size: 10px; color: #34d399; font-family: 'Geist Mono'; text-transform: uppercase;">${inc.status}</span>
                 </div>
-                <p style="font-size: 11px; color: var(--text-muted);">${inc.roadName}</p>
+                <p style="font-size: 11.5px; color: var(--text-muted);">${inc.roadName} — Capacity -${inc.capacityReductionPercent}%.</p>
                 <div style="display: flex; gap: 6px; margin-top: 4px;">
-                  <button style="flex: 1; background: #2563eb; color: #fff; border: none; padding: 3px 6px; border-radius: 4px; font-size: 10px; cursor: pointer;" onclick="updateStatus('${inc.id}', 'verified')">Verify</button>
-                  <button style="flex: 1; background: #059669; color: #fff; border: none; padding: 3px 6px; border-radius: 4px; font-size: 10px; cursor: pointer;" onclick="updateStatus('${inc.id}', 'resolved')">Resolve</button>
-                  <button style="flex: 1; background: #475569; color: #fff; border: none; padding: 3px 6px; border-radius: 4px; font-size: 10px; cursor: pointer;" onclick="checkImpact('${inc.id}')">Impact</button>
+                  <button class="reroute-btn" style="flex: 1; padding: 4px 6px; font-size: 11px; background: #2563eb;" onclick="updateIncidentStatus('${inc.id}', 'verified')">Verify</button>
+                  <button class="reroute-btn" style="flex: 1; padding: 4px 6px; font-size: 11px; background: #059669;" onclick="updateIncidentStatus('${inc.id}', 'resolved')">Resolve</button>
                 </div>
               </div>
             `;
           }).join('');
         }
       } catch (e) {
-        console.warn('Incident load notice', e);
+        console.warn('Failed to load incidents', e);
       }
     }
 
-    async function checkImpact(id) {
+    async function updateIncidentStatus(id, newStatus) {
       try {
-        const res = await fetch(`/api/incidents/${id}/impact`);
-        const json = await res.json();
-        if (json.data) {
-          alert(`Network Impact Analysis:\n• Mean City Delay: +${json.data.meanCityDelayMin} min\n• Affected Corridors: ${json.data.affectedCorridorsCount}\n• Strategy: ${json.data.primaryDiversionStrategy}`);
+        const res = await fetch(`/api/incidents/${id}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+        if (res.ok) {
+          showToast(`Incident ${id} updated to ${newStatus}`);
+          loadActiveIncidents();
+          runRouting();
         }
-      } catch (e) {
-        console.warn('Impact check error', e);
+      } catch (err) {
+        showToast('Status update failed', 'error');
       }
-    }
-
-    async function updateStatus(id, st) {
-      await fetch(`/api/incidents/${id}/status`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: st })
-      });
-      loadIncidents();
-      runRouting();
     }
 
     async function submitIncident() {
+      const btn = document.getElementById('btn-submit-incident');
+      if (btn) btn.disabled = true;
+
       const type = document.getElementById('report-type').value;
       const severity = parseInt(document.getElementById('report-severity').value, 10);
       const desc = document.getElementById('report-desc').value;
-      closeIncidentModal();
 
-      await fetch('/api/incidents/report', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type,
-          severity,
-          description: desc,
-          location: { lat: clickedCoords[0], lng: clickedCoords[1], roadSegmentId: "BEL-COLLEGE-RD" }
-        })
-      });
-      loadIncidents();
-      runRouting();
-      document.getElementById('reroute-alert').style.display = 'flex';
-    }
-
-    function applyAlternateRoute() {
-      document.getElementById('reroute-alert').style.display = 'none';
-      astarPoly.setStyle({ color: '#10b981' });
-    }
-
-    // 5. Emergency Green Wave & Animated Ambulance
-    async function activateGreenWave() {
-      emergencyPoly.setStyle({ color: '#10b981', weight: 8 });
       try {
-        const res = await fetch('/api/emergency/corridor', {
+        const res = await fetch('/api/incidents/report', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ originNode: "chennamma_circle", hospitalDestinationNode: "bims_hospital" })
+          body: JSON.stringify({
+            type,
+            severity,
+            description: desc,
+            location: { lat: clickedCoords[0], lng: clickedCoords[1], roadSegmentId: "BEL-PB-ROAD" }
+          })
         });
-        const json = await res.json();
-        if (json.data) {
-          document.getElementById('emg-saved').innerText = json.data.timeSavedMin;
-          if (json.data.waypoints) {
-            emergencyPoly.setLatLngs(json.data.waypoints).addTo(map);
-            map.fitBounds(emergencyPoly.getBounds(), { padding: [60, 60] });
-
-            // Animate ambulance pulse along corridor
-            animateAmbulance(json.data.waypoints);
-          }
-          if (json.data.preemptedJunctions) {
-            document.getElementById('emg-steps-box').innerHTML = json.data.preemptedJunctions.map(j => `
-              <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; display: flex; justify-content: space-between; font-size: 11.5px;">
-                <span>${j.name}</span>
-                <span style="color: #34d399; font-weight: 700; font-family: 'Geist Mono';">T+${j.preemptInSec}s GREEN</span>
-              </div>
-            `).join('');
-          }
+        const result = await res.json();
+        if (res.ok) {
+          closeIncidentModal();
+          showToast('⚠️ Incident reported & saved to SQLite');
+          loadActiveIncidents();
+          runRouting();
+        } else {
+          showToast(result.message || 'Error reporting incident', 'error');
         }
       } catch (e) {
-        console.warn('Emergency notice', e);
+        showToast('Network error submitting incident', 'error');
+      } finally {
+        if (btn) btn.disabled = false;
       }
     }
 
-    function animateAmbulance(pts) {
-      if (!ambulanceMarker) {
-        ambulanceMarker = L.circleMarker(pts[0], {
-          radius: 9,
-          color: '#ffffff',
-          fillColor: '#10b981',
-          fillOpacity: 1,
-          weight: 3
-        }).addTo(map);
-      }
-      let idx = 0;
-      const interval = setInterval(() => {
-        if (idx >= pts.length) {
-          clearInterval(interval);
-          return;
-        }
-        ambulanceMarker.setLatLng(pts[idx]);
-        idx++;
-      }, 120);
-    }
-
-    // 6. Signal Simulation
-    async function runSignalLab() {
-      const n = parseInt(document.getElementById('slider-north').value, 10);
-      const e = parseInt(document.getElementById('slider-east').value, 10);
-      document.getElementById('val-q-north').innerText = n + ' veh';
-      document.getElementById('val-q-east').innerText = e + ' veh';
+    // 7. Signal Simulation (HCM Webster Equation)
+    async function optimizeSignalTiming() {
+      const north = parseInt(document.getElementById('slider-north').value, 10);
+      const east = parseInt(document.getElementById('slider-east').value, 10);
 
       try {
         const res = await fetch('/api/signals/optimize', {
@@ -1307,7 +1435,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             junctionId: "JNC-14",
-            currentQueueLengths: { north: n, south: Math.round(n * 0.4), east: e, west: Math.round(e * 0.4) }
+            currentQueueLengths: { north, south: Math.round(north * 0.4), east, west: Math.round(east * 0.4) }
           })
         });
         const json = await res.json();
@@ -1315,40 +1443,117 @@
           document.getElementById('signal-reduction').innerText = `-${json.data.waitTimeReductionPercent}%`;
           document.getElementById('signal-times').innerText = `${json.data.baselineFixedTiming.avgWaitTimeSec}s ➔ ${json.data.optimizedAdaptiveTiming.avgWaitTimeSec}s`;
         }
-      } catch (err) {
-        console.warn('Signal notice', err);
+      } catch (e) {
+        console.warn('Signal API error', e);
       }
     }
 
-    // 7. Tab Navigation
-    function switchTab(tabKey) {
-      document.querySelectorAll('.tab-item').forEach(b => b.classList.remove('active'));
-      const activeBtn = Array.from(document.querySelectorAll('.tab-item')).find(b => b.onclick.toString().includes(tabKey));
+    // 8. Emergency Green Wave
+    async function activateGreenWave() {
+      emergencyPoly.setStyle({ color: '#10b981', weight: 8 });
+      try {
+        const res = await fetch('/api/emergency/corridor', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            vehicleType: "ambulance", 
+            priorityLevel: 1, 
+            originNode: "chennamma_circle", 
+            hospitalDestinationNode: "bims_hospital" 
+          })
+        });
+        const json = await res.json();
+        if (json.data) {
+          document.getElementById('emg-saved').innerText = json.data.timeSavedMin;
+          if (json.data.waypoints && json.data.waypoints.length > 0) {
+            emergencyPoly.setLatLngs(json.data.waypoints).addTo(map);
+            const b = emergencyPoly.getBounds();
+            if (b && b.isValid()) {
+              map.fitBounds(b, { padding: [60, 60], maxZoom: 16 });
+            }
+            animateAmbulance(json.data.waypoints);
+            showToast('🚨 Green Wave preemption active to BIMS Hospital');
+          }
+        }
+      } catch (e) {
+        showToast('Failed to activate corridor', 'error');
+      }
+    }
+
+    function animateAmbulance(waypoints) {
+      if (!waypoints || waypoints.length === 0) return;
+      if (ambulanceMarker) map.removeLayer(ambulanceMarker);
+
+      const ambIcon = L.divIcon({
+        className: 'ambulance-icon',
+        html: '<div style="font-size: 24px; filter: drop-shadow(0 0 8px #10b981); animation: pulseDot 1s infinite;">🚑</div>',
+        iconSize: [28, 28],
+        iconAnchor: [14, 14]
+      });
+
+      ambulanceMarker = L.marker(waypoints[0], { icon: ambIcon }).addTo(map);
+      let step = 0;
+      const interval = setInterval(() => {
+        step++;
+        if (step >= waypoints.length) {
+          clearInterval(interval);
+          setTimeout(() => {
+            if (ambulanceMarker) map.removeLayer(ambulanceMarker);
+            ambulanceMarker = null;
+          }, 3000);
+          return;
+        }
+        ambulanceMarker.setLatLng(waypoints[step]);
+      }, 350);
+    }
+
+    // 9. Reset Demo Data
+    async function resetDemoData() {
+      try {
+        const res = await fetch('/api/demo/reset', { method: 'POST' });
+        if (res.ok) {
+          showToast('↺ Demo environment reset to clean baseline');
+          loadActiveIncidents();
+          runRouting();
+          loadHeatmapOverlay();
+          document.getElementById('reroute-alert').style.display = 'none';
+        }
+      } catch (e) {
+        showToast('Reset failed', 'error');
+      }
+    }
+
+    // 10. Navigation & UI Controls
+    function switchView(tabKey) {
+      document.querySelectorAll('.tab-item').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = Array.from(document.querySelectorAll('.tab-item')).find(b => b.getAttribute('onclick') && b.getAttribute('onclick').includes(tabKey));
       if (activeBtn) activeBtn.classList.add('active');
 
-      document.querySelectorAll('.view-panel').forEach(v => v.classList.remove('active'));
-      const target = document.getElementById('panel-' + tabKey);
-      if (target) target.classList.add('active');
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+      const targetPanel = document.getElementById('panel-' + tabKey);
+      if (targetPanel) targetPanel.classList.add('active');
 
-      const titles = {
-        'routes': ['Commuter Route Optimizer', 'BPR Cost + A* vs Dijkstra'],
+      const titleMap = {
+        'dashboard': ['City Command Overview', 'Executive Traffic Intelligence'],
+        'routes': ['Commuter Routing', 'BPR Cost + A* vs Dijkstra'],
         'emergency': ['Emergency Green Wave', 'Priority Corridor Preemption'],
-        'signals': ['Signal Lab', 'Adaptive Webster HCM Queue Model'],
-        'incidents': ['Incident Triage Feed', 'Real-time SQLite Disruption Queue']
+        'signals': ['Signal Lab', 'Adaptive Webster Simulation'],
+        'admin': ['Admin Incident Queue', 'Network Impact & SQLite']
       };
-      if (titles[tabKey]) {
-        document.getElementById('sidebar-title').innerText = titles[tabKey][0];
-        document.getElementById('sidebar-sub').innerText = titles[tabKey][1];
+
+      if (titleMap[tabKey]) {
+        document.getElementById('drawer-title').innerText = titleMap[tabKey][0];
+        document.getElementById('drawer-subtitle').innerText = titleMap[tabKey][1];
       }
 
       if (tabKey === 'emergency') {
         if (!map.hasLayer(emergencyPoly)) emergencyPoly.addTo(map);
-        astarPoly.setStyle({ opacity: 0.2 });
-        dijkstraPoly.setStyle({ opacity: 0.2 });
+        fastestPoly.setStyle({ opacity: 0.2 });
+        shortestPoly.setStyle({ opacity: 0.2 });
       } else {
         if (map.hasLayer(emergencyPoly)) map.removeLayer(emergencyPoly);
-        astarPoly.setStyle({ opacity: 0.95 });
-        dijkstraPoly.setStyle({ opacity: 0.75 });
+        fastestPoly.setStyle({ opacity: 0.95 });
+        shortestPoly.setStyle({ opacity: 0.7 });
       }
     }
 
@@ -1362,67 +1567,74 @@
       if (sig) map.addLayer(signalsLayer); else map.removeLayer(signalsLayer);
     }
 
-    function loadBenchmark(key) {
-      customOrigin = null;
-      customDest = null;
+    function loadDemoScenario(key) {
+      customOriginCoords = null;
+      customDestCoords = null;
+
       if (key === 'kle_airport') {
         document.getElementById('origin-select').value = 'kle_tech';
         document.getElementById('dest-select').value = 'sambre_airport';
-        switchTab('routes');
+        switchView('routes');
         runRouting();
-      } else if (key === 'station_bims') {
-        switchTab('emergency');
+      } else if (key === 'station_hospital') {
+        switchView('emergency');
         activateGreenWave();
       } else if (key === 'chennamma_suvarna') {
         document.getElementById('origin-select').value = 'chennamma_circle';
         document.getElementById('dest-select').value = 'suvarna_soudha';
-        switchTab('routes');
+        switchView('routes');
         runRouting();
       }
     }
 
-    async function resetDemo() {
-      try {
-        await fetch('/api/demo/reset', { method: 'POST' });
-        loadIncidents();
-        runRouting();
-        loadHeatmapOverlay();
-      } catch (e) {
-        console.warn('Demo reset notice', e);
-      }
+    function triggerIncidentModal() {
+      document.getElementById('incident-modal').style.display = 'flex';
     }
 
-    function openIncidentModal() { document.getElementById('incident-modal').style.display = 'flex'; }
-    function closeIncidentModal() { document.getElementById('incident-modal').style.display = 'none'; }
+    function closeIncidentModal() {
+      document.getElementById('incident-modal').style.display = 'none';
+    }
 
-    // Prepopulate signal markers
+    function updateQueue(dir, val) {
+      document.getElementById('val-q-' + dir).innerText = val;
+    }
+
+    function showToast(msg, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.style.borderColor = type === 'error' ? 'rgba(244, 63, 94, 0.4)' : 'rgba(59, 130, 246, 0.4)';
+      toast.innerHTML = `<span>${type === 'error' ? '❌' : 'ℹ️'}</span> <span>${msg}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.transition = 'opacity 0.4s';
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 400);
+      }, 3500);
+    }
+
+    // Pre-populate Signal Markers
     fetch('/api/signals/junctions')
       .then(r => r.json())
       .then(res => {
         if (res.data) {
-          res.data.forEach(j => {
-            L.circleMarker([j.lat, j.lng], {
+          res.data.forEach(jnc => {
+            L.circleMarker([jnc.lat, jnc.lng], {
               radius: 6,
               color: '#34d399',
               fillColor: '#059669',
               fillOpacity: 0.9,
               weight: 2
-            }).bindPopup(`<b>${j.name}</b><br>Baseline: ${j.baseline_wait_sec}s ➔ Optimized: ${j.optimized_wait_sec}s`).addTo(signalsLayer);
+            }).bindPopup(`<b>${jnc.name}</b><br>Signal Wait: ${jnc.baseline_wait_sec}s ➔ ${jnc.optimized_wait_sec}s`).addTo(signalsLayer);
           });
         }
-      });
+      })
+      .catch(e => console.log('Signals init notice'));
 
-    // Initial Execution
-    loadIncidents();
+    // Initial Load
+    loadActiveIncidents();
     loadHeatmapOverlay();
     runRouting();
-
-    // Socket.IO
-    try {
-      const socket = io();
-      socket.on('incident:new', () => { loadIncidents(); runRouting(); });
-      socket.on('reroute:triggered', () => { runRouting(); });
-    } catch (e) {}
   </script>
 </body>
 </html>

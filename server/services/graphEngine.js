@@ -610,26 +610,28 @@ export async function calculateMultiFactorRoutes(originParam, destParam, departu
   let rawOriginCoords = null;
   let rawDestCoords = null;
 
-  if (typeof originParam === 'object' && originParam.lat && originParam.lng) {
+  if (typeof originParam === 'object' && originParam && originParam.lat && originParam.lng) {
     rawOriginCoords = [originParam.lng, originParam.lat];
+    const nearOrigin = findNearestGraphNode(originParam.lat, originParam.lng);
+    if (nearOrigin) originKey = nearOrigin.key;
+  } else {
+    originKey = resolveNodeKey(originParam);
   }
-  if (typeof destParam === 'object' && destParam.lat && destParam.lng) {
+
+  if (typeof destParam === 'object' && destParam && destParam.lat && destParam.lng) {
     rawDestCoords = [destParam.lng, destParam.lat];
+    const nearDest = findNearestGraphNode(destParam.lat, destParam.lng);
+    if (nearDest) destKey = nearDest.key;
+  } else {
+    destKey = resolveNodeKey(destParam);
   }
 
   if (rawOriginCoords && rawDestCoords) {
     const nearOrigin = findNearestGraphNode(rawOriginCoords[1], rawOriginCoords[0]);
     const nearDest = findNearestGraphNode(rawDestCoords[1], rawDestCoords[0]);
-
-    if (nearOrigin.distanceMeters < 6000 && nearDest.distanceMeters < 6000) {
-      originKey = nearOrigin.key;
-      destKey = nearDest.key;
-    } else {
+    if (nearOrigin.distanceMeters >= 12000 || nearDest.distanceMeters >= 12000) {
       isArbitraryCoordinates = true;
     }
-  } else {
-    originKey = resolveNodeKey(originParam);
-    destKey = resolveNodeKey(destParam);
   }
 
   // Handle Arbitrary Coordinate Global Routing
