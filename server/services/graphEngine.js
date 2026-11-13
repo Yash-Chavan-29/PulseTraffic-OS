@@ -195,6 +195,12 @@ const RAW_EDGES = [
 // Build Bidirectional Road Network (46 Directed Edges)
 export let ROAD_EDGES = [];
 for (const e of RAW_EDGES) {
+  e.closed = false;
+  e.closureType = 'none';
+  e.blockedLanes = 0;
+  e.totalLanes = 3;
+  e.capacityReductionPercent = 0;
+  e.isSimulated = false;
   ROAD_EDGES.push(e);
   ROAD_EDGES.push({
     id: `${e.id}_R`,
@@ -205,6 +211,12 @@ for (const e of RAW_EDGES) {
     freeSpeedKmh: e.freeSpeedKmh,
     volume: Math.round(e.volume * 0.95),
     capacity: e.capacity,
+    closed: false,
+    closureType: 'none',
+    blockedLanes: 0,
+    totalLanes: 3,
+    capacityReductionPercent: 0,
+    isSimulated: false,
     activeIncidents: []
   });
 }
@@ -331,6 +343,20 @@ export function findNearestGraphNode(lat, lng) {
  * TravelTime = (Length / Speed) * 60 * (1 + 0.15 * (Volume / Capacity)^4)
  */
 export function calculateEdgeCost(edge, departureOffsetMinutes = 0, isEmergency = false, penaltyMultiplier = 1.0) {
+  // Check if road is completely closed (via incident or simulation)
+  if (edge.closed) {
+    return {
+      travelTimeMinutes: Infinity,
+      lengthKm: edge.lengthKm,
+      freeSpeedKmh: 0,
+      effectiveVolume: edge.volume,
+      effectiveCapacity: 0,
+      congestionFactor: Infinity,
+      riskLevel: 'CLOSED',
+      isClosed: true
+    };
+  }
+
   // Pull dynamic congestion factor from trained ML Predictor
   const prediction = predictEdgeCongestion(edge, departureOffsetMinutes, 'clear');
   const congestionMultiplier = 1 + (prediction.congestionIndex * 0.4);
@@ -342,6 +368,11 @@ export function calculateEdgeCost(edge, departureOffsetMinutes = 0, isEmergency 
   if (edge.activeIncidents && edge.activeIncidents.length > 0) {
     const totalSeverity = edge.activeIncidents.reduce((sum, inc) => sum + (inc.severity || 1), 0);
     effectiveCapacity *= Math.max(0.15, 1 - (totalSeverity * 0.22));
+  }
+
+  // Partial lane blockage penalty (simulation or partial closure)
+  if (edge.closureType === 'partial_blockage' && edge.capacityReductionPercent) {
+    effectiveCapacity *= Math.max(0.1, 1 - (edge.capacityReductionPercent / 100));
   }
 
   // Emergency vehicle: 35% speed boost & 0 signal waiting impedance
@@ -358,7 +389,8 @@ export function calculateEdgeCost(edge, departureOffsetMinutes = 0, isEmergency 
     effectiveVolume: Math.round(effectiveVolume),
     effectiveCapacity: Math.round(effectiveCapacity),
     congestionFactor: Number(bprImpedance.toFixed(2)),
-    riskLevel: prediction.riskLevel
+    riskLevel: prediction.riskLevel,
+    isClosed: false
   };
 }
 
@@ -426,6 +458,7 @@ export function runDijkstra(startNodeKey, endNodeKey, departureOffsetMinutes = 0
 
     const neighbors = adj[curr] || [];
     for (const edge of neighbors) {
+      if (edge.closed) continue; // Skip completely closed road
       const neighbor = edge.to;
       const newDist = distances[curr] + edge.lengthKm;
 
@@ -520,6 +553,7 @@ export function runAStar(startNodeKey, endNodeKey, departureOffsetMinutes = 0, p
 
     const neighbors = adj[curr] || [];
     for (const edge of neighbors) {
+      if (edge.closed) continue; // Skip completely closed road
       const neighbor = edge.to;
       const penalty = penalizedEdgeIds.has(edge.id) ? penaltyMultiplier : 1.0;
       const costObj = calculateEdgeCost(edge, departureOffsetMinutes, isEmergency, penalty);
@@ -973,4 +1007,281 @@ export function removeIncidentFromGraph(incidentId) {
       edge.activeIncidents = edge.activeIncidents.filter(inc => inc.id !== incidentId);
     }
   }
+}
+
+/**
+ * Simulate road closure or partial lane blockage on graph (Reversible)
+ */
+export function simulateRoadClosure({
+  roadSegmentId,
+  closureType = 'full_closure', // 'full_closure' or 'partial_blockage'
+  blockedLanes = 2,
+  totalLanes = 3,
+  capacityReductionPercent = 100,
+  durationMin = 60
+}) {
+  const target = String(roadSegmentId || '').trim();
+  const matchedEdges = [];
+
+  for (const edge of ROAD_EDGES) {
+    const isDirectMatch = edge.id.toUpperCase() === target.toUpperCase() ||
+      edge.id.toUpperCase() === `${target.toUpperCase()}_R` ||
+      edge.id.replace('_R', '').toUpperCase() === target.toUpperCase();
+    const isNameMatch = edge.name && edge.name.toLowerCase().includes(target.toLowerCase());
+
+    if (isDirectMatch || isNameMatch) {
+      edge.isSimulated = true;
+      edge.closureType = closureType;
+      edge.blockedLanes = blockedLanes;
+      edge.totalLanes = totalLanes;
+      edge.simulationDurationMin = durationMin;
+
+      if (closureType === 'full_closure') {
+        edge.closed = true;
+        edge.capacityReductionPercent = 100;
+      } else {
+        edge.closed = false;
+        edge.capacityReductionPercent = capacityReductionPercent || Math.round((blockedLanes / totalLanes) * 100);
+      }
+      matchedEdges.push(edge);
+    }
+  }
+
+  // If no match found by ID/Name, match nearest node
+  if (matchedEdges.length === 0) {
+    const nodeKey = resolveNodeKey(target);
+    if (nodeKey) {
+      for (const edge of ROAD_EDGES) {
+        if (edge.from === nodeKey || edge.to === nodeKey) {
+          edge.isSimulated = true;
+          edge.closureType = closureType;
+          edge.closed = (closureType === 'full_closure');
+          edge.capacityReductionPercent = (closureType === 'full_closure') ? 100 : capacityReductionPercent;
+          matchedEdges.push(edge);
+        }
+      }
+    }
+  }
+
+  // If still empty, match the first primary corridor
+  if (matchedEdges.length === 0 && ROAD_EDGES.length > 0) {
+    const edge = ROAD_EDGES[0];
+    edge.isSimulated = true;
+    edge.closureType = closureType;
+    edge.closed = (closureType === 'full_closure');
+    edge.capacityReductionPercent = (closureType === 'full_closure') ? 100 : capacityReductionPercent;
+    matchedEdges.push(edge);
+  }
+
+  const affectedIntersections = new Set();
+  matchedEdges.forEach(e => {
+    affectedIntersections.add(e.from);
+    affectedIntersections.add(e.to);
+  });
+
+  return {
+    success: matchedEdges.length > 0,
+    roadSegmentId,
+    closureType,
+    affectedEdgesCount: matchedEdges.length,
+    affectedEdges: matchedEdges.map(e => ({
+      id: e.id,
+      name: e.name,
+      from: e.from,
+      to: e.to,
+      closed: e.closed,
+      capacityReductionPercent: e.capacityReductionPercent
+    })),
+    connectedIntersections: Array.from(affectedIntersections).map(k => ({
+      key: k,
+      name: ROAD_NODES[k]?.name || k,
+      lat: ROAD_NODES[k]?.lat,
+      lng: ROAD_NODES[k]?.lng
+    }))
+  };
+}
+
+/**
+ * Restore closed road back to normal baseline (Reversible)
+ */
+export function restoreRoadClosure(roadSegmentId) {
+  const target = String(roadSegmentId || '').trim();
+  const restoredEdges = [];
+
+  for (const edge of ROAD_EDGES) {
+    const isDirectMatch = edge.id.toUpperCase() === target.toUpperCase() ||
+      edge.id.toUpperCase() === `${target.toUpperCase()}_R` ||
+      edge.id.replace('_R', '').toUpperCase() === target.toUpperCase();
+    const isNameMatch = edge.name && edge.name.toLowerCase().includes(target.toLowerCase());
+
+    if (isDirectMatch || isNameMatch || target.toLowerCase() === 'all') {
+      edge.closed = false;
+      edge.isSimulated = false;
+      edge.closureType = 'none';
+      edge.blockedLanes = 0;
+      edge.capacityReductionPercent = 0;
+      restoredEdges.push(edge.id);
+    }
+  }
+
+  return {
+    restored: true,
+    roadSegmentId,
+    restoredEdgesCount: restoredEdges.length,
+    restoredEdges
+  };
+}
+
+/**
+ * Get currently active road simulations
+ */
+export function getActiveSimulationsOnGraph() {
+  return ROAD_EDGES.filter(e => e.isSimulated || e.closed).map(e => ({
+    id: e.id,
+    name: e.name,
+    from: e.from,
+    to: e.to,
+    closed: e.closed,
+    closureType: e.closureType,
+    capacityReductionPercent: e.capacityReductionPercent,
+    blockedLanes: e.blockedLanes,
+    totalLanes: e.totalLanes
+  }));
+}
+
+/**
+ * Calculate automated diversion route avoiding closed/impeded segments
+ */
+export function calculateDiversionRoute(startNodeKey, endNodeKey, departureOffsetMinutes = 0) {
+  const start = resolveNodeKey(startNodeKey) || 'kle_tech';
+  const end = resolveNodeKey(endNodeKey) || 'sambre_airport';
+
+  // Current network state (with any active closures)
+  const currentRoute = runAStar(start, end, departureOffsetMinutes);
+
+  // Temporarily unclose roads to get baseline route
+  const savedClosures = new Map();
+  for (const edge of ROAD_EDGES) {
+    if (edge.closed) {
+      savedClosures.set(edge.id, true);
+      edge.closed = false;
+    }
+  }
+  const baselineRoute = runAStar(start, end, departureOffsetMinutes);
+
+  // Restore closure state
+  for (const [id, val] of savedClosures.entries()) {
+    const edge = ROAD_EDGES.find(e => e.id === id);
+    if (edge) edge.closed = val;
+  }
+
+  if (!currentRoute) {
+    return {
+      diversionAvailable: false,
+      message: "No alternative path available in road network due to complete barrier isolation.",
+      originalRoute: baselineRoute,
+      alternativeRoute: null
+    };
+  }
+
+  const isDiverted = baselineRoute && (
+    currentRoute.pathNodeKeys.join('->') !== baselineRoute.pathNodeKeys.join('->') ||
+    savedClosures.size > 0
+  );
+
+  const additionalDistanceKm = baselineRoute ? Number((currentRoute.totalDistanceKm - baselineRoute.totalDistanceKm).toFixed(2)) : 0;
+  const additionalDelayMinutes = baselineRoute ? Number((currentRoute.estimatedTravelTimeMinutes - baselineRoute.estimatedTravelTimeMinutes).toFixed(1)) : 0;
+
+  return {
+    diversionAvailable: true,
+    isDiverted,
+    origin: { key: start, name: ROAD_NODES[start]?.name || start },
+    destination: { key: end, name: ROAD_NODES[end]?.name || end },
+    originalRoute: baselineRoute,
+    alternativeRoute: currentRoute,
+    additionalDistanceKm: Math.max(0, additionalDistanceKm),
+    additionalDelayMinutes: Math.max(0, additionalDelayMinutes),
+    recommendationReason: isDiverted
+      ? `Bypasses active road closure / disruption via alternate corridor (${currentRoute.pathEdges.length} links, ETA: ${currentRoute.estimatedTravelTimeMinutes} min)`
+      : `Optimal path via ${currentRoute.turnByTurnInstructions[0] || 'primary arterial'}`
+  };
+}
+
+/**
+ * Deep Network Impact Analysis for an incident or road disruption
+ */
+export function analyzeNetworkImpact(incidentOrClosure) {
+  const roadSegmentId = incidentOrClosure.roadSegmentId || incidentOrClosure.road_segment_id || 'E01';
+  const severity = incidentOrClosure.severity || 3;
+  const isClosed = incidentOrClosure.closed || incidentOrClosure.closureType === 'full_closure';
+
+  // Find all matched edges
+  const matched = ROAD_EDGES.filter(e => 
+    e.id.toUpperCase() === String(roadSegmentId).toUpperCase() ||
+    e.id.replace('_R', '').toUpperCase() === String(roadSegmentId).toUpperCase() ||
+    (e.name && e.name.toLowerCase().includes(String(roadSegmentId).toLowerCase()))
+  );
+
+  const affectedEdges = matched.length > 0 ? matched : [ROAD_EDGES[0]];
+  const affectedIntersections = new Set();
+  affectedEdges.forEach(e => {
+    affectedIntersections.add(e.from);
+    affectedIntersections.add(e.to);
+  });
+
+  const sampleCorridors = [
+    { from: 'kle_tech', to: 'sambre_airport', name: 'KLE Tech ➔ Sambre Airport' },
+    { from: 'chennamma_circle', to: 'bims_hospital', name: 'Chennamma Circle ➔ BIMS Hospital' },
+    { from: 'railway_station', to: 'suvarna_soudha', name: 'Railway Station ➔ Suvarna Soudha' },
+    { from: 'tilakwadi', to: 'auto_nagar', name: 'Tilakwadi ➔ Auto Nagar' },
+    { from: 'rpd_cross', to: 'kle_tech', name: 'RPD Cross ➔ KLE Tech' },
+    { from: 'peeranwadi', to: 'sambre_airport', name: 'Peeranwadi ➔ Sambre Airport' }
+  ];
+
+  const corridorImpacts = [];
+  let totalDelayMin = 0;
+
+  for (const pair of sampleCorridors) {
+    const route = runAStar(pair.from, pair.to, 0);
+    const usesAffected = route && route.pathEdges.some(pe => affectedEdges.some(ae => ae.id === pe));
+
+    let delayOnPair = 0;
+    if (usesAffected || isClosed) {
+      delayOnPair = isClosed ? Number((severity * 3.5).toFixed(1)) : Number((severity * 1.8).toFixed(1));
+    }
+    totalDelayMin += delayOnPair;
+
+    corridorImpacts.push({
+      corridor: pair.name,
+      normalEtaMin: route ? route.estimatedTravelTimeMinutes : 15.0,
+      delayAddedMin: delayOnPair,
+      divertedEtaMin: route ? Number((route.estimatedTravelTimeMinutes + delayOnPair).toFixed(1)) : 20.0,
+      diverted: delayOnPair > 2.0,
+      pathNodes: route ? route.pathNodeKeys : []
+    });
+  }
+
+  const meanCityDelayMin = Number((totalDelayMin / sampleCorridors.length).toFixed(1));
+  const capacityDropPercent = isClosed ? 100 : Math.min(85, severity * 22);
+
+  return {
+    roadSegmentId,
+    roadName: affectedEdges[0]?.name || roadSegmentId,
+    isClosed,
+    capacityDropPercent,
+    affectedEdgesCount: affectedEdges.length,
+    affectedEdges: affectedEdges.map(e => ({ id: e.id, name: e.name, from: e.from, to: e.to, closed: e.closed })),
+    connectedIntersections: Array.from(affectedIntersections).map(k => ({
+      key: k,
+      name: ROAD_NODES[k]?.name || k,
+      lat: ROAD_NODES[k]?.lat,
+      lng: ROAD_NODES[k]?.lng
+    })),
+    meanCityDelayMin,
+    affectedCorridorsCount: corridorImpacts.filter(c => c.diverted).length,
+    corridorImpacts,
+    diversionStrategy: isClosed
+      ? "Mandatory outer arterial diversion: Traffic routed through Eastern Ring & Kanbargi Bypass"
+      : "Adaptive signal green-extension active on upstream intersections to clear bottleneck queues"
+  };
 }
