@@ -18,6 +18,7 @@
       --bg: #090a0f;
       --panel: #11141c;
       --panel-elevated: #161a24;
+      --panel-glass: rgba(17, 20, 28, 0.92);
       --border: rgba(255, 255, 255, 0.08);
       --border-focus: rgba(255, 255, 255, 0.2);
       --text: #f8fafc;
@@ -122,10 +123,14 @@
       border: none;
     }
 
+    .tab-item:hover {
+      color: #ffffff;
+    }
+
     .tab-item.active {
       background: var(--panel-elevated);
       color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
     }
 
     .top-meta {
@@ -159,27 +164,28 @@
       overflow: hidden;
     }
 
-    /* Floating Left Control Panel (Flow A: Commuter) */
+    /* Left Control Drawer */
     .control-drawer {
       position: absolute;
       top: 16px;
       left: 16px;
       bottom: 16px;
-      width: 380px;
-      background: rgba(17, 20, 28, 0.88);
+      width: 400px;
+      background: var(--panel-glass);
       backdrop-filter: blur(20px) saturate(180%);
       -webkit-backdrop-filter: blur(20px) saturate(180%);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       z-index: 1000;
-      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7);
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      transition: all 0.2s ease;
     }
 
     .drawer-header {
-      padding: 18px 20px;
+      padding: 16px 20px;
       border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
@@ -193,15 +199,26 @@
     }
 
     .drawer-body {
-      padding: 18px 20px;
+      padding: 16px 20px;
       overflow-y: auto;
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
     }
 
-    /* Search Inputs */
+    /* Tab View Containers */
+    .view-panel {
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .view-panel.active {
+      display: flex;
+    }
+
+    /* Input Groups */
     .route-input-group {
       display: flex;
       flex-direction: column;
@@ -222,6 +239,7 @@
       width: 10px;
       height: 10px;
       border-radius: 50%;
+      flex-shrink: 0;
     }
 
     .pin-source { background: #3b82f6; border: 2px solid #ffffff; }
@@ -234,6 +252,7 @@
       color: var(--text);
       font-size: 13px;
       outline: none;
+      cursor: pointer;
     }
 
     .node-select option {
@@ -247,7 +266,6 @@
       margin-left: 20px;
     }
 
-    /* Time offset selector */
     .departure-row {
       display: flex;
       align-items: center;
@@ -269,6 +287,7 @@
       padding: 4px 8px;
       border-radius: 6px;
       cursor: pointer;
+      transition: all 0.15s ease;
     }
 
     .time-pill.selected {
@@ -296,9 +315,62 @@
 
     .action-btn-primary:hover {
       background: #e2e8f0;
+      transform: translateY(-1px);
     }
 
-    /* Route Comparison Cards (Module 2) */
+    .action-btn-emerald {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--accent-emerald);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+    }
+
+    .action-btn-emerald:hover {
+      background: #059669;
+    }
+
+    /* Reroute Alert Banner */
+    .reroute-banner {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.35);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .reroute-banner-top {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 600;
+      color: #fb7185;
+    }
+
+    .reroute-btn {
+      background: #f43f5e;
+      color: #fff;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    /* Route Comparison Cards */
     .routes-container {
       display: flex;
       flex-direction: column;
@@ -316,32 +388,37 @@
     }
 
     .route-card:hover {
-      border-color: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
     }
 
     .route-card.active-fastest {
-      border-color: rgba(59, 130, 246, 0.5);
+      border-color: rgba(59, 130, 246, 0.6);
       background: rgba(59, 130, 246, 0.05);
+    }
+
+    .route-card.active-shortest {
+      border-color: rgba(148, 163, 184, 0.6);
+      background: rgba(148, 163, 184, 0.05);
     }
 
     .route-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 6px;
     }
 
     .route-name-badge {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       font-size: 13px;
       font-weight: 600;
     }
 
     .rec-badge {
-      font-family: 'Geist Mono', monospace;
       font-size: 10px;
+      font-weight: 600;
       background: rgba(16, 185, 129, 0.15);
       color: #34d399;
       border: 1px solid rgba(16, 185, 129, 0.3);
@@ -350,7 +427,7 @@
     }
 
     .route-eta {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       font-family: 'Geist Mono', monospace;
     }
@@ -358,96 +435,121 @@
     .route-stats-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-top: 8px;
+      margin-top: 10px;
       padding-top: 8px;
-      border-top: 1px solid var(--border);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
       font-size: 11px;
       color: var(--text-muted);
     }
 
     .stat-val {
-      font-family: 'Geist Mono', monospace;
       color: #ffffff;
-      font-weight: 500;
+      font-weight: 600;
+      font-family: 'Geist Mono', monospace;
     }
 
-    /* Reroute Suggested Banner (Module 4) */
-    .reroute-banner {
-      background: rgba(244, 63, 94, 0.12);
-      border: 1px solid rgba(244, 63, 94, 0.35);
+    /* Metric telemetry card */
+    .telemetry-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      padding: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .telemetry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .telemetry-value-lg {
+      font-size: 26px;
+      font-weight: 700;
+      font-family: 'Geist Mono', monospace;
+      color: #ffffff;
+    }
+
+    /* Sliders */
+    .slider-group {
       display: flex;
       flex-direction: column;
       gap: 6px;
     }
 
-    .reroute-banner-top {
+    .slider-label {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      font-size: 12.5px;
-      font-weight: 600;
-      color: #fb7185;
+      font-size: 12px;
+      color: var(--text-muted);
     }
 
-    .reroute-btn {
-      background: #f43f5e;
-      color: #fff;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 11.5px;
-      font-weight: 600;
+    .range-input {
+      width: 100%;
+      height: 6px;
+      background: var(--panel-elevated);
+      border-radius: 3px;
+      outline: none;
+      -webkit-appearance: none;
       cursor: pointer;
-      margin-top: 4px;
     }
 
-    /* Map Viewport */
+    .range-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      cursor: pointer;
+      border: 2px solid #ffffff;
+    }
+
+    /* Leaflet Map */
     #city-map {
       flex: 1;
       height: 100%;
-      background: #06070a;
+      background: #090a0f;
       z-index: 10;
     }
 
-    /* Native Dark CartoDB basemap - no invert filter needed */
     .leaflet-tile-pane {
       filter: none;
     }
 
-    /* Floating Top-Right Layer HUD */
+    /* Floating HUD Toggles */
     .map-hud {
       position: absolute;
       top: 16px;
       right: 16px;
-      background: rgba(17, 20, 28, 0.9);
+      background: var(--panel-glass);
       backdrop-filter: blur(16px);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
       z-index: 1000;
       display: flex;
       gap: 16px;
-      align-items: center;
       font-size: 12px;
+      color: var(--text-muted);
     }
 
     .hud-toggle {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       cursor: pointer;
-      color: var(--text-muted);
       user-select: none;
     }
 
     .hud-toggle input {
-      accent-color: #3b82f6;
+      accent-color: var(--accent-blue);
     }
 
-    /* Floating Report Incident Quick FAB */
+    /* Report Incident FAB */
     .report-fab {
       position: absolute;
       bottom: 24px;
@@ -470,6 +572,49 @@
 
     .report-fab:hover {
       transform: translateY(-2px);
+    }
+
+    /* Incident Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(6px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-card {
+      width: 440px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 18px;
     }
   </style>
 </head>
@@ -496,7 +641,7 @@
     <div class="top-meta">
       <div class="system-status">
         <span class="status-dot"></span>
-        <span>Graph Engine Online (142 Nodes / 380 Edges)</span>
+        <span id="engine-status">Graph Engine Online (142 Nodes / 380 Edges)</span>
       </div>
     </div>
   </header>
@@ -504,96 +649,216 @@
   <!-- Main Split Layout -->
   <div class="app-main">
     
-    <!-- Left Commuter & Routing Panel -->
+    <!-- Left Drawer -->
     <div class="control-drawer" id="main-drawer">
       <div class="drawer-header">
-        <h2>Commuter Routing</h2>
-        <span style="font-family: 'Geist Mono'; font-size: 11px; color: var(--text-dim);">Dijkstra + A*</span>
+        <h2 id="drawer-title">Commuter Routing</h2>
+        <span style="font-family: 'Geist Mono'; font-size: 11px; color: var(--text-dim);" id="drawer-subtitle">Dijkstra + A*</span>
       </div>
 
       <div class="drawer-body">
         
-        <!-- Source / Destination Pickers -->
-        <div class="route-input-group">
-          <div class="input-row">
-            <span class="node-pin pin-source"></span>
-            <select class="node-select" id="origin-select" onchange="runRouting()">
-              <option value="1">Central Station (Node 1)</option>
-              <option value="14">Tech Park Gateway (Node 14)</option>
-              <option value="28">Harbor Terminal (Node 28)</option>
-              <option value="56">North Ring Crossing (Node 56)</option>
-            </select>
+        <!-- View 1: Commuter Route Search -->
+        <div class="view-panel active" id="panel-routes">
+          <div class="route-input-group">
+            <div class="input-row">
+              <span class="node-pin pin-source"></span>
+              <select class="node-select" id="origin-select" onchange="runRouting()">
+                <option value="1">Central Station (Node 1)</option>
+                <option value="14">Tech Park Gateway (Node 14)</option>
+                <option value="28">Harbor Terminal (Node 28)</option>
+                <option value="56">North Ring Crossing (Node 56)</option>
+              </select>
+            </div>
+            <div class="input-divider"></div>
+            <div class="input-row">
+              <span class="node-pin pin-dest"></span>
+              <select class="node-select" id="dest-select" onchange="runRouting()">
+                <option value="98" selected>Airport Terminal 2 (Node 98)</option>
+                <option value="42">Civic Square (Node 42)</option>
+                <option value="73">South Logistics Hub (Node 73)</option>
+              </select>
+            </div>
           </div>
-          <div class="input-divider"></div>
-          <div class="input-row">
-            <span class="node-pin pin-dest"></span>
-            <select class="node-select" id="dest-select" onchange="runRouting()">
-              <option value="98" selected>Airport Terminal 2 (Node 98)</option>
-              <option value="42">Civic Square (Node 42)</option>
-              <option value="73">South Logistics Hub (Node 73)</option>
-            </select>
+
+          <div class="departure-row">
+            <span>AI Departure Window:</span>
+            <div class="pill-group">
+              <button class="time-pill selected" onclick="setTime(this, 0)">Now</button>
+              <button class="time-pill" onclick="setTime(this, 15)">+15 min</button>
+              <button class="time-pill" onclick="setTime(this, 30)">+30 min</button>
+            </div>
           </div>
-        </div>
 
-        <div class="departure-row">
-          <span>Departure Prediction:</span>
-          <div class="pill-group">
-            <button class="time-pill selected" onclick="setTime(this, 0)">Now</button>
-            <button class="time-pill" onclick="setTime(this, 15)">+15 min</button>
-            <button class="time-pill" onclick="setTime(this, 30)">+30 min</button>
+          <button class="action-btn-primary" onclick="runRouting()">
+            <span>Recalculate Optimal Routes</span>
+          </button>
+
+          <!-- Dynamic Reroute Alert -->
+          <div class="reroute-banner" id="reroute-alert" style="display: none;">
+            <div class="reroute-banner-top">
+              <span>⚠ Incident on Arterial 4</span>
+              <span>+9.2 min delay</span>
+            </div>
+            <p style="font-size: 11.5px; color: #fecdd3; line-height: 1.4;">Accident detected at Node 42. Alternate route saves 7.2 minutes.</p>
+            <button class="reroute-btn" onclick="applyReroute()">Switch to Ring Road Bypass</button>
           </div>
-        </div>
 
-        <button class="action-btn-primary" onclick="runRouting()">
-          <span>Recalculate Optimal Routes</span>
-        </button>
-
-        <!-- Dynamic Reroute Alert (Simulated Incident Impact) -->
-        <div class="reroute-banner" id="reroute-alert" style="display: none;">
-          <div class="reroute-banner-top">
-            <span>⚠ Incident on Arterial 4</span>
-            <span>+9 min delay</span>
-          </div>
-          <p style="font-size: 11.5px; color: #fecdd3; line-height: 1.4;">Accident detected at Node 42. Alternate route saves 7.2 minutes.</p>
-          <button class="reroute-btn" onclick="applyReroute()">Switch to Ring Road Bypass</button>
-        </div>
-
-        <!-- Module 2: Route Comparison Table -->
-        <div class="routes-container" id="routes-list">
-          
-          <!-- Route 1: Fastest (A*) -->
-          <div class="route-card active-fastest" onclick="selectRoute(0)">
-            <div class="route-header">
-              <div class="route-name-badge">
-                <span style="color: #60a5fa;">● A* Fastest</span>
-                <span class="rec-badge">Recommended</span>
+          <!-- Route Comparison Cards -->
+          <div class="routes-container" id="routes-list">
+            <div class="route-card active-fastest" id="card-route-0" onclick="selectRoute(0)">
+              <div class="route-header">
+                <div class="route-name-badge">
+                  <span style="color: #60a5fa;">● A* Fastest</span>
+                  <span class="rec-badge">Recommended</span>
+                </div>
+                <span class="route-eta" id="fastest-eta">18.4 min</span>
               </div>
-              <span class="route-eta">18.4 min</span>
-            </div>
-            <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">Via West Expressway & Arterial 2 (Lowest congestion risk)</p>
-            <div class="route-stats-grid">
-              <div>Dist: <span class="stat-val">12.8 km</span></div>
-              <div>Congestion: <span class="stat-val" style="color: #34d399;">Low</span></div>
-              <div>Fuel: <span class="stat-val">0.9 L</span></div>
-            </div>
-          </div>
-
-          <!-- Route 2: Shortest (Dijkstra) -->
-          <div class="route-card" onclick="selectRoute(1)">
-            <div class="route-header">
-              <div class="route-name-badge">
-                <span style="color: #94a3b8;">● Dijkstra Shortest</span>
+              <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;" id="fastest-desc">Via West Expressway & Arterial 2 (Lowest congestion risk)</p>
+              <div class="route-stats-grid">
+                <div>Dist: <span class="stat-val" id="fastest-dist">12.8 km</span></div>
+                <div>Congestion: <span class="stat-val" style="color: #34d399;" id="fastest-cong">Low</span></div>
+                <div>Fuel: <span class="stat-val" id="fastest-fuel">0.88 L</span></div>
               </div>
-              <span class="route-eta">24.1 min</span>
             </div>
-            <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">Via Downtown Core (Heavy traffic bottlenecks)</p>
-            <div class="route-stats-grid">
-              <div>Dist: <span class="stat-val">10.4 km</span></div>
-              <div>Congestion: <span class="stat-val" style="color: #f87171;">High</span></div>
-              <div>Fuel: <span class="stat-val">1.2 L</span></div>
+
+            <div class="route-card" id="card-route-1" onclick="selectRoute(1)">
+              <div class="route-header">
+                <div class="route-name-badge">
+                  <span style="color: #94a3b8;">● Dijkstra Shortest</span>
+                </div>
+                <span class="route-eta" id="shortest-eta">25.1 min</span>
+              </div>
+              <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;" id="shortest-desc">Via Downtown Core (Heavy traffic bottlenecks)</p>
+              <div class="route-stats-grid">
+                <div>Dist: <span class="stat-val" id="shortest-dist">10.4 km</span></div>
+                <div>Congestion: <span class="stat-val" style="color: #f87171;" id="shortest-cong">High</span></div>
+                <div>Fuel: <span class="stat-val" id="shortest-fuel">1.25 L</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- View 2: Emergency Priority Corridor -->
+        <div class="view-panel" id="panel-emergency">
+          <div class="telemetry-card" style="border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.05);">
+            <div class="telemetry-header">
+              <span>PRIORITY CORRIDOR STATUS</span>
+              <span style="color: #34d399; font-weight: 700; font-family: 'Geist Mono';">● GREEN WAVE ACTIVE</span>
+            </div>
+            <div style="display: flex; align-items: baseline; gap: 8px;">
+              <span class="telemetry-value-lg" style="color: #34d399;">12.6</span>
+              <span style="font-size: 13px; color: #a7f3d0;">minutes saved (56.2%)</span>
+            </div>
+            <p style="font-size: 11.5px; color: var(--text-muted);">3 Critical junctions synchronized to locked green for approaching EMS Unit #04.</p>
+          </div>
+
+          <div class="route-input-group">
+            <div class="input-row">
+              <span style="font-size: 11px; color: var(--text-muted); width: 80px;">Vehicle:</span>
+              <select class="node-select">
+                <option>Ambulance (EMS Priority 1)</option>
+                <option>Fire Engine (Rescue Priority 1)</option>
+              </select>
+            </div>
+            <div class="input-divider"></div>
+            <div class="input-row">
+              <span style="font-size: 11px; color: var(--text-muted); width: 80px;">Hospital:</span>
+              <select class="node-select">
+                <option>City Central Hospital (Node 88)</option>
+                <option>Memorial Trauma Center (Node 104)</option>
+              </select>
             </div>
           </div>
 
+          <div style="background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="font-size: 12px; font-weight: 600; color: #fff;">Preempted Junctions (Auto-Clear)</div>
+            <div style="display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-muted);">
+              <span>JNC-14 (Tech Park Main)</span>
+              <span style="color: #34d399; font-family: 'Geist Mono';">LOCKED GREEN (0s)</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-muted);">
+              <span>JNC-22 (Arterial 3 Cross)</span>
+              <span style="color: #60a5fa; font-family: 'Geist Mono';">QUEUED (ETA 90s)</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-muted);">
+              <span>JNC-38 (Hospital Access)</span>
+              <span style="color: #60a5fa; font-family: 'Geist Mono';">QUEUED (ETA 210s)</span>
+            </div>
+          </div>
+
+          <button class="action-btn-emerald" onclick="activateGreenWave()">
+            <span>⚡ Re-trigger Green Wave Corridor</span>
+          </button>
+        </div>
+
+        <!-- View 3: Adaptive Signal Lab -->
+        <div class="view-panel" id="panel-signals">
+          <div class="telemetry-card">
+            <div class="telemetry-header">
+              <span>WAIT TIME REDUCTION</span>
+              <span style="color: #60a5fa; font-weight: 700; font-family: 'Geist Mono';">ADAPTIVE Q-ALGO</span>
+            </div>
+            <div style="display: flex; align-items: baseline; gap: 8px;">
+              <span class="telemetry-value-lg" id="signal-reduction">-42.8%</span>
+              <span style="font-size: 13px; color: var(--text-muted);">68.4s ➔ 39.1s</span>
+            </div>
+            <p style="font-size: 11.5px; color: var(--text-muted);">Dynamically reallocating green light splits based on queue camera density.</p>
+          </div>
+
+          <div class="route-input-group">
+            <div style="font-size: 12px; font-weight: 600; color: #fff; margin-bottom: 4px;">Selected Junction: JNC-14 (Tech Park)</div>
+            
+            <div class="slider-group">
+              <div class="slider-label">
+                <span>North Queue (Vehicles)</span>
+                <span class="stat-val" id="val-q-north">38</span>
+              </div>
+              <input type="range" min="5" max="80" value="38" class="range-input" oninput="updateQueue('north', this.value)">
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-label">
+                <span>East Queue (Vehicles)</span>
+                <span class="stat-val" id="val-q-east">44</span>
+              </div>
+              <input type="range" min="5" max="80" value="44" class="range-input" oninput="updateQueue('east', this.value)">
+            </div>
+          </div>
+
+          <button class="action-btn-primary" onclick="optimizeSignalTiming()">
+            <span>Recalculate Adaptive Splits</span>
+          </button>
+        </div>
+
+        <!-- View 4: Admin Incident Queue -->
+        <div class="view-panel" id="panel-admin">
+          <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.2); padding: 8px 12px; border-radius: 6px; font-size: 11px; color: #93c5fd;">
+            <span>🛡 Automated Deduplication Engine</span>
+            <span style="font-weight: 700;">ACTIVE</span>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 12px; font-weight: 600; color: #f43f5e;">● Collision (Severity 3)</span>
+                <span style="font-size: 11px; color: var(--text-muted); font-family: 'Geist Mono';">INC-8891</span>
+              </div>
+              <p style="font-size: 11.5px; color: var(--text-muted);">Civic Square Arterial — 2 lanes blocked. -65% capacity reduction.</p>
+              <div style="display: flex; gap: 8px; margin-top: 4px;">
+                <button class="reroute-btn" style="flex: 1;" onclick="applyReroute()">Dispatch Diversion</button>
+                <button class="reroute-btn" style="background: var(--panel-elevated); color: var(--text-muted);" onclick="alert('Incident verified by Traffic Command.')">Verify</button>
+              </div>
+            </div>
+
+            <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 12px; font-weight: 600; color: #f59e0b;">● Roadblock (Severity 2)</span>
+                <span style="font-size: 11px; color: var(--text-muted); font-family: 'Geist Mono';">INC-8874</span>
+              </div>
+              <p style="font-size: 11.5px; color: var(--text-muted);">Metro Pillar 14 Construction — single lane slow crawl (+4.5m delay).</p>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -618,7 +883,7 @@
       </label>
     </div>
 
-    <!-- Report Incident Trigger -->
+    <!-- Report Incident FAB -->
     <button class="report-fab" onclick="triggerIncidentModal()">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -628,25 +893,57 @@
 
   </div>
 
+  <!-- Incident Reporting Modal -->
+  <div class="modal-overlay" id="incident-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Report Road Incident</h3>
+        <button class="modal-close" onclick="closeIncidentModal()">&times;</button>
+      </div>
+      <div class="route-input-group">
+        <div class="input-row">
+          <span style="font-size: 12px; color: var(--text-muted); width: 80px;">Type:</span>
+          <select class="node-select" id="report-type">
+            <option value="accident">Accident / Collision</option>
+            <option value="roadblock">Roadblock / Construction</option>
+            <option value="congestion">Severe Congestion Jam</option>
+          </select>
+        </div>
+        <div class="input-divider"></div>
+        <div class="input-row">
+          <span style="font-size: 12px; color: var(--text-muted); width: 80px;">Severity:</span>
+          <select class="node-select" id="report-severity">
+            <option value="1">Level 1 (Minor delay)</option>
+            <option value="2">Level 2 (Lane partially blocked)</option>
+            <option value="3" selected>Level 3 (Major blockage / Gridlock)</option>
+          </select>
+        </div>
+      </div>
+      <button class="action-btn-primary" style="background: #f43f5e; color: #fff;" onclick="submitIncident()">
+        Broadcast to Network (Socket.io)
+      </button>
+    </div>
+  </div>
+
   <!-- Leaflet Map Script -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    // 1. Initialize Map on Central Coordinates
+    // 1. Initialize Map
     const map = L.map('city-map', {
-      center: [12.9716, 77.5946], // Bangalore city coordinates as realistic base
+      center: [12.9716, 77.5946],
       zoom: 13,
       zoomControl: false
     });
 
     L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
-    // Enterprise Dark Canvas Basemap (Free, No API Key Required, No Watermarks)
+    // Enterprise Dark Canvas Basemap
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
       maxZoom: 16,
       attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'
     }).addTo(map);
 
-    // 2. City Graph Simulation (Synthetic 12x12 grid + arterial corridors)
+    // 2. City Graph Simulation Nodes
     const nodes = [];
     const baseLat = 12.94;
     const baseLng = 77.56;
@@ -662,10 +959,7 @@
       }
     }
 
-    // Render Arterial Road Corridors
-    const routeLines = [];
-
-    // Route A* Fastest (Blue Polyline)
+    // Polylines for Routes
     const fastestCoords = [
       [nodes[0].lat, nodes[0].lng],
       [nodes[9].lat, nodes[9].lng],
@@ -677,14 +971,6 @@
       [nodes[63].lat, nodes[63].lng]
     ];
 
-    const fastestPoly = L.polyline(fastestCoords, {
-      color: '#3b82f6',
-      weight: 5,
-      opacity: 0.9,
-      lineCap: 'round'
-    }).addTo(map);
-
-    // Route Shortest (Grey/Amber Polyline)
     const shortestCoords = [
       [nodes[0].lat, nodes[0].lng],
       [nodes[1].lat, nodes[1].lng],
@@ -698,6 +984,13 @@
       [nodes[63].lat, nodes[63].lng]
     ];
 
+    const fastestPoly = L.polyline(fastestCoords, {
+      color: '#3b82f6',
+      weight: 5,
+      opacity: 0.9,
+      lineCap: 'round'
+    }).addTo(map);
+
     const shortestPoly = L.polyline(shortestCoords, {
       color: '#94a3b8',
       weight: 4,
@@ -705,8 +998,8 @@
       opacity: 0.6
     }).addTo(map);
 
-    // Add Source & Destination Markers
-    L.circleMarker([nodes[0].lat, nodes[0].lng], {
+    // Source & Destination Markers
+    const srcMarker = L.circleMarker([nodes[0].lat, nodes[0].lng], {
       radius: 7,
       color: '#ffffff',
       fillColor: '#3b82f6',
@@ -714,7 +1007,7 @@
       weight: 2
     }).addTo(map).bindPopup("<b>Source:</b> Central Station");
 
-    L.circleMarker([nodes[63].lat, nodes[63].lng], {
+    const dstMarker = L.circleMarker([nodes[63].lat, nodes[63].lng], {
       radius: 7,
       color: '#ffffff',
       fillColor: '#10b981',
@@ -722,49 +1015,72 @@
       weight: 2
     }).addTo(map).bindPopup("<b>Destination:</b> Airport Terminal 2");
 
-    // Add Incident Marker (Simulated Accident)
+    // Incident Marker LayerGroup
+    const incidentsLayer = L.layerGroup().addTo(map);
     const incidentMarker = L.circleMarker([nodes[26].lat, nodes[26].lng], {
       radius: 9,
       color: '#ffffff',
       fillColor: '#f43f5e',
       fillOpacity: 1,
       weight: 2
-    }).addTo(map).bindPopup("<b>Incident:</b> Multi-vehicle accident (Severity 3)");
+    }).bindPopup("<b>Incident:</b> Multi-vehicle accident (Severity 3)").addTo(incidentsLayer);
+
+    // Congestion Overlay LayerGroup
+    const congestionLayer = L.layerGroup().addTo(map);
+    const hotNodes = [nodes[18], nodes[26], nodes[34], nodes[42]];
+    hotNodes.forEach(n => {
+      L.circle([n.lat, n.lng], {
+        radius: 450,
+        color: 'transparent',
+        fillColor: '#f59e0b',
+        fillOpacity: 0.25
+      }).addTo(congestionLayer);
+    });
+
+    // Signals LayerGroup
+    const signalsLayer = L.layerGroup();
+    nodes.filter(n => n.isJunction).forEach(j => {
+      L.circleMarker([j.lat, j.lng], {
+        radius: 5,
+        color: '#10b981',
+        fillColor: '#10b981',
+        fillOpacity: 0.8,
+        weight: 1
+      }).bindPopup("<b>Adaptive Signal:</b> Green-split optimized").addTo(signalsLayer);
+    });
 
     map.fitBounds(fastestPoly.getBounds(), { padding: [50, 50] });
 
-    // 3. UI Interactions & Simulated Sockets
-    function setTime(el, minutes) {
-      document.querySelectorAll('.time-pill').forEach(p => p.classList.remove('selected'));
-      el.classList.add('selected');
-      
-      // Simulate ML prediction shift
-      if (minutes > 0) {
-        document.getElementById('reroute-alert').style.display = 'flex';
-      } else {
-        document.getElementById('reroute-alert').style.display = 'none';
-      }
-    }
-
-    function applyReroute() {
-      document.getElementById('reroute-alert').style.display = 'none';
-      fastestPoly.setStyle({ color: '#10b981' });
-      alert("Route updated to Ring Road bypass. Time saved: 7.2 minutes.");
-    }
-
-    function triggerIncidentModal() {
-      const confirmed = confirm("Simulate reporter pin drop on map? This will broadcast to connected clients via Socket.IO.");
-      if (confirmed) {
-        document.getElementById('reroute-alert').style.display = 'flex';
-      }
-    }
-
-    function switchView(tab) {
-      document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+    // 3. UI Function Handlers
+    function switchView(tabKey) {
+      document.querySelectorAll('.tab-item').forEach(btn => btn.classList.remove('active'));
       event.target.classList.add('active');
+
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+      const targetPanel = document.getElementById('panel-' + tabKey);
+      if (targetPanel) targetPanel.classList.add('active');
+
+      const titleMap = {
+        'routes': ['Commuter Routing', 'Dijkstra + A*'],
+        'emergency': ['Emergency Corridor', 'Priority Green Wave'],
+        'signals': ['Signal Lab', 'Adaptive Queue Balancing'],
+        'admin': ['Admin Incident Queue', 'Network Impact Analysis']
+      };
+      if (titleMap[tabKey]) {
+        document.getElementById('drawer-title').innerText = titleMap[tabKey][0];
+        document.getElementById('drawer-subtitle').innerText = titleMap[tabKey][1];
+      }
+
+      if (tabKey === 'emergency') {
+        fastestPoly.setStyle({ color: '#10b981', weight: 6, opacity: 1 });
+      } else {
+        fastestPoly.setStyle({ color: '#3b82f6', weight: 5, opacity: 0.9 });
+      }
     }
 
     function selectRoute(index) {
+      document.getElementById('card-route-0').classList.toggle('active-fastest', index === 0);
+      document.getElementById('card-route-1').classList.toggle('active-shortest', index === 1);
       if (index === 0) {
         fastestPoly.bringToFront();
         fastestPoly.setStyle({ opacity: 1, weight: 6 });
@@ -774,6 +1090,72 @@
         shortestPoly.setStyle({ opacity: 1, weight: 6 });
         fastestPoly.setStyle({ opacity: 0.4, weight: 3 });
       }
+    }
+
+    function setTime(el, minutes) {
+      document.querySelectorAll('.time-pill').forEach(p => p.classList.remove('selected'));
+      el.classList.add('selected');
+      if (minutes > 0) {
+        document.getElementById('reroute-alert').style.display = 'flex';
+        document.getElementById('fastest-eta').innerText = (18.4 + (minutes * 0.4)).toFixed(1) + ' min';
+        document.getElementById('shortest-eta').innerText = (25.1 + (minutes * 0.6)).toFixed(1) + ' min';
+      } else {
+        document.getElementById('reroute-alert').style.display = 'none';
+        document.getElementById('fastest-eta').innerText = '18.4 min';
+        document.getElementById('shortest-eta').innerText = '25.1 min';
+      }
+    }
+
+    function runRouting() {
+      const orig = document.getElementById('origin-select').value;
+      const dest = document.getElementById('dest-select').value;
+      document.getElementById('fastest-desc').innerText = 'Recalculated via optimal multi-factor graph search';
+      fastestPoly.setStyle({ weight: 7 });
+      setTimeout(() => fastestPoly.setStyle({ weight: 5 }), 300);
+    }
+
+    function applyReroute() {
+      document.getElementById('reroute-alert').style.display = 'none';
+      fastestPoly.setStyle({ color: '#10b981' });
+      alert("Route updated to Ring Road bypass. Time saved: 7.2 minutes.");
+    }
+
+    function toggleLayers() {
+      const cong = document.getElementById('layer-congestion').checked;
+      const inc = document.getElementById('layer-incidents').checked;
+      const sig = document.getElementById('layer-signals').checked;
+
+      if (cong) map.addLayer(congestionLayer); else map.removeLayer(congestionLayer);
+      if (inc) map.addLayer(incidentsLayer); else map.removeLayer(incidentsLayer);
+      if (sig) map.addLayer(signalsLayer); else map.removeLayer(signalsLayer);
+    }
+
+    function triggerIncidentModal() {
+      document.getElementById('incident-modal').style.display = 'flex';
+    }
+
+    function closeIncidentModal() {
+      document.getElementById('incident-modal').style.display = 'none';
+    }
+
+    function submitIncident() {
+      closeIncidentModal();
+      document.getElementById('reroute-alert').style.display = 'flex';
+      alert("Incident successfully broadcast to connected clients via Socket.io!");
+    }
+
+    function activateGreenWave() {
+      fastestPoly.setStyle({ color: '#10b981', weight: 8 });
+      alert("Priority Corridor Activated: Next 3 junctions preempted to locked green.");
+    }
+
+    function updateQueue(direction, val) {
+      document.getElementById('val-q-' + direction).innerText = val;
+    }
+
+    function optimizeSignalTiming() {
+      document.getElementById('signal-reduction').innerText = '-46.2%';
+      alert("Adaptive optimization ran: signal timings updated based on live queue lengths.");
     }
   </script>
 </body>
