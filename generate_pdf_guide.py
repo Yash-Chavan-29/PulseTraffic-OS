@@ -115,14 +115,9 @@ def generate_pdf(output_path="Y:\\Hackothon\\SmartRoute_Presentation_Guide.pdf")
             Paragraph("Type any city or click chips (Dharwad, Bagalkot, Hubballi, Airport) to trigger instant routing.", body_style)
         ],
         [
-            Paragraph("<b>2-3 Routes Displayed</b>", body_style),
-            Paragraph("Fastest route rendered in <b>Solid Blue</b>; Shortest and Bypass routes in <b>Yellow</b>.", body_style),
-            Paragraph("Routes rendered on map with interactive hover and click highlighting.", body_style)
-        ],
-        [
-            Paragraph("<b>Compare Shortest vs Fastest</b>", body_style),
-            Paragraph("Displays travel times formatted in hours/minutes (e.g. 1h 14m vs 1h 32m) and distance in km.", body_style),
-            Paragraph("Green comparison box shows exact minutes and distance saved by selecting fastest path.", body_style)
+            Paragraph("<b>Single Fastest Route Display</b>", body_style),
+            Paragraph("A* optimal route rendered in prominent <b>Solid Blue</b> with distance and travel time.", body_style),
+            Paragraph("Shows distance in km and arrival time in hours/mins (e.g. 1h 14m) with optimal free flow.", body_style)
         ],
         [
             Paragraph("<b>Persistent Live Incidents</b>", body_style),
@@ -157,8 +152,8 @@ def generate_pdf(output_path="Y:\\Hackothon\\SmartRoute_Presentation_Guide.pdf")
     elements.append(Paragraph("1-Minute Judge Walkthrough Script", h1_style))
     demo_script = (
         "<b>1. Client Map:</b> Point out the 500m blue accuracy circle locked around your current location.<br/>"
-        "<b>2. Route Comparison:</b> Click <b>Dharwad</b>. Show the <b>Fastest Route in Blue</b> and <b>2 Alternative Routes in Yellow</b>, with distances and travel times in hours and minutes.<br/>"
-        "<b>3. Incident Reporting:</b> Click <b>⚠ Report Incident</b>, submit an accident report, and show judges how the system immediately flags the road and recommends an alternate bypass.<br/>"
+        "<b>2. Fastest Route:</b> Click <b>Dharwad</b>. Show the <b>Fastest Route in Solid Blue</b> with exact distance and estimated travel time in hours and minutes.<br/>"
+        "<b>3. Incident Reporting:</b> Click <b>⚠ Report Incident</b>, submit an accident report, and show judges how the system immediately flags the road with live markers.<br/>"
         "<b>4. Admin Portal:</b> Switch to <b>🔒 Administration</b>, sign in with <code>admin / admin123</code>, and show the moderation queue where administrators review, verify, or close roads in real time."
     )
     demo_table = Table([[Paragraph(demo_script, body_style)]], colWidths=[532])

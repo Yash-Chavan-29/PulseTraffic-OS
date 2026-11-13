@@ -338,61 +338,26 @@
           </button>
         </div>
 
-        <!-- Available Routes Card (2 to 3 Routes Displayed & Compared) -->
+        <!-- Fastest Route Display Card -->
         <div class="box-card" id="routes-card" style="display: none;">
           <div class="box-label">
-            <span>Available Route Options (2-3)</span>
-            <span id="route-count-badge">3 Calculated</span>
+            <span>Fastest Route (A* Recommended)</span>
+            <span id="route-count-badge" style="color: var(--fastest);">Active Path</span>
           </div>
 
-          <!-- Route 1: Fastest (Blue) -->
-          <div class="route-item fastest" onclick="highlightRoute(0)">
+          <!-- Single Fastest Route (Solid Blue) -->
+          <div class="route-item fastest">
             <div class="route-head">
               <span class="route-name">
                 <span style="color: var(--fastest);">●</span>
-                <span>Fastest Route (A* Recommended)</span>
+                <span>Fastest Optimal Travel Path</span>
               </span>
               <span class="route-eta" style="color: var(--fastest);" id="eta-fastest">--</span>
             </div>
             <div class="route-meta">
               <span>Distance: <b id="dist-fastest" style="color: #fff;">-- km</b></span>
-              <span>Delay: <b style="color: var(--positive);">Nominal</b></span>
+              <span>Flow: <b style="color: var(--positive);">Optimal Free-Flow</b></span>
             </div>
-          </div>
-
-          <!-- Route 2: Shortest (Yellow) -->
-          <div class="route-item alternate" onclick="highlightRoute(1)">
-            <div class="route-head">
-              <span class="route-name">
-                <span style="color: var(--alternate);">●</span>
-                <span>Shortest Distance (Dijkstra)</span>
-              </span>
-              <span class="route-eta" style="color: var(--alternate);" id="eta-shortest">--</span>
-            </div>
-            <div class="route-meta">
-              <span>Distance: <b id="dist-shortest" style="color: #fff;">-- km</b></span>
-              <span>Signals: <b>14 Stops</b></span>
-            </div>
-          </div>
-
-          <!-- Route 3: Bypass / Alternate (Yellow Dashed) -->
-          <div class="route-item alternate" onclick="highlightRoute(2)">
-            <div class="route-head">
-              <span class="route-name">
-                <span style="color: var(--alternate);">●</span>
-                <span>Incident Bypass Corridor</span>
-              </span>
-              <span class="route-eta" style="color: var(--alternate);" id="eta-bypass">--</span>
-            </div>
-            <div class="route-meta">
-              <span>Distance: <b id="dist-bypass" style="color: #fff;">-- km</b></span>
-              <span>Avoids: <b>Rani Chennamma Choke</b></span>
-            </div>
-          </div>
-
-          <!-- Comparison Delta Summary -->
-          <div class="comparison-delta-box" id="comparison-summary">
-            Fastest route saves ~22 minutes compared to the congested city center route.
           </div>
         </div>
 
@@ -559,9 +524,7 @@
     // Map Layers
     let gpsMarker = null;
     let gpsCircle = null; // 500m blue radius circle
-    let fastestRouteLayer = L.polyline([], { color: '#2563eb', weight: 6, opacity: 0.95 }).addTo(map); // Blue
-    let shortestRouteLayer = L.polyline([], { color: '#eab308', weight: 4, opacity: 0.85 }).addTo(map); // Yellow
-    let bypassRouteLayer = L.polyline([], { color: '#ca8a04', weight: 4, opacity: 0.85, dashArray: '8, 8' }).addTo(map); // Yellow Dashed
+    let fastestRouteLayer = L.polyline([], { color: '#2563eb', weight: 6, opacity: 0.95 }).addTo(map); // Fastest Blue Route Only
     let incidentMarkersLayer = L.layerGroup().addTo(map);
 
     // 2. 500m Blue Accuracy Circle at Current Location
@@ -594,10 +557,10 @@
       showToast('GPS Locked: 500m Accuracy Radius Visible');
     }
 
-    // 3. Multi-Route Calculation (2-3 Routes: Fastest in Blue, Alternates in Yellow)
+    // 3. Single Fastest Route Calculation (A* Heuristic Solid Blue)
     async function calculateRoutes() {
       const dest = document.getElementById('input-dest').value.trim() || 'Dharwad';
-      showToast(`Calculating routes to ${dest}...`);
+      showToast(`Calculating fastest route to ${dest}...`);
 
       try {
         const res = await fetch('/api/routes/calculate', {
@@ -610,45 +573,24 @@
         if (json.data && json.data.routes && json.data.routes.length > 0) {
           const r = json.data.routes[0];
           
-          // Primary Fastest Path (Solid Blue)
+          // Primary Fastest Path (Solid Blue Only)
           if (r.waypoints && r.waypoints.length > 0) {
             fastestRouteLayer.setLatLngs(r.waypoints);
-            
-            // Generate Realistic Alternate Routes (Shortest and Bypass in Yellow)
-            const shortestWaypoints = r.waypoints.filter((_, idx) => idx % 2 === 0);
-            const bypassWaypoints = r.waypoints.map(pt => [pt[0] + 0.008, pt[1] + 0.012]);
-
-            shortestRouteLayer.setLatLngs(shortestWaypoints);
-            bypassRouteLayer.setLatLngs(bypassWaypoints);
-
             map.fitBounds(fastestRouteLayer.getBounds(), { padding: [50, 50] });
           }
 
-          // Format times in hours & minutes
+          // Format time in hours & minutes
           const formatTime = (totalMin) => {
             const hrs = Math.floor(totalMin / 60);
             const mins = Math.round(totalMin % 60);
             return hrs > 0 ? `${hrs}h ${mins}m` : `${mins} min`;
           };
 
-          const fastTime = r.etaMinutes;
-          const shortTime = fastTime + 18.5;
-          const bypassTime = fastTime + 26.0;
-
-          document.getElementById('eta-fastest').innerText = formatTime(fastTime);
+          document.getElementById('eta-fastest').innerText = formatTime(r.etaMinutes);
           document.getElementById('dist-fastest').innerText = `${r.distanceKm} km`;
 
-          document.getElementById('eta-shortest').innerText = formatTime(shortTime);
-          document.getElementById('dist-shortest').innerText = `${(r.distanceKm - 2.4).toFixed(1)} km`;
-
-          document.getElementById('eta-bypass').innerText = formatTime(bypassTime);
-          document.getElementById('dist-bypass').innerText = `${(r.distanceKm + 5.1).toFixed(1)} km`;
-
-          document.getElementById('comparison-summary').innerText = 
-            `Fastest route in Blue saves ${Math.round(shortTime - fastTime)} minutes compared to the alternative route.`;
-
           document.getElementById('routes-card').style.display = 'flex';
-          showToast(`Routes computed: Fastest (Blue) vs Alternates (Yellow)`);
+          showToast(`Fastest route displayed: ${r.distanceKm} km (${formatTime(r.etaMinutes)})`);
         }
       } catch (e) {
         showToast('Route calculation active');
@@ -754,11 +696,7 @@
 
       closeReportModal();
       renderMapIncidents();
-      showToast(`Incident reported! Alternate bypass suggested.`);
-      
-      // Auto-suggest alternate route when incident affects route
-      shortestRouteLayer.setStyle({ color: '#f59e0b', weight: 6 });
-      document.getElementById('comparison-summary').innerText = `⚠ Active incident on primary road. Diverting via Alternate Route.`;
+      showToast(`Incident reported! Map updated.`);
     }
 
     // 6. Dual Dashboard Switching (Client vs Administration)
@@ -843,9 +781,9 @@
     }
 
     function adminCloseRoad(id) {
-      showToast(`Road closed for ${id}. Alternate diversions activated!`);
+      showToast(`Road closed for ${id}. Route recalculation triggered!`);
       switchDashboard('client');
-      bypassRouteLayer.setStyle({ color: '#ef4444', weight: 6, dashArray: '' });
+      calculateRoutes();
     }
 
     function adminDismiss(id) {
