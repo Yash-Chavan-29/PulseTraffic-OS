@@ -28,8 +28,14 @@ router.post('/calculate', async (req, res) => {
 
 // GET /api/predictions/heatmap
 router.get('/heatmap', (req, res) => {
-  const windowMinutes = parseInt(req.query.window || '30', 10);
-  const data = getCongestionHeatmap(windowMinutes);
+  const weather = req.query.weather || 'clear';
+  if (req.query.hour !== undefined && req.query.hour !== '') {
+    const hour = parseFloat(req.query.hour);
+    const data = getCongestionHeatmap(hour, weather, true);
+    return res.status(200).json({ status: 200, data });
+  }
+  const windowMinutes = parseInt(req.query.window || '0', 10);
+  const data = getCongestionHeatmap(windowMinutes, weather, false);
   res.status(200).json({ status: 200, data });
 });
 
