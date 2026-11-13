@@ -1,0 +1,213 @@
+{
+  "project": "PulseTraffic - Intelligent Traffic Management & Route Optimization System",
+  "version": "1.0.0",
+  "problemStatement": "PS 01: Intelligent Traffic Management and Route Optimization System",
+  "endpoints": [
+    {
+      "method": "POST",
+      "route": "/api/routes/calculate",
+      "description": "Calculates and compares multi-factor routes (Fastest A*, Shortest Dijkstra, Fuel-Efficient) with 15-30m congestion prediction",
+      "request": {
+        "headers": { "Content-Type": "application/json" },
+        "body": {
+          "originNodeId": 1,
+          "destinationNodeId": 98,
+          "departureOffsetMinutes": 15,
+          "vehicleType": "car"
+        }
+      },
+      "response": {
+        "status": 200,
+        "data": {
+          "origin": { "id": 1, "name": "Central Railway Station", "lat": 12.9716, "lng": 77.5946 },
+          "destination": { "id": 98, "name": "Airport Terminal 2", "lat": 13.1986, "lng": 77.7066 },
+          "predictionWindow": "+15 min (AI Congestion Forecast)",
+          "routes": [
+            {
+              "id": "route_astar_fastest",
+              "algorithm": "A* Dynamic Heuristic",
+              "label": "Fastest Route",
+              "isRecommended": true,
+              "recommendationReason": "Bypasses predicted bottleneck at Node 42; 24% faster than downtown arterial.",
+              "distanceKm": 12.8,
+              "etaMinutes": 18.4,
+              "fuelConsumptionLiters": 0.88,
+              "congestionRisk": "Low",
+              "reliabilityScore": 0.94,
+              "color": "#3b82f6",
+              "waypoints": [
+                { "lat": 12.9716, "lng": 77.5946, "name": "Central Station" },
+                { "lat": 12.992, "lng": 77.615, "name": "West Expressway Entry" },
+                { "lat": 13.05, "lng": 77.64, "name": "Ring Flyover Junction" },
+                { "lat": 13.1986, "lng": 77.7066, "name": "Airport Terminal 2" }
+              ]
+            },
+            {
+              "id": "route_dijkstra_shortest",
+              "algorithm": "Dijkstra Minimum Distance",
+              "label": "Shortest Distance",
+              "isRecommended": false,
+              "recommendationReason": "Shortest path in distance, but passes through high-density Civic Square.",
+              "distanceKm": 10.4,
+              "etaMinutes": 25.1,
+              "fuelConsumptionLiters": 1.25,
+              "congestionRisk": "High",
+              "reliabilityScore": 0.71,
+              "color": "#94a3b8",
+              "waypoints": [
+                { "lat": 12.9716, "lng": 77.5946, "name": "Central Station" },
+                { "lat": 12.985, "lng": 77.602, "name": "Civic Square Bottleneck" },
+                { "lat": 13.1986, "lng": 77.7066, "name": "Airport Terminal 2" }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "route": "/api/incidents/report",
+      "description": "Submit a citizen incident report with automated deduplication & network impact closure analysis",
+      "request": {
+        "headers": { "Content-Type": "application/json" },
+        "body": {
+          "type": "accident",
+          "severity": 3,
+          "location": { "lat": 12.985, "lng": 77.602, "roadSegmentId": "SEG-42" },
+          "description": "Multi-car collision blocking 2 outbound lanes",
+          "reportedBy": "Citizen-4819"
+        }
+      },
+      "response": {
+        "status": 201,
+        "data": {
+          "incidentId": "INC-8891",
+          "isDuplicate": false,
+          "clusterIncidentId": null,
+          "estimatedClearanceTimeMin": 45,
+          "networkImpact": {
+            "affectedRoads": ["Central Arterial North", "Civic Avenue East"],
+            "capacityReductionPercent": 65,
+            "diversionRecommended": true,
+            "diversionRouteId": "BYPASS-RING-01",
+            "timePenaltyAddedMinutes": 9.2
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "route": "/api/incidents/active",
+      "description": "Retrieve all verified active incidents with geographical coordinates and heat severity",
+      "request": {
+        "headers": {},
+        "body": null
+      },
+      "response": {
+        "status": 200,
+        "data": [
+          {
+            "id": "INC-8891",
+            "type": "accident",
+            "severity": 3,
+            "lat": 12.985,
+            "lng": 77.602,
+            "roadName": "Civic Square Arterial",
+            "delayImpactMin": 9.2,
+            "timestamp": "2026-11-13T11:45:00Z"
+          },
+          {
+            "id": "INC-8874",
+            "type": "roadblock",
+            "severity": 2,
+            "lat": 13.012,
+            "lng": 77.625,
+            "roadName": "Metro Construction Pillar 14",
+            "delayImpactMin": 4.5,
+            "timestamp": "2026-11-13T10:30:00Z"
+          }
+        ]
+      }
+    },
+    {
+      "method": "POST",
+      "route": "/api/signals/optimize",
+      "description": "Simulates junction traffic queue lengths and dynamically computes adaptive signal timings",
+      "request": {
+        "headers": { "Content-Type": "application/json" },
+        "body": {
+          "junctionId": "JNC-14",
+          "currentQueueLengths": { "north": 38, "south": 12, "east": 44, "west": 18 }
+        }
+      },
+      "response": {
+        "status": 200,
+        "data": {
+          "junctionId": "JNC-14",
+          "junctionName": "Tech Park Main Cross",
+          "baselineFixedTiming": {
+            "greenTimeSec": { "northSouth": 45, "eastWest": 45 },
+            "avgWaitTimeSec": 68.4
+          },
+          "optimizedAdaptiveTiming": {
+            "greenTimeSec": { "north": 52, "south": 20, "east": 60, "west": 24 },
+            "avgWaitTimeSec": 39.1
+          },
+          "waitTimeReductionPercent": 42.8,
+          "queueClearanceEfficiency": "High"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "route": "/api/emergency/corridor",
+      "description": "Emergency vehicle green-wave path optimization with automated junction preemption and time saved",
+      "request": {
+        "headers": { "Content-Type": "application/json" },
+        "body": {
+          "vehicleType": "ambulance",
+          "priorityLevel": 1,
+          "originNode": 14,
+          "hospitalDestinationNode": 88
+        }
+      },
+      "response": {
+        "status": 200,
+        "data": {
+          "corridorId": "EMG-CORR-99",
+          "status": "GREEN_WAVE_ACTIVE",
+          "normalTravelTimeMin": 22.4,
+          "emergencyCorridorTimeMin": 9.8,
+          "timeSavedMin": 12.6,
+          "timeSavedPercent": 56.25,
+          "preemptedJunctions": [
+            { "id": "JNC-14", "preemptInSec": 0, "status": "LOCKED_GREEN" },
+            { "id": "JNC-22", "preemptInSec": 90, "status": "QUEUED_PREEMPTION" },
+            { "id": "JNC-38", "preemptInSec": 210, "status": "QUEUED_PREEMPTION" }
+          ]
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "route": "/api/predictions/heatmap",
+      "description": "Returns 15-30 min ahead AI congestion forecast grid for overlay rendering",
+      "request": {
+        "headers": {},
+        "body": null
+      },
+      "response": {
+        "status": 200,
+        "data": {
+          "forecastTimestamp": "2026-11-13T12:00:00Z",
+          "windowMinutes": 30,
+          "zones": [
+            { "zoneId": "ZONE-CBD", "riskLevel": "CRITICAL", "congestionIndex": 0.88, "color": "#ef4444" },
+            { "zoneId": "ZONE-TECHPARK", "riskLevel": "MODERATE", "congestionIndex": 0.54, "color": "#f59e0b" },
+            { "zoneId": "ZONE-RINGROAD", "riskLevel": "LOW", "congestionIndex": 0.22, "color": "#10b981" }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "testScenarios": {
+    "calculateRoute": {
+      "url": "http://localhost:5000/api/routes/calculate",
+      "method": "POST",
+      "headers": { "Content-Type": "application/json" },
+      "body": {
+        "originNodeId": 1,
+        "destinationNodeId": 98,
+        "departureOffsetMinutes": 15,
+        "vehicleType": "car"
+      }
+    },
+    "reportIncident": {
+      "url": "http://localhost:5000/api/incidents/report",
+      "method": "POST",
+      "headers": { "Content-Type": "application/json" },
+      "body": {
+        "type": "accident",
+        "severity": 3,
+        "location": { "lat": 12.985, "lng": 77.602, "roadSegmentId": "SEG-42" },
+        "description": "Multi-car collision blocking 2 outbound lanes",
+        "reportedBy": "Citizen-4819"
+      }
+    },
+    "getActiveIncidents": {
+      "url": "http://localhost:5000/api/incidents/active",
+      "method": "GET"
+    },
+    "optimizeSignals": {
+      "url": "http://localhost:5000/api/signals/optimize",
+      "method": "POST",
+      "headers": { "Content-Type": "application/json" },
+      "body": {
+        "junctionId": "JNC-14",
+        "currentQueueLengths": { "north": 38, "south": 12, "east": 44, "west": 18 }
+      }
+    },
+    "emergencyCorridor": {
+      "url": "http://localhost:5000/api/emergency/corridor",
+      "method": "POST",
+      "headers": { "Content-Type": "application/json" },
+      "body": {
+        "vehicleType": "ambulance",
+        "priorityLevel": 1,
+        "originNode": 14,
+        "hospitalDestinationNode": 88
+      }
+    },
+    "congestionHeatmap": {
+      "url": "http://localhost:5000/api/predictions/heatmap",
+      "method": "GET"
+    }
+  }
+}
