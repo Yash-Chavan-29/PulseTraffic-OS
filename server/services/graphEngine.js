@@ -12,9 +12,27 @@
  * 9. Global arbitrary coordinate routing via Mapbox Directions API / OSRM
  */
 
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { haversineDistanceMeters } from '../db/database.js';
 import db from '../db/database.js';
 import { predictEdgeCongestion } from './mlPredictor.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load real snapped OSRM road geometry
+export let EDGE_GEOMETRY = {};
+try {
+  const geomPath = path.join(__dirname, '..', 'data', 'edge_geometry.json');
+  if (fs.existsSync(geomPath)) {
+    EDGE_GEOMETRY = JSON.parse(fs.readFileSync(geomPath, 'utf8'));
+    console.log(`[GraphEngine] Loaded ${Object.keys(EDGE_GEOMETRY).length} snapped road geometries from disk.`);
+  }
+} catch (e) {
+  console.warn("Could not load edge_geometry.json:", e.message);
+}
 
 // --- Min-Heap Priority Queue ---
 export class PriorityQueue {
@@ -411,11 +429,13 @@ export function runDijkstra(startNodeKey, endNodeKey, departureOffsetMinutes = 0
     totalMinutes += cost.travelTimeMinutes;
     totalKm += edge.lengthKm;
 
-    const fromN = ROAD_NODES[edge.from];
-    const toN = ROAD_NODES[edge.to];
-    const segPts = interpolateStreetWaypoints(fromN, toN);
-    if (i > 0) segPts.shift();
-    streetWaypoints.push(...segPts);
+    if (EDGE_GEOMETRY[edge.id] && EDGE_GEOMETRY[edge.id].coordinates) {
+      streetWaypoints.push(...EDGE_GEOMETRY[edge.id].coordinates);
+    } else {
+      const fromN = ROAD_NODES[edge.from];
+      const toN = ROAD_NODES[edge.to];
+      streetWaypoints.push([fromN.lat, fromN.lng], [toN.lat, toN.lng]);
+    }
   }
 
   return {
@@ -506,11 +526,13 @@ export function runAStar(startNodeKey, endNodeKey, departureOffsetMinutes = 0, p
     totalMinutes += cost.travelTimeMinutes;
     totalKm += edge.lengthKm;
 
-    const fromN = ROAD_NODES[edge.from];
-    const toN = ROAD_NODES[edge.to];
-    const segPts = interpolateStreetWaypoints(fromN, toN);
-    if (i > 0) segPts.shift();
-    streetWaypoints.push(...segPts);
+    if (EDGE_GEOMETRY[edge.id] && EDGE_GEOMETRY[edge.id].coordinates) {
+      streetWaypoints.push(...EDGE_GEOMETRY[edge.id].coordinates);
+    } else {
+      const fromN = ROAD_NODES[edge.from];
+      const toN = ROAD_NODES[edge.to];
+      streetWaypoints.push([fromN.lat, fromN.lng], [toN.lat, toN.lng]);
+    }
   }
 
   return {

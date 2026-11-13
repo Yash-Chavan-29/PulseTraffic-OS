@@ -23,6 +23,15 @@ try {
   console.warn("Could not load traffic_model.json, using baseline defaults", e.message);
 }
 
+// Load snapped road geometries for heatmap rendering
+let EDGE_GEOMETRY = {};
+try {
+  const geomPath = path.join(__dirname, '..', 'data', 'edge_geometry.json');
+  if (fs.existsSync(geomPath)) {
+    EDGE_GEOMETRY = JSON.parse(fs.readFileSync(geomPath, 'utf8'));
+  }
+} catch (e) {}
+
 const DEFAULT_WEIGHTS = [0.42, -0.09, -0.21, -0.11, 0.27, -0.11, 0.06, 0.16, 0.10, 0.10];
 const weights = modelArtifact ? modelArtifact.weights : DEFAULT_WEIGHTS;
 
@@ -94,17 +103,15 @@ export function getCongestionHeatmap(windowMinutes = 30, weather = 'clear') {
   const currentHour = new Date().getHours();
   const isRushHour = (currentHour >= 8 && currentHour <= 11) || (currentHour >= 17 && currentHour <= 20);
 
-  // Compute prediction for all directed road segments
+  // Compute prediction for all directed road segments using snapped street coordinates
   const edgePredictions = ROAD_EDGES.filter(e => !e.id.endsWith('_R')).map(edge => {
     const pred = predictEdgeCongestion(edge, windowMinutes, weather);
-    const fromNode = ROAD_NODES[edge.from];
-    const toNode = ROAD_NODES[edge.to];
+    const coords = (EDGE_GEOMETRY[edge.id] && EDGE_GEOMETRY[edge.id].coordinates)
+      ? EDGE_GEOMETRY[edge.id].coordinates
+      : [[ROAD_NODES[edge.from]?.lat, ROAD_NODES[edge.from]?.lng], [ROAD_NODES[edge.to]?.lat, ROAD_NODES[edge.to]?.lng]];
     return {
       ...pred,
-      coordinates: fromNode && toNode ? [
-        [fromNode.lat, fromNode.lng],
-        [toNode.lat, toNode.lng]
-      ] : []
+      coordinates: coords
     };
   });
 
