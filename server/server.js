@@ -130,19 +130,42 @@ io.on('connection', (socket) => {
 app.post('/api/demo/reset', (req, res) => {
   try {
     db.prepare('DELETE FROM incidents').run();
+    try { db.prepare('DELETE FROM incident_reports').run(); } catch (e) {}
+    try { db.prepare('DELETE FROM road_closure_simulations').run(); } catch (e) {}
+
     const insertInc = db.prepare(`
-      INSERT INTO incidents (id, type, severity, lat, lng, road_segment_id, description, reported_by, status, confirmations, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      INSERT INTO incidents (
+        id, type, severity, lat, lng, road_segment_id, description, reported_by,
+        status, confirmations, created_at, updated_at, title, severity_category,
+        severity_score, lanes_blocked, total_lanes, affected_road_name
+      ) VALUES (
+        ?, ?, ?, ?, ?, ?, ?, ?,
+        ?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?, ?,
+        ?, ?, ?, ?
+      )
     `);
-    insertInc.run('INC-8891', 'accident', 3, 15.8497, 74.5089, 'College Road Arterial', 'Multi-car collision near Rani Chennamma Circle', 'Traffic Patrol-1', 'verified');
-    insertInc.run('INC-8874', 'roadblock', 2, 15.8720, 74.5190, 'PB Road Northern Spine', 'Underpass drainage maintenance', 'PWD Belagavi', 'verified');
+    insertInc.run(
+      'INC-8891', 'accident', 3, 15.8497, 74.5089, 'E01',
+      'Multi-car collision near Rani Chennamma Circle', 'Traffic Patrol-1',
+      'verified', 'Accident at Rani Chennamma Circle', 'HIGH', 72, 2, 3, 'College Road Arterial'
+    );
+    insertInc.run(
+      'INC-8874', 'roadblock', 2, 15.8720, 74.5190, 'E04',
+      'Underpass drainage maintenance', 'PWD Belagavi',
+      'verified', 'Maintenance on PB Road Spine', 'MEDIUM', 45, 1, 3, 'PB Road Northern Spine'
+    );
 
     for (const e of ROAD_EDGES) {
       e.activeIncidents = [];
+      e.closed = false;
+      e.isSimulated = false;
+      e.closureType = 'none';
+      e.capacityReductionPercent = 0;
     }
     hydrateGraphFromDB();
 
     io.emit('incident:new', { id: 'INC-8891', type: 'accident', severity: 3, roadName: 'Multi-car collision near Rani Chennamma Circle' });
+    io.emit('network:restore', { roadSegmentId: 'all' });
     io.emit('reroute:triggered', { reason: 'Demo reset' });
 
     res.status(200).json({ status: 200, message: "Demo data reset successfully to clean benchmark state." });
