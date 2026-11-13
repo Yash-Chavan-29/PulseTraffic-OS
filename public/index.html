@@ -814,11 +814,10 @@
     // ---------------------------------------------------------
     const userLocation = { lat: 15.8497, lng: 74.5089, name: "Your location (Belagavi Hub)" };
 
-    // Tile Layers
-    const streetLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    // Clean Street Layer (OpenStreetMap - 100% Free, Zero Watermark, No API Key Required)
+    const streetLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      subdomains: 'abcd',
-      attribution: '© OpenStreetMap contributors, © CARTO'
+      attribution: '© OpenStreetMap contributors'
     });
 
     const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -843,7 +842,7 @@
         map.addLayer(satelliteLayer);
         currentTileMode = 'satellite';
         document.getElementById('layer-label-text').innerText = 'Map';
-        document.getElementById('layer-thumb-preview').style.backgroundImage = "url('https://a.basemaps.cartocdn.com/rastertiles/voyager/4/11/7.png')";
+        document.getElementById('layer-thumb-preview').style.backgroundImage = "url('https://tile.openstreetmap.org/4/11/7.png')";
         showToast('Switched to Satellite View');
       } else {
         map.removeLayer(satelliteLayer);
