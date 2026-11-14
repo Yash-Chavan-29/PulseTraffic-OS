@@ -1101,7 +1101,7 @@
         <div class="gmaps-inputs-box">
           <div class="input-row">
             <div class="input-dot-origin"></div>
-            <input type="text" id="input-origin" class="gmaps-input" value="Rani Chennamma Circle Hub (Belagavi)" placeholder="Choose starting point or junction..." onkeydown="if(event.key==='Enter') calculateGoogleRoutes()">
+            <input type="text" id="input-origin" class="gmaps-input" value="Belagavi Central Railway Station" placeholder="Choose starting point or junction..." onkeydown="if(event.key==='Enter') calculateGoogleRoutes()">
             <button class="input-action-btn" onclick="locateUserGPS()" title="Use Current GPS">📍</button>
             <button class="input-action-btn" onclick="clearInput('input-origin')" title="Clear">✕</button>
           </div>
@@ -1120,7 +1120,6 @@
         <!-- Belagavi Landmark Destination Chips -->
         <div class="gmaps-chips-scroll">
           <span class="place-chip active" onclick="setDestination('Belagavi Sambre Airport')">✈️ Airport</span>
-          <span class="place-chip" onclick="setDestination('KLE Technological University')">🎓 KLE Tech</span>
           <span class="place-chip" onclick="setDestination('BIMS District Civil Hospital')">🏥 BIMS Hospital</span>
           <span class="place-chip" onclick="setDestination('Belagavi Central Railway Station')">🚆 Railway Station</span>
           <span class="place-chip" onclick="setDestination('RPD College Cross Junction')">🏛️ RPD Cross</span>
@@ -1843,7 +1842,7 @@
     }
 
     async function calculateGoogleRoutes() {
-      const origInput = document.getElementById('input-origin').value.trim() || 'chennamma_circle';
+      const origInput = document.getElementById('input-origin').value.trim() || 'railway_station';
       const destInput = document.getElementById('input-destination').value.trim() || 'sambre_airport';
 
       const btn = document.getElementById('btn-calc-routes');

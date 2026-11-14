@@ -33,8 +33,8 @@ router.post('/calculate', async (req, res) => {
       departureOffsetMinutes = 0 
     } = req.body;
 
-    const fromParam = origin || originNodeId || 1;
-    const toParam = destination || destinationNodeId || 98;
+    const fromParam = origin || originNodeId || 'railway_station';
+    const toParam = destination || destinationNodeId || 'sambre_airport';
 
     const result = await calculateMultiFactorRoutes(fromParam, toParam, departureOffsetMinutes);
     res.status(200).json({ status: 200, data: result });

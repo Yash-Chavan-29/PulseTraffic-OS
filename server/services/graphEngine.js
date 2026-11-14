@@ -835,7 +835,7 @@ export async function calculateMultiFactorRoutes(originParam, destParam, departu
 
   // Fallbacks if not provided
   if (!rawOriginCoords && !originKey) {
-    originKey = "chennamma_circle";
+    originKey = "railway_station";
     rawOriginCoords = [ROAD_NODES[originKey].lng, ROAD_NODES[originKey].lat];
     originName = ROAD_NODES[originKey].name;
   }
@@ -941,12 +941,12 @@ export async function calculateMultiFactorRoutes(originParam, destParam, departu
 
   // Run Real Graph Pathfinding across Belagavi Network
   if (originKey === destKey) {
-    originKey = "kle_tech";
+    originKey = "railway_station";
     destKey = "sambre_airport";
   }
 
-  const astarResult = runAStar(originKey, destKey, departureOffsetMinutes) || runAStar("kle_tech", "sambre_airport", departureOffsetMinutes);
-  const dijkstraResult = runDijkstra(originKey, destKey, departureOffsetMinutes) || runDijkstra("kle_tech", "sambre_airport", departureOffsetMinutes);
+  const astarResult = runAStar(originKey, destKey, departureOffsetMinutes) || runAStar("railway_station", "sambre_airport", departureOffsetMinutes);
+  const dijkstraResult = runDijkstra(originKey, destKey, departureOffsetMinutes) || runDijkstra("railway_station", "sambre_airport", departureOffsetMinutes);
 
   // Compute Alternate Route by penalizing A* primary edges by 1.6x
   const primaryEdgeSet = new Set(astarResult.pathEdges);
