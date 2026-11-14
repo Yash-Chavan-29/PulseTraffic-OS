@@ -421,8 +421,10 @@ export function calculateEdgeCost(edge, departureOffsetMinutes = 0, isEmergency 
   const travelTimeMinutes = baseTravelMinutes * bprImpedance * penaltyMultiplier;
 
   return {
-    travelTimeMinutes: Number(travelTimeMinutes.toFixed(2)),
+    travelTimeMinutes: travelTimeMinutes,
+    travelTimeSeconds: travelTimeMinutes * 60,
     lengthKm: edge.lengthKm,
+    lengthMeters: Math.round(edge.lengthKm * 1000),
     freeSpeedKmh: edge.freeSpeedKmh,
     effectiveVolume: Math.round(effectiveVolume),
     effectiveCapacity: Math.round(effectiveCapacity),
@@ -543,12 +545,17 @@ export function runDijkstra(startNodeKey, endNodeKey, departureOffsetMinutes = 0
     }
   }
 
+  const totalSeconds = Math.round(totalMinutes * 60);
+  const totalMeters = Math.round(totalKm * 1000);
+
   return {
     algorithm: "Dijkstra (Shortest Distance)",
     pathNodeKeys: pathNodes,
     pathEdges: pathEdges.map(e => e.id),
-    totalDistanceKm: Number(totalKm.toFixed(2)),
-    estimatedTravelTimeMinutes: Number(totalMinutes.toFixed(1)),
+    totalDistanceKm: Number((totalMeters / 1000).toFixed(3)),
+    distanceMeters: totalMeters,
+    estimatedTravelTimeMinutes: Number((totalSeconds / 60).toFixed(2)),
+    estimatedTravelTimeSeconds: totalSeconds,
     waypoints: streetWaypoints.length > 0 ? streetWaypoints : pathNodes.map(k => [ROAD_NODES[k].lat, ROAD_NODES[k].lng]),
     turnByTurnInstructions: pathEdges.map((e, idx) => `Step ${idx + 1}: Take ${e.name} (${e.lengthKm} km) towards ${ROAD_NODES[e.to]?.name || e.to}`)
   };
@@ -641,12 +648,17 @@ export function runAStar(startNodeKey, endNodeKey, departureOffsetMinutes = 0, p
     }
   }
 
+  const totalSeconds = Math.round(totalMinutes * 60);
+  const totalMeters = Math.round(totalKm * 1000);
+
   return {
     algorithm: isEmergency ? "A* Emergency Green Wave" : "A* (Fastest Travel Time)",
     pathNodeKeys: pathNodes,
     pathEdges: pathEdges.map(e => e.id),
-    totalDistanceKm: Number(totalKm.toFixed(2)),
-    estimatedTravelTimeMinutes: Number(totalMinutes.toFixed(1)),
+    totalDistanceKm: Number((totalMeters / 1000).toFixed(3)),
+    distanceMeters: totalMeters,
+    estimatedTravelTimeMinutes: Number((totalSeconds / 60).toFixed(2)),
+    estimatedTravelTimeSeconds: totalSeconds,
     waypoints: streetWaypoints.length > 0 ? streetWaypoints : pathNodes.map(k => [ROAD_NODES[k].lat, ROAD_NODES[k].lng]),
     turnByTurnInstructions: pathEdges.map((e, idx) => `Step ${idx + 1}: Follow ${e.name} (${e.lengthKm} km) at ~${e.freeSpeedKmh} km/h`)
   };
@@ -665,16 +677,20 @@ export async function fetchExternalRoute(originCoords, destCoords) {
         const data = await res.json();
         if (data.routes && data.routes.length > 0) {
           const route = data.routes[0];
-          const distKm = Number((route.distance / 1000).toFixed(2));
-          const timeMin = Number((route.duration / 60).toFixed(1));
-          const bprTime = Number((timeMin * 1.18).toFixed(1));
+          const distMeters = Math.round(route.distance);
+          const distKm = Number((distMeters / 1000).toFixed(3));
+          const durationSeconds = Math.round(route.duration);
+          const bprDurationSeconds = Math.round(durationSeconds * 1.18);
+          const bprTimeMin = Number((bprDurationSeconds / 60).toFixed(2));
           const waypoints = route.geometry.coordinates.map(c => [c[1], c[0]]);
           const steps = (route.legs[0]?.steps || []).map((s, i) => `Step ${i + 1}: ${s.maneuver.instruction} (${(s.distance / 1000).toFixed(1)} km)`);
 
           return {
             source: 'mapbox',
             totalDistanceKm: distKm,
-            estimatedTravelTimeMinutes: bprTime,
+            distanceMeters: distMeters,
+            estimatedTravelTimeMinutes: bprTimeMin,
+            estimatedTravelTimeSeconds: bprDurationSeconds,
             waypoints,
             turnByTurnInstructions: steps.length > 0 ? steps : [`Drive to destination (${distKm} km)`]
           };
@@ -688,13 +704,17 @@ export async function fetchExternalRoute(originCoords, destCoords) {
       const data = await resOsrm.json();
       if (data.routes && data.routes.length > 0) {
         const route = data.routes[0];
-        const distKm = Number((route.distance / 1000).toFixed(2));
-        const timeMin = Number((route.duration / 60).toFixed(1));
+        const distMeters = Math.round(route.distance);
+        const distKm = Number((distMeters / 1000).toFixed(3));
+        const durationSeconds = Math.round(route.duration);
+        const timeMin = Number((durationSeconds / 60).toFixed(2));
         const waypoints = route.geometry.coordinates.map(c => [c[1], c[0]]);
         return {
           source: 'osrm',
           totalDistanceKm: distKm,
+          distanceMeters: distMeters,
           estimatedTravelTimeMinutes: timeMin,
+          estimatedTravelTimeSeconds: durationSeconds,
           waypoints,
           turnByTurnInstructions: [`Drive via OSRM street route (${distKm} km)`]
         };
@@ -714,8 +734,10 @@ export async function fetchExternalRoute(originCoords, destCoords) {
               Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const straightKm = 6371 * c;
-    const roadDistKm = Number((Math.max(1, straightKm * 1.32)).toFixed(2));
-    const estimatedMinutes = Number((roadDistKm / 55 * 60).toFixed(1)); // ~55 km/h avg speed
+    const roadDistMeters = Math.round(Math.max(1000, straightKm * 1.32 * 1000));
+    const roadDistKm = Number((roadDistMeters / 1000).toFixed(3));
+    const estimatedSeconds = Math.round((roadDistMeters / 1000) / 55 * 3600); // ~55 km/h avg speed
+    const estimatedMinutes = Number((estimatedSeconds / 60).toFixed(2));
     
     // Generate intermediate interpolated waypoints for smooth polyline display
     const numPoints = 8;
@@ -731,11 +753,13 @@ export async function fetchExternalRoute(originCoords, destCoords) {
     return {
       source: 'global_estimation',
       totalDistanceKm: roadDistKm,
+      distanceMeters: roadDistMeters,
       estimatedTravelTimeMinutes: estimatedMinutes,
+      estimatedTravelTimeSeconds: estimatedSeconds,
       waypoints,
       turnByTurnInstructions: [
         `Depart towards destination coordinates (${destCoords[1].toFixed(3)}, ${destCoords[0].toFixed(3)})`,
-        `Estimated global highway transit distance: ${roadDistKm} km (~${estimatedMinutes} min)`
+        `Estimated global highway transit distance: ${roadDistKm} km (~${Math.round(estimatedSeconds / 60)} min)`
       ]
     };
   } catch (e) {
@@ -833,17 +857,27 @@ export async function calculateMultiFactorRoutes(originParam, destParam, departu
   if (isArbitraryCoordinates && rawOriginCoords && rawDestCoords) {
     const extRoute = await fetchExternalRoute(rawOriginCoords, rawDestCoords);
     if (extRoute) {
-      const astarFuel = Number((extRoute.totalDistanceKm * 0.072).toFixed(2));
-      const dijkstraDist = Number((extRoute.totalDistanceKm * 0.96).toFixed(2));
-      const dijkstraEta = Number((extRoute.estimatedTravelTimeMinutes * 1.15).toFixed(1));
-      const altDist = Number((extRoute.totalDistanceKm * 1.08).toFixed(2));
-      const altEta = Number((extRoute.estimatedTravelTimeMinutes * 1.12).toFixed(1));
+      const astarMeters = extRoute.distanceMeters || Math.round(extRoute.totalDistanceKm * 1000);
+      const astarSeconds = extRoute.estimatedTravelTimeSeconds || Math.round(extRoute.estimatedTravelTimeMinutes * 60);
+      const astarFuel = Number(((astarMeters / 1000) * 0.072).toFixed(2));
+
+      const dijkstraMeters = Math.round(astarMeters * 0.96);
+      const dijkstraDist = Number((dijkstraMeters / 1000).toFixed(3));
+      const dijkstraSeconds = Math.round(astarSeconds * 1.15);
+      const dijkstraEta = Number((dijkstraSeconds / 60).toFixed(2));
+
+      const altMeters = Math.round(astarMeters * 1.08);
+      const altDist = Number((altMeters / 1000).toFixed(3));
+      const altSeconds = Math.round(astarSeconds * 1.12);
+      const altEta = Number((altSeconds / 60).toFixed(2));
 
       const astarObj = {
         name: "A* Optimal Travel Path",
         algorithm: "A* (Global OSRM / Mapbox + BPR Congestion)",
         etaMinutes: extRoute.estimatedTravelTimeMinutes,
+        etaSeconds: astarSeconds,
         distanceKm: extRoute.totalDistanceKm,
+        distanceMeters: astarMeters,
         fuelConsumptionLitres: astarFuel,
         fuelConsumptionLiters: astarFuel,
         congestionRisk: "LOW",
@@ -856,7 +890,9 @@ export async function calculateMultiFactorRoutes(originParam, destParam, departu
         name: "Dijkstra Minimum Distance",
         algorithm: "Dijkstra (Physical Distance Shortest)",
         etaMinutes: dijkstraEta,
+        etaSeconds: dijkstraSeconds,
         distanceKm: dijkstraDist,
+        distanceMeters: dijkstraMeters,
         fuelConsumptionLitres: Number((dijkstraDist * 0.081).toFixed(2)),
         fuelConsumptionLiters: Number((dijkstraDist * 0.081).toFixed(2)),
         congestionRisk: "HIGH",
@@ -869,7 +905,9 @@ export async function calculateMultiFactorRoutes(originParam, destParam, departu
         name: "Dynamic Perimeter Alternate",
         algorithm: "Perimeter Divergence Bypass",
         etaMinutes: altEta,
+        etaSeconds: altSeconds,
         distanceKm: altDist,
+        distanceMeters: altMeters,
         fuelConsumptionLitres: Number((altDist * 0.074).toFixed(2)),
         fuelConsumptionLiters: Number((altDist * 0.074).toFixed(2)),
         congestionRisk: "MODERATE",
@@ -882,14 +920,19 @@ export async function calculateMultiFactorRoutes(originParam, destParam, departu
       routesContainer.dijkstraShortest = dijkstraObj;
       routesContainer.alternateRoute = alternateObj;
 
+      const timeDiffSeconds = dijkstraSeconds - astarSeconds;
+      const distDiffMeters = astarMeters - dijkstraMeters;
+
       return {
         origin: { name: originName || `Location (${rawOriginCoords[1].toFixed(4)}, ${rawOriginCoords[0].toFixed(4)})`, coordinates: [rawOriginCoords[1], rawOriginCoords[0]] },
         destination: { name: destName || `Location (${rawDestCoords[1].toFixed(4)}, ${rawDestCoords[0].toFixed(4)})`, coordinates: [rawDestCoords[1], rawDestCoords[0]] },
         departureOffsetMinutes: Number(departureOffsetMinutes),
         routes: routesContainer,
         comparison: {
-          timeSavedMinutes: Number((dijkstraEta - extRoute.estimatedTravelTimeMinutes).toFixed(1)),
-          distanceDifferenceKm: Number((extRoute.totalDistanceKm - dijkstraDist).toFixed(2)),
+          timeSavedSeconds: Math.max(0, timeDiffSeconds),
+          timeSavedMinutes: Number((Math.max(0, timeDiffSeconds) / 60).toFixed(2)),
+          distanceDifferenceMeters: Math.abs(distDiffMeters),
+          distanceDifferenceKm: Number((Math.abs(distDiffMeters) / 1000).toFixed(3)),
           recommendation: "A* Optimal path is recommended based on real-time transit telemetry"
         }
       };
@@ -910,30 +953,38 @@ export async function calculateMultiFactorRoutes(originParam, destParam, departu
   const alternateResult = runAStar(originKey, destKey, departureOffsetMinutes, primaryEdgeSet, 1.6) || astarResult;
 
   const astarDist = astarResult.totalDistanceKm;
+  const astarMeters = astarResult.distanceMeters || Math.round(astarDist * 1000);
   const astarEta = astarResult.estimatedTravelTimeMinutes;
+  const astarSeconds = astarResult.estimatedTravelTimeSeconds || Math.round(astarEta * 60);
   const astarFuel = Number((astarDist * 0.068).toFixed(2));
 
   const dijkDist = dijkstraResult.totalDistanceKm;
+  const dijkMeters = dijkstraResult.distanceMeters || Math.round(dijkDist * 1000);
   const dijkEta = dijkstraResult.estimatedTravelTimeMinutes;
+  const dijkSeconds = dijkstraResult.estimatedTravelTimeSeconds || Math.round(dijkEta * 60);
   const dijkFuel = Number((dijkDist * 0.079).toFixed(2));
 
   const altDist = alternateResult.totalDistanceKm;
+  const altMeters = alternateResult.distanceMeters || Math.round(altDist * 1000);
   const altEta = alternateResult.estimatedTravelTimeMinutes;
+  const altSeconds = alternateResult.estimatedTravelTimeSeconds || Math.round(altEta * 60);
   const altFuel = Number((altDist * 0.071).toFixed(2));
 
-  const timeDiff = Number((dijkEta - astarEta).toFixed(1));
-  const distDiff = Number((astarDist - dijkDist).toFixed(2));
+  const timeDiffSeconds = dijkSeconds - astarSeconds;
+  const distDiffMeters = astarMeters - dijkMeters;
 
   const astarObj = {
     name: "A* Optimal Travel Path",
     algorithm: "A* (BPR Cost Impedance + Haversine)",
     etaMinutes: astarEta,
+    etaSeconds: astarSeconds,
     distanceKm: astarDist,
+    distanceMeters: astarMeters,
     fuelConsumptionLitres: astarFuel,
     fuelConsumptionLiters: astarFuel,
     congestionRisk: "LOW",
     reliabilityScore: 0.95,
-    recommendationReason: `Bypasses arterial bottlenecks via primary spine (saves ${Math.abs(timeDiff)} min).`,
+    recommendationReason: `Bypasses arterial bottlenecks via primary spine (saves ${Math.abs(Math.round(timeDiffSeconds / 60))} min).`,
     pathNodes: astarResult.pathNodeKeys,
     pathEdges: astarResult.pathEdges,
     waypoints: astarResult.waypoints,
@@ -944,7 +995,9 @@ export async function calculateMultiFactorRoutes(originParam, destParam, departu
     name: "Dijkstra Minimum Distance",
     algorithm: "Dijkstra (Physical Distance)",
     etaMinutes: dijkEta,
+    etaSeconds: dijkSeconds,
     distanceKm: dijkDist,
+    distanceMeters: dijkMeters,
     fuelConsumptionLitres: dijkFuel,
     fuelConsumptionLiters: dijkFuel,
     congestionRisk: "HIGH",
@@ -960,7 +1013,9 @@ export async function calculateMultiFactorRoutes(originParam, destParam, departu
     name: "Dynamic Bypass Alternate",
     algorithm: "A* with Primary Segment Penalty (1.6x)",
     etaMinutes: altEta,
+    etaSeconds: altSeconds,
     distanceKm: altDist,
+    distanceMeters: altMeters,
     fuelConsumptionLitres: altFuel,
     fuelConsumptionLiters: altFuel,
     congestionRisk: "MODERATE",
@@ -992,11 +1047,13 @@ export async function calculateMultiFactorRoutes(originParam, destParam, departu
     departureOffsetMinutes: Number(departureOffsetMinutes),
     routes: routesContainer,
     comparison: {
-      timeSavedMinutes: Math.abs(timeDiff),
-      distanceDifferenceKm: Math.abs(distDiff),
-      recommendation: timeDiff > 0 
-        ? `A* saves ${timeDiff} min travel time despite +${distDiff} km distance due to lower link impedance.`
-        : `Dijkstra provides the direct corridor saving ${Math.abs(distDiff)} km.`
+      timeSavedSeconds: Math.abs(timeDiffSeconds),
+      timeSavedMinutes: Number((Math.abs(timeDiffSeconds) / 60).toFixed(2)),
+      distanceDifferenceMeters: Math.abs(distDiffMeters),
+      distanceDifferenceKm: Number((Math.abs(distDiffMeters) / 1000).toFixed(3)),
+      recommendation: timeDiffSeconds > 0 
+        ? `A* saves ${Math.round(timeDiffSeconds / 60)} min travel time despite +${(distDiffMeters / 1000).toFixed(2)} km distance due to lower link impedance.`
+        : `Dijkstra provides the direct corridor saving ${Math.abs(Number((distDiffMeters / 1000).toFixed(2)))} km.`
     }
   };
 }

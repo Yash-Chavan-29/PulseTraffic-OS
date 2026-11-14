@@ -1770,11 +1770,48 @@
     let currentTravelMode = 'drive';
     let selectedRouteIndex = 0; // 0 = Fastest, 1 = Shortest
 
-    function formatDuration(totalMin) {
-      if (totalMin < 60) return `${Math.max(1, Math.round(totalMin))} min`;
-      const hrs = Math.floor(totalMin / 60);
-      const mins = Math.round(totalMin % 60);
-      return mins > 0 ? `${hrs} hr ${mins} min` : `${hrs} hr`;
+    function formatDuration(totalSeconds) {
+      const sec = Math.round(Number(totalSeconds) || 0);
+      if (sec < 60) {
+        return `${Math.max(1, sec)} sec`;
+      }
+      const hrs = Math.floor(sec / 3600);
+      const remSec = sec % 3600;
+      const mins = Math.floor(remSec / 60);
+      const remainingSeconds = remSec % 60;
+
+      if (hrs > 0) {
+        if (mins === 0 && remainingSeconds === 0) return `${hrs} hr`;
+        if (remainingSeconds === 0) return `${hrs} hr ${mins} min`;
+        if (mins === 0) return `${hrs} hr ${remainingSeconds} sec`;
+        return `${hrs} hr ${mins} min ${remainingSeconds} sec`;
+      }
+
+      if (remainingSeconds === 0) {
+        return `${mins} min`;
+      }
+      return `${mins} min ${remainingSeconds} sec`;
+    }
+
+    function formatDistanceDiff(baseMeters, compareMeters) {
+      const diff = Math.round(baseMeters - compareMeters);
+      if (diff === 0) {
+        return 'Same distance';
+      }
+      if (diff > 0) {
+        if (diff < 1000) {
+          return `${diff} m shorter`;
+        }
+        const km = Number((diff / 1000).toFixed(1));
+        return `${km} km shorter`;
+      } else {
+        const absDiff = Math.abs(diff);
+        if (absDiff < 1000) {
+          return `${absDiff} m longer`;
+        }
+        const km = Number((absDiff / 1000).toFixed(1));
+        return `${km} km longer`;
+      }
     }
 
     function clearInput(id) {
@@ -1825,6 +1862,13 @@
 
         if (json.data && json.data.routes && json.data.routes.length > 0) {
           currentRoutes = json.data.routes;
+
+          // Attach unrounded precision seconds & meters to each route
+          currentRoutes.forEach(r => {
+            r._exactSeconds = r.etaSeconds !== undefined ? Number(r.etaSeconds) : Math.round((Number(r.etaMinutes) || 0) * 60);
+            r._exactMeters = r.distanceMeters !== undefined ? Number(r.distanceMeters) : Math.round((Number(r.distanceKm) || 0) * 1000);
+          });
+
           selectedRouteIndex = 0; // default to fastest
 
           // Place origin and destination pins
@@ -1857,58 +1901,75 @@
     function renderModeRoutes() {
       if (!currentRoutes || currentRoutes.length === 0) return;
 
-      const fastest = currentRoutes[0];
-      const shortest = currentRoutes.length > 1 ? currentRoutes[1] : {
-        etaMinutes: fastest.etaMinutes * 1.18,
-        distanceKm: Number((fastest.distanceKm * 0.94).toFixed(1)),
-        waypoints: fastest.waypoints,
-        pathNodes: fastest.pathNodes
-      };
+      // Identify fastest by unrounded travel time and shortest by unrounded distance
+      let fastest = currentRoutes[0];
+      for (let i = 1; i < currentRoutes.length; i++) {
+        if (currentRoutes[i]._exactSeconds < fastest._exactSeconds) {
+          fastest = currentRoutes[i];
+        }
+      }
 
-      const baseCarMin = fastest.etaMinutes;
-      const baseDistKm = fastest.distanceKm;
+      let shortest = currentRoutes.length > 1 ? currentRoutes[1] : null;
+      if (!shortest) {
+        const estSec = Math.round(fastest._exactSeconds * 1.18);
+        const estM = Math.round(fastest._exactMeters * 0.96);
+        shortest = {
+          _exactSeconds: estSec,
+          _exactMeters: estM,
+          etaMinutes: Number((estSec / 60).toFixed(2)),
+          distanceKm: Number((estM / 1000).toFixed(3)),
+          waypoints: fastest.waypoints,
+          pathNodes: fastest.pathNodes
+        };
+      }
 
-      let r0_eta = baseCarMin;
-      let r1_eta = shortest.etaMinutes;
+      const baseCarSeconds = fastest._exactSeconds !== undefined ? fastest._exactSeconds : Math.round((Number(fastest.etaMinutes) || 0) * 60);
+      const shortestCarSeconds = shortest._exactSeconds !== undefined ? shortest._exactSeconds : Math.round((Number(shortest.etaMinutes) || 0) * 60);
+
+      const r0_meters = fastest._exactMeters !== undefined ? fastest._exactMeters : Math.round((Number(fastest.distanceKm) || 0) * 1000);
+      const r1_meters = shortest._exactMeters !== undefined ? shortest._exactMeters : Math.round((Number(shortest.distanceKm) || 0) * 1000);
+
+      let r0_seconds = baseCarSeconds;
+      let r1_seconds = shortestCarSeconds;
       let modeColor = '#1a73e8';
       let modeDash = null;
 
       if (currentTravelMode === 'drive') {
-        r0_eta = Math.max(2, Math.round(baseCarMin));
-        r1_eta = Math.max(2, Math.round(shortest.etaMinutes));
+        r0_seconds = baseCarSeconds;
+        r1_seconds = shortestCarSeconds;
         modeColor = '#1a73e8';
       } else if (currentTravelMode === 'moto') {
-        // Two-wheeler agile filtering through Belagavi city traffic
-        r0_eta = Math.max(2, Math.round(baseCarMin * 0.82));
-        r1_eta = Math.max(2, Math.round(shortest.etaMinutes * 0.85));
+        // Two-wheeler agile filtering through Belagavi city traffic (15-18% faster)
+        r0_seconds = Math.round(baseCarSeconds * 0.82);
+        r1_seconds = Math.round(shortestCarSeconds * 0.85);
         modeColor = '#0284c7';
       } else if (currentTravelMode === 'transit') {
-        // NWKRTC City bus / scheduled transit stops: ~22 km/h + 6 min stop overhead
-        r0_eta = Math.round((baseDistKm / 24) * 60 + 6);
-        r1_eta = Math.round((shortest.distanceKm / 22) * 60 + 8);
+        // NWKRTC City bus / scheduled transit stops: ~24 km/h + 6 min stop overhead
+        r0_seconds = Math.round((r0_meters / 1000 / 24) * 3600 + 360);
+        r1_seconds = Math.round((r1_meters / 1000 / 22) * 3600 + 480);
         modeColor = '#ea4335';
       } else if (currentTravelMode === 'walk') {
         // Pedestrian walk speed 4.8 km/h (~12.5 min per km)
-        r0_eta = Math.round((baseDistKm / 4.8) * 60);
-        r1_eta = Math.round((shortest.distanceKm / 4.8) * 60);
+        r0_seconds = Math.round((r0_meters / 1000 / 4.8) * 3600);
+        r1_seconds = Math.round((r1_meters / 1000 / 4.8) * 3600);
         modeColor = '#10b981';
         modeDash = '6, 8';
       }
 
-      const r0_dist = baseDistKm;
-      const r1_dist = shortest.distanceKm;
+      const r0_distKm = Number((r0_meters / 1000).toFixed(2));
+      const r1_distKm = Number((r1_meters / 1000).toFixed(2));
 
       // Update Fastest Card
-      document.getElementById('r0-eta').innerText = formatDuration(r0_eta);
-      document.getElementById('r0-dist').innerText = `${r0_dist} km`;
+      document.getElementById('r0-eta').innerText = formatDuration(r0_seconds);
+      document.getElementById('r0-dist').innerText = `${r0_distKm} km`;
       document.getElementById('r0-tag').innerText = currentTravelMode === 'walk' ? 'via Pedestrian Walkways' :
         currentTravelMode === 'transit' ? 'via NWKRTC Belagavi Bus Transit' :
         currentTravelMode === 'moto' ? 'via Agile Two-Wheeler Corridors' : 'via A* Dynamic BPR Corridor';
       
-      const fuelR0Text = currentTravelMode === 'walk' ? `🔥 ${Math.round(r0_dist * 52)} kcal` :
-        currentTravelMode === 'transit' ? `🚌 ₹${Math.min(50, Math.max(10, Math.round(r0_dist * 2.5)))} fare` :
-        currentTravelMode === 'moto' ? `⛽ ${(r0_dist * 0.028).toFixed(2)} L petrol` :
-        `⛽ ${(r0_dist * 0.068).toFixed(2)} L fuel`;
+      const fuelR0Text = currentTravelMode === 'walk' ? `🔥 ${Math.round(r0_distKm * 52)} kcal` :
+        currentTravelMode === 'transit' ? `🚌 ₹${Math.min(50, Math.max(10, Math.round(r0_distKm * 2.5)))} fare` :
+        currentTravelMode === 'moto' ? `⛽ ${(r0_distKm * 0.028).toFixed(2)} L petrol` :
+        `⛽ ${(r0_distKm * 0.068).toFixed(2)} L fuel`;
       document.getElementById('r0-fuel').innerText = fuelR0Text;
 
       // Format Junctions path string
@@ -1918,24 +1979,30 @@
       }
 
       // Update Shortest Card
-      document.getElementById('r1-eta').innerText = formatDuration(r1_eta);
-      document.getElementById('r1-dist').innerText = `${r1_dist} km`;
+      document.getElementById('r1-eta').innerText = formatDuration(r1_seconds);
+      document.getElementById('r1-dist').innerText = `${r1_distKm} km`;
 
-      if (r1_dist < r0_dist) {
-        const diffDist = Number((r0_dist - r1_dist).toFixed(1));
-        const diffMin = Math.max(1, r1_eta - r0_eta);
-        document.getElementById('r1-desc').innerText = `Dijkstra path • ${diffDist} km shorter (${diffMin} min signal delay)`;
-      } else if (r1_dist === r0_dist) {
-        document.getElementById('r1-desc').innerText = `Dijkstra physical distance • Same direct corridor`;
+      // Difference calculation based on unrounded values
+      const distDiffLabel = formatDistanceDiff(r0_meters, r1_meters);
+      const timeDiffSec = r1_seconds - r0_seconds;
+
+      if (r1_meters < r0_meters) {
+        if (timeDiffSec > 0) {
+          document.getElementById('r1-desc').innerText = `Dijkstra path • ${distDiffLabel} (${formatDuration(timeDiffSec)} signal delay)`;
+        } else {
+          document.getElementById('r1-desc').innerText = `Dijkstra path • ${distDiffLabel}`;
+        }
+      } else if (r1_meters === r0_meters) {
+        document.getElementById('r1-desc').innerText = `Dijkstra physical distance • Same distance`;
       } else {
-        const diffMin = Math.max(1, r1_eta - r0_eta);
-        document.getElementById('r1-desc').innerText = `Dijkstra physical path • Subject to urban signals (+${diffMin} min)`;
+        const diffText = formatDistanceDiff(r1_meters, r0_meters);
+        document.getElementById('r1-desc').innerText = `Dijkstra physical path • ${diffText} (+${formatDuration(Math.abs(timeDiffSec))})`;
       }
 
-      const fuelR1Text = currentTravelMode === 'walk' ? `🔥 ${Math.round(r1_dist * 52)} kcal` :
-        currentTravelMode === 'transit' ? `🚌 ₹${Math.min(50, Math.max(10, Math.round(r1_dist * 2.5)))} fare` :
-        currentTravelMode === 'moto' ? `⛽ ${(r1_dist * 0.032).toFixed(2)} L petrol` :
-        `⛽ ${(r1_dist * 0.079).toFixed(2)} L fuel`;
+      const fuelR1Text = currentTravelMode === 'walk' ? `🔥 ${Math.round(r1_distKm * 52)} kcal` :
+        currentTravelMode === 'transit' ? `🚌 ₹${Math.min(50, Math.max(10, Math.round(r1_distKm * 2.5)))} fare` :
+        currentTravelMode === 'moto' ? `⛽ ${(r1_distKm * 0.032).toFixed(2)} L petrol` :
+        `⛽ ${(r1_distKm * 0.079).toFixed(2)} L fuel`;
       document.getElementById('r1-fuel').innerText = fuelR1Text;
 
       if (shortest.pathNodes && shortest.pathNodes.length > 0) {
