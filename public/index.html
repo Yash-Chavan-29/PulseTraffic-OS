@@ -1121,15 +1121,15 @@
         <!-- Origin & Destination Inputs -->
         <div class="gmaps-inputs-box">
           <div class="input-row">
-            <div class="input-dot-origin"></div>
-            <input type="text" id="input-origin" class="gmaps-input" value="Belagavi Central Railway Station" placeholder="Choose starting point or junction..." onkeydown="if(event.key==='Enter') calculateGoogleRoutes()">
-            <button class="input-action-btn" onclick="locateUserGPS()" title="Use Current GPS">📍</button>
+            <div class="input-dot-origin" title="Start Point (A)"></div>
+            <input type="text" id="input-origin" list="belagavi-landmarks-list" class="gmaps-input" value="Belagavi Central Railway Station" placeholder="Choose starting point or junction..." onkeydown="if(event.key==='Enter') calculateGoogleRoutes()">
+            <button class="input-action-btn" onclick="locateUserGPS(true)" title="Use Current GPS as Start">📍</button>
             <button class="input-action-btn" onclick="clearInput('input-origin')" title="Clear">✕</button>
           </div>
 
           <div class="input-row">
-            <div class="input-dot-dest"></div>
-            <input type="text" id="input-destination" class="gmaps-input" value="Belagavi Sambre Airport" placeholder="Choose destination or junction..." onkeydown="if(event.key==='Enter') calculateGoogleRoutes()">
+            <div class="input-dot-dest" title="Destination (B)"></div>
+            <input type="text" id="input-destination" list="belagavi-landmarks-list" class="gmaps-input" value="Belagavi Sambre Airport" placeholder="Choose destination or junction..." onkeydown="if(event.key==='Enter') calculateGoogleRoutes()">
             <button class="input-action-btn" onclick="clearInput('input-destination')" title="Clear">✕</button>
           </div>
 
@@ -1138,15 +1138,39 @@
           </button>
         </div>
 
+        <!-- Landmarks Autocomplete Datalist -->
+        <datalist id="belagavi-landmarks-list">
+          <option value="Belagavi Central Railway Station">Railway Station</option>
+          <option value="Belagavi Sambre Airport">Airport (IXG)</option>
+          <option value="Rani Chennamma Circle Hub">Chennamma Circle</option>
+          <option value="BIMS District Civil Hospital">BIMS Hospital</option>
+          <option value="RPD College Cross Junction">RPD Cross</option>
+          <option value="Bogarves Central Intersection">Bogarves</option>
+          <option value="Central Bus Terminal">CBT Bus Stand</option>
+          <option value="Belagavi Fort Lake Junction">Fort Lake</option>
+          <option value="Tilakwadi 1st Gate">Tilakwadi</option>
+          <option value="Camp Cantonment Cross">Camp</option>
+          <option value="Shahapur Market Square">Shahapur</option>
+          <option value="Vadgaon Historic Crossing">Vadgaon</option>
+          <option value="Hindwadi Congress Road">Hindwadi</option>
+          <option value="Suvarna Vidhana Soudha">Suvarna Soudha</option>
+          <option value="Auto Nagar Industrial Hub">Auto Nagar</option>
+          <option value="Kanbargi Bypass Crossing">Kanbargi</option>
+          <option value="Nehru Nagar Circle">Nehru Nagar</option>
+          <option value="Subhash Nagar Gateway">Subhash Nagar</option>
+          <option value="Peeranwadi Industrial Bypass">Peeranwadi</option>
+          <option value="Machhe Industrial Estate">Machhe</option>
+        </datalist>
+
         <!-- Belagavi Landmark Destination Chips -->
         <div class="gmaps-chips-scroll">
-          <span class="place-chip active" onclick="setDestination('Belagavi Sambre Airport')">✈️ Airport</span>
-          <span class="place-chip" onclick="setDestination('BIMS District Civil Hospital')">🏥 BIMS Hospital</span>
-          <span class="place-chip" onclick="setDestination('Belagavi Central Railway Station')">🚆 Railway Station</span>
-          <span class="place-chip" onclick="setDestination('RPD College Cross Junction')">🏛️ RPD Cross</span>
-          <span class="place-chip" onclick="setDestination('Bogarves Central Intersection')">🔄 Bogarves</span>
-          <span class="place-chip" onclick="setDestination('Central Bus Terminal')">🚌 CBT Stand</span>
-          <span class="place-chip" onclick="setDestination('Suvarna Vidhana Soudha')">🏛️ Suvarna Soudha</span>
+          <span class="place-chip active" data-dest="Belagavi Sambre Airport" onclick="setDestination('Belagavi Sambre Airport')">✈️ Airport</span>
+          <span class="place-chip" data-dest="BIMS District Civil Hospital" onclick="setDestination('BIMS District Civil Hospital')">🏥 BIMS Hospital</span>
+          <span class="place-chip" data-dest="Belagavi Central Railway Station" onclick="setDestination('Belagavi Central Railway Station')">🚆 Railway Station</span>
+          <span class="place-chip" data-dest="RPD College Cross Junction" onclick="setDestination('RPD College Cross Junction')">🏛️ RPD Cross</span>
+          <span class="place-chip" data-dest="Bogarves Central Intersection" onclick="setDestination('Bogarves Central Intersection')">🔄 Bogarves</span>
+          <span class="place-chip" data-dest="Central Bus Terminal" onclick="setDestination('Central Bus Terminal')">🚌 CBT Stand</span>
+          <span class="place-chip" data-dest="Suvarna Vidhana Soudha" onclick="setDestination('Suvarna Vidhana Soudha')">🏛️ Suvarna Soudha</span>
         </div>
 
         <!-- Calculate Routes Button -->
@@ -1757,9 +1781,9 @@
     }
 
     // ---------------------------------------------------------
-    // 2. Belagavi Landmark Junctions Layer
+    // 2. Belagavi Landmark Junctions Layer (Complete 23 Nodes)
     // ---------------------------------------------------------
-    const BELAGAVI_JUNCTIONS = {
+    let BELAGAVI_JUNCTIONS = {
       "kle_tech": { name: "KLE Technological University", lat: 15.8902, lng: 74.5180, icon: "🎓" },
       "chennamma_circle": { name: "Rani Chennamma Circle Hub", lat: 15.8497, lng: 74.5089, icon: "⭕" },
       "railway_station": { name: "Belagavi Central Railway Station", lat: 15.8640, lng: 74.5065, icon: "🚆" },
@@ -1769,44 +1793,87 @@
       "cbt_bus_stand": { name: "Central Bus Terminal (CBT)", lat: 15.8611, lng: 74.5123, icon: "🚌" },
       "fort_lake": { name: "Belagavi Fort Lake Junction", lat: 15.8635, lng: 74.5240, icon: "🏞️" },
       "tilakwadi": { name: "Tilakwadi 1st Gate", lat: 15.8380, lng: 74.5050, icon: "🚏" },
+      "camp_area": { name: "Camp Cantonment Cross", lat: 15.8510, lng: 74.4980, icon: "🚏" },
+      "peeranwadi": { name: "Peeranwadi Industrial Bypass", lat: 15.8150, lng: 74.4650, icon: "🏭" },
+      "suvarna_soudha": { name: "Suvarna Vidhana Soudha", lat: 15.7890, lng: 74.5680, icon: "🏛️" },
       "auto_nagar": { name: "Auto Nagar Industrial Hub", lat: 15.8750, lng: 74.5420, icon: "🏭" },
       "kanbargi": { name: "Kanbargi Bypass Crossing", lat: 15.8820, lng: 74.5350, icon: "🛣️" },
       "sambre_airport": { name: "Belagavi Sambre Airport", lat: 15.8590, lng: 74.6180, icon: "✈️" },
       "nehru_nagar": { name: "Nehru Nagar Circle", lat: 15.8800, lng: 74.5120, icon: "🚏" },
       "subhash_nagar": { name: "Subhash Nagar Gateway", lat: 15.8720, lng: 74.5190, icon: "🚏" },
-      "suvarna_soudha": { name: "Suvarna Vidhana Soudha", lat: 15.7890, lng: 74.5680, icon: "🏛️" },
-      "peeranwadi": { name: "Peeranwadi Industrial Bypass", lat: 15.8150, lng: 74.4650, icon: "🏭" }
+      "shahapur": { name: "Shahapur Market Square", lat: 15.8420, lng: 74.5140, icon: "🏬" },
+      "vadgaon": { name: "Vadgaon Historic Crossing", lat: 15.8350, lng: 74.5190, icon: "🏛️" },
+      "hindwadi": { name: "Hindwadi Congress Road", lat: 15.8440, lng: 74.5010, icon: "🛣️" },
+      "machhe": { name: "Machhe Industrial Estate", lat: 15.8080, lng: 74.4780, icon: "🏭" },
+      "kakati_nh4": { name: "Kakati NH-48 Express Interchange", lat: 15.9320, lng: 74.5380, icon: "🛣️" },
+      "halga_nh4": { name: "Halga NH-48 South Interchange", lat: 15.8100, lng: 74.5510, icon: "🛣️" }
     };
+
+    function getNodeShortName(k) {
+      const shortNames = {
+        railway_station: "Railway Station",
+        sambre_airport: "Sambre Airport",
+        chennamma_circle: "Chennamma Circle",
+        bims_hospital: "BIMS Hospital",
+        rpd_cross: "RPD Cross",
+        bogarves: "Bogarves",
+        cbt_bus_stand: "CBT Stand",
+        fort_lake: "Fort Lake",
+        tilakwadi: "Tilakwadi",
+        camp_area: "Camp",
+        peeranwadi: "Peeranwadi",
+        suvarna_soudha: "Suvarna Soudha",
+        auto_nagar: "Auto Nagar",
+        kanbargi: "Kanbargi",
+        nehru_nagar: "Nehru Nagar",
+        subhash_nagar: "Subhash Nagar",
+        shahapur: "Shahapur",
+        vadgaon: "Vadgaon",
+        hindwadi: "Hindwadi",
+        machhe: "Machhe",
+        kakati_nh4: "Kakati NH-48",
+        halga_nh4: "Halga NH-48",
+        kle_tech: "KLE Tech"
+      };
+      if (shortNames[k]) return shortNames[k];
+      if (BELAGAVI_JUNCTIONS[k]) {
+        const raw = BELAGAVI_JUNCTIONS[k].name;
+        return raw.replace(/^Belagavi\s+/i, '').split(' ')[0];
+      }
+      return String(k).replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    }
 
     async function loadBelagaviJunctions() {
       junctionsLayer.clearLayers();
-      let junctions = BELAGAVI_JUNCTIONS;
 
       try {
         const res = await fetch('/api/routes/junctions');
         const json = await res.json();
         if (json.data && json.data.length > 0) {
-          junctions = {};
-          json.data.forEach(j => { junctions[j.id || j.key] = j; });
+          json.data.forEach(j => {
+            const k = j.key || j.id;
+            BELAGAVI_JUNCTIONS[k] = { ...BELAGAVI_JUNCTIONS[k], ...j };
+          });
         }
       } catch (e) {}
 
-      Object.entries(junctions).forEach(([key, jnc]) => {
+      Object.entries(BELAGAVI_JUNCTIONS).forEach(([key, jnc]) => {
         const iconChar = jnc.icon || "📍";
+        const shortLabel = getNodeShortName(key);
         const customIcon = L.divIcon({
           className: 'junction-div-icon',
-          html: `<div class="junction-marker-pill"><span>${iconChar}</span> <span>${jnc.name.split(' ')[0]}</span></div>`,
-          iconSize: [80, 22],
-          iconAnchor: [40, 11]
+          html: `<div class="junction-marker-pill"><span>${iconChar}</span> <span>${shortLabel}</span></div>`,
+          iconSize: [96, 24],
+          iconAnchor: [48, 12]
         });
 
         const m = L.marker([jnc.lat, jnc.lng], { icon: customIcon }).bindPopup(`
-          <div style="font-family:'Roboto',sans-serif; min-width:180px;">
+          <div style="font-family:'Roboto',sans-serif; min-width:190px;">
             <b style="font-size:13.5px; color:#1e293b;">${jnc.name}</b>
             <div style="font-size:11px; color:#64748b; margin-top:2px;">Belagavi Network Junction (${jnc.lat.toFixed(4)}, ${jnc.lng.toFixed(4)})</div>
             <div style="margin-top:8px; display:flex; gap:6px;">
-              <button onclick="setOrigin('${jnc.name}')" style="background:#e8f0fe; color:#1a73e8; border:1px solid #bad3fb; padding:4px 8px; border-radius:10px; font-size:11px; font-weight:600; cursor:pointer;">Start Here</button>
-              <button onclick="setDestination('${jnc.name}')" style="background:#1a73e8; color:#fff; border:none; padding:4px 8px; border-radius:10px; font-size:11px; font-weight:600; cursor:pointer;">Route Here</button>
+              <button onclick="setOrigin('${jnc.name}')" style="flex:1; background:#e8f0fe; color:#1a73e8; border:1px solid #bad3fb; padding:5px 8px; border-radius:10px; font-size:11px; font-weight:700; cursor:pointer;">🟢 Start Here</button>
+              <button onclick="setDestination('${jnc.name}')" style="flex:1; background:#1a73e8; color:#fff; border:none; padding:5px 8px; border-radius:10px; font-size:11px; font-weight:700; cursor:pointer;">🔴 Route Here</button>
             </div>
           </div>
         `);
@@ -1817,31 +1884,63 @@
     // ---------------------------------------------------------
     // 3. GPS Geolocation
     // ---------------------------------------------------------
-    function locateUserGPS() {
+    function locateUserGPS(setAsStart = false) {
       if (gpsMarker) map.removeLayer(gpsMarker);
       if (gpsRadiusCircle) map.removeLayer(gpsRadiusCircle);
 
-      gpsRadiusCircle = L.circle([userLocation.lat, userLocation.lng], {
-        radius: 500,
-        color: '#1a73e8',
-        weight: 1.5,
-        fillColor: '#1a73e8',
-        fillOpacity: 0.12
-      }).addTo(map);
+      const applyGPS = (lat, lng, name) => {
+        gpsRadiusCircle = L.circle([lat, lng], {
+          radius: 500,
+          color: '#1a73e8',
+          weight: 1.5,
+          fillColor: '#1a73e8',
+          fillOpacity: 0.12
+        }).addTo(map);
 
-      const icon = L.divIcon({
-        className: 'gps-marker-pulsing',
-        html: '<div class="gps-ring"></div><div class="gps-dot"></div>',
-        iconSize: [24, 24],
-        iconAnchor: [12, 12]
-      });
+        const icon = L.divIcon({
+          className: 'gps-marker-pulsing',
+          html: '<div class="gps-ring"></div><div class="gps-dot"></div>',
+          iconSize: [24, 24],
+          iconAnchor: [12, 12]
+        });
 
-      gpsMarker = L.marker([userLocation.lat, userLocation.lng], { icon })
-        .bindPopup(`<b>${userLocation.name}</b><br><span style="color:#5f6368;font-size:12px;">Belagavi Core Center (500m Accuracy)</span>`)
-        .addTo(map);
+        gpsMarker = L.marker([lat, lng], { icon })
+          .bindPopup(`<b>${name}</b><br><span style="color:#5f6368;font-size:12px;">Your Location (500m Accuracy)</span>`)
+          .addTo(map);
 
-      map.setView([userLocation.lat, userLocation.lng], 14, { animate: true });
-      showToast('Centered on Belagavi location');
+        map.setView([lat, lng], 14, { animate: true });
+
+        if (setAsStart) {
+          const originInput = document.getElementById('input-origin');
+          originInput.value = name;
+          showToast(`📍 Starting point set: ${name}`);
+          switchFlyoutPanel('directions');
+          calculateGoogleRoutes();
+        } else {
+          showToast(`📍 Centered on ${name}`);
+        }
+      };
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            const distFromBelagavi = Math.hypot(lat - 15.8497, lng - 74.5089);
+            if (distFromBelagavi < 0.6) {
+              applyGPS(lat, lng, `Current Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`);
+            } else {
+              applyGPS(userLocation.lat, userLocation.lng, userLocation.name);
+            }
+          },
+          (err) => {
+            applyGPS(userLocation.lat, userLocation.lng, userLocation.name);
+          },
+          { timeout: 4000 }
+        );
+      } else {
+        applyGPS(userLocation.lat, userLocation.lng, userLocation.name);
+      }
     }
 
     // ---------------------------------------------------------
@@ -1910,22 +2009,58 @@
       calculateGoogleRoutes();
     }
 
+    function syncDestinationChips(placeName) {
+      const norm = (placeName || '').toLowerCase().trim();
+      document.querySelectorAll('.place-chip').forEach(c => {
+        const d = (c.getAttribute('data-dest') || c.innerText).toLowerCase().trim();
+        const isActive = norm.length > 2 && (d.includes(norm) || norm.includes(d) || c.innerText.toLowerCase().includes(norm));
+        c.classList.toggle('active', isActive);
+      });
+    }
+
     function setOrigin(placeName) {
       document.getElementById('input-origin').value = placeName;
+      showToast(`🟢 Starting point: ${placeName}`);
+      switchFlyoutPanel('directions');
       calculateGoogleRoutes();
     }
 
     function setDestination(placeName) {
       document.getElementById('input-destination').value = placeName;
-      document.querySelectorAll('.place-chip').forEach(c => {
-        c.classList.toggle('active', c.innerText.includes(placeName));
-      });
+      syncDestinationChips(placeName);
+      showToast(`🔴 Destination: ${placeName}`);
+      switchFlyoutPanel('directions');
       calculateGoogleRoutes();
     }
 
     async function calculateGoogleRoutes() {
-      const origInput = document.getElementById('input-origin').value.trim() || 'railway_station';
-      const destInput = document.getElementById('input-destination').value.trim() || 'sambre_airport';
+      const origEl = document.getElementById('input-origin');
+      const destEl = document.getElementById('input-destination');
+      let origInput = origEl.value.trim();
+      let destInput = destEl.value.trim();
+
+      // Guard against empty inputs - auto-populate so the UI is never blank
+      if (!origInput && !destInput) {
+        origInput = 'Belagavi Central Railway Station';
+        destInput = 'Belagavi Sambre Airport';
+        origEl.value = origInput;
+        destEl.value = destInput;
+      } else if (!origInput) {
+        origInput = 'Belagavi Central Railway Station';
+        origEl.value = origInput;
+        showToast('Start location auto-set to Belagavi Central Railway Station');
+      } else if (!destInput) {
+        destInput = 'Belagavi Sambre Airport';
+        destEl.value = destInput;
+        showToast('Destination auto-set to Belagavi Sambre Airport');
+      }
+
+      if (origInput.toLowerCase() === destInput.toLowerCase()) {
+        showToast('⚠️ Start and Destination cannot be the same');
+        return;
+      }
+
+      syncDestinationChips(destInput);
 
       const btn = document.getElementById('btn-calc-routes');
       const btnText = document.getElementById('btn-calc-text');
@@ -1952,17 +2087,33 @@
 
           selectedRouteIndex = 0; // default to fastest
 
-          // Place origin and destination pins
+          // Distinct Start (Green A) and Destination (Red B) pins
           if (json.data.origin && json.data.origin.coordinates) {
             const [oLat, oLng] = json.data.origin.coordinates;
             if (originMarker) map.removeLayer(originMarker);
-            originMarker = L.marker([oLat, oLng]).bindPopup(`<b>Start:</b> ${json.data.origin.name || origInput}`).addTo(map);
+            const startPin = L.divIcon({
+              className: 'route-start-pin',
+              html: `<div style="background:#10b981; color:#fff; width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; box-shadow:0 3px 10px rgba(16,185,129,0.5); border:2.5px solid #fff;">A</div>`,
+              iconSize: [30, 30],
+              iconAnchor: [15, 15]
+            });
+            originMarker = L.marker([oLat, oLng], { icon: startPin })
+              .bindPopup(`<div style="font-family:'Roboto',sans-serif;"><span style="color:#10b981; font-weight:700; font-size:11px;">🟢 START POINT</span><br><b style="font-size:13.5px; color:#1e293b;">${json.data.origin.name || origInput}</b></div>`)
+              .addTo(map);
           }
 
           if (json.data.destination && json.data.destination.coordinates) {
             const [dLat, dLng] = json.data.destination.coordinates;
             if (destinationMarker) map.removeLayer(destinationMarker);
-            destinationMarker = L.marker([dLat, dLng]).bindPopup(`<b>Destination:</b> ${json.data.destination.name || destInput}`).addTo(map);
+            const destPin = L.divIcon({
+              className: 'route-dest-pin',
+              html: `<div style="background:#ef4444; color:#fff; width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; box-shadow:0 3px 10px rgba(239,68,68,0.5); border:2.5px solid #fff;">B</div>`,
+              iconSize: [30, 30],
+              iconAnchor: [15, 15]
+            });
+            destinationMarker = L.marker([dLat, dLng], { icon: destPin })
+              .bindPopup(`<div style="font-family:'Roboto',sans-serif;"><span style="color:#ef4444; font-weight:700; font-size:11px;">🔴 DESTINATION</span><br><b style="font-size:13.5px; color:#1e293b;">${json.data.destination.name || destInput}</b></div>`)
+              .addTo(map);
           }
 
           document.getElementById('routes-results-list').style.display = 'flex';
@@ -2055,7 +2206,7 @@
 
       // Format Junctions path string
       if (fastest.pathNodes && fastest.pathNodes.length > 0) {
-        const readableNodes = fastest.pathNodes.map(k => (BELAGAVI_JUNCTIONS[k] ? BELAGAVI_JUNCTIONS[k].name.split(' ')[0] : k));
+        const readableNodes = fastest.pathNodes.map(k => getNodeShortName(k));
         document.getElementById('r0-junctions-path').innerText = `Junctions: ${readableNodes.join(' ➔ ')}`;
       }
 
@@ -2087,7 +2238,7 @@
       document.getElementById('r1-fuel').innerText = fuelR1Text;
 
       if (shortest.pathNodes && shortest.pathNodes.length > 0) {
-        const readableNodes = shortest.pathNodes.map(k => (BELAGAVI_JUNCTIONS[k] ? BELAGAVI_JUNCTIONS[k].name.split(' ')[0] : k));
+        const readableNodes = shortest.pathNodes.map(k => getNodeShortName(k));
         document.getElementById('r1-junctions-path').innerText = `Junctions: ${readableNodes.join(' ➔ ')}`;
       }
 
@@ -2367,6 +2518,26 @@
       document.getElementById('hazard-location-input').value = `Map Point (${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)})`;
       document.getElementById('hazard-coords-preview').innerText = `Target: Lat ${e.latlng.lat.toFixed(4)}, Lng ${e.latlng.lng.toFixed(4)} (Picked on Map)`;
       showToast('📍 Location pinpointed on map!');
+    });
+
+    // Right-click or long-press on map to pick Start or Destination anywhere in Belagavi
+    map.on('contextmenu', (e) => {
+      const lat = e.latlng.lat.toFixed(4);
+      const lng = e.latlng.lng.toFixed(4);
+      const coordStr = `${lat}, ${lng}`;
+      L.popup()
+        .setLatLng(e.latlng)
+        .setContent(`
+          <div style="font-family:'Roboto',sans-serif; min-width:160px; text-align:center; padding:4px;">
+            <b style="font-size:12.5px; color:#1e293b;">Belagavi Point</b>
+            <div style="font-size:11px; color:#64748b; margin-top:2px;">(${lat}, ${lng})</div>
+            <div style="display:flex; gap:6px; margin-top:8px;">
+              <button onclick="setOrigin('${coordStr}'); map.closePopup();" style="flex:1; background:#10b981; color:#fff; border:none; padding:5px 8px; border-radius:8px; font-size:11px; font-weight:700; cursor:pointer;">🟢 Set Start</button>
+              <button onclick="setDestination('${coordStr}'); map.closePopup();" style="flex:1; background:#ef4444; color:#fff; border:none; padding:5px 8px; border-radius:8px; font-size:11px; font-weight:700; cursor:pointer;">🔴 Set Dest</button>
+            </div>
+          </div>
+        `)
+        .openOn(map);
     });
 
     async function submitHazardReport() {
