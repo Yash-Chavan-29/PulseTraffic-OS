@@ -1313,39 +1313,121 @@
            PANEL 3: ADAPTIVE SIGNAL OPTIMIZATION LAB
            ------------------------------------------------------- -->
       <div id="panel-signals" class="flyout-panel-view" style="display: none; padding: 14px 16px;">
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-bottom: 12px;">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 13px; font-weight: 600; color: #334155;">Webster Delay Reduction:</span>
-            <span id="signal-delay-reduction" style="font-size: 16px; font-weight: 700; color: var(--gm-green);">-42.8%</span>
-          </div>
-          <div style="font-size: 11px; color: #64748b; margin-top: 3px;">
-            Optimum Cycle: <code style="color:var(--gm-blue);">Co = (1.5L + 5) / (1 - Y)</code> • Constrained 55s - 105s
-          </div>
-        </div>
-
+        <!-- Junction Selector -->
         <div style="margin-bottom: 12px;">
-          <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 4px;">
-            <span>College Road Approach (Northbound):</span>
-            <span id="q-north-val" style="color: var(--gm-blue);">38 cars</span>
-          </div>
-          <input type="range" id="slider-queue-north" min="5" max="80" value="38" style="width: 100%; accent-color: var(--gm-blue);" oninput="updateQueueSlider('north', this.value)">
+          <label style="font-size: 11px; font-weight: 700; color: var(--gm-text-secondary); text-transform: uppercase;">SIGNALIZED JUNCTION</label>
+          <select id="signal-junction-select" class="admin-filter-select" style="width: 100%; margin-top: 4px; padding: 8px 10px; border-radius: 8px; border: 1px solid #cbd5e1; font-weight: 600;" onchange="onSignalJunctionChange()">
+            <option value="JNC-14">⭕ Rani Chennamma Circle Hub (JNC-14)</option>
+            <option value="JNC-08">🔄 Bogarves Central Intersection (JNC-08)</option>
+            <option value="JNC-22">🚌 CBT Bus Terminal Junction (JNC-22)</option>
+            <option value="JNC-05">🏛️ RPD College Cross (JNC-05)</option>
+            <option value="JNC-19">🏥 KLE Hospital Main Gate (JNC-19)</option>
+          </select>
         </div>
 
-        <div style="margin-bottom: 14px;">
-          <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 4px;">
-            <span>Civil Hospital Road (Eastbound):</span>
-            <span id="q-east-val" style="color: var(--gm-blue);">44 cars</span>
+        <!-- Webster KPI Summary Box -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 14px; margin-bottom: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Delay Reduction</div>
+              <div id="signal-delay-reduction" style="font-size: 24px; font-weight: 800; color: #10b981; line-height: 1.2;">-40.4%</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Clearance Rating</div>
+              <div id="signal-los-rating" style="font-size: 12px; font-weight: 700; color: #1e293b; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 6px; padding: 3px 8px; margin-top: 2px;">LOS B (Optimal)</div>
+            </div>
           </div>
-          <input type="range" id="slider-queue-east" min="5" max="80" value="44" style="width: 100%; accent-color: var(--gm-blue);" oninput="updateQueueSlider('east', this.value)">
+          <div style="display: flex; justify-content: space-between; font-size: 11.5px; color: #475569; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #e2e8f0;">
+            <span>Avg Wait: <b id="signal-wait-diff" style="color:#10b981;">79.3s ➔ 47.3s</b></span>
+            <span>Cycle: <b id="signal-cycle-diff">90s ➔ 100s</b></span>
+          </div>
         </div>
 
+        <!-- Live Traffic Light Visualization Widget -->
+        <div style="background: #0f172a; border-radius: 12px; padding: 12px 14px; color: #fff; margin-bottom: 14px;">
+          <div style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between;">
+            <span>Dual-Ring Signal Phases</span>
+            <span style="color:#38bdf8; font-size: 10px;">Webster HCM Model</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <!-- Phase 1: North-South -->
+            <div style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px; text-align: center;">
+              <div style="font-size: 11px; color: #94a3b8; font-weight: 600;">Phase 1: North-South</div>
+              <div style="display: flex; justify-content: center; align-items: center; gap: 6px; margin: 6px 0;">
+                <div id="light-ns-red" style="width: 14px; height: 14px; border-radius: 50%; background: #475569; opacity: 0.3;"></div>
+                <div id="light-ns-yellow" style="width: 14px; height: 14px; border-radius: 50%; background: #475569; opacity: 0.3;"></div>
+                <div id="light-ns-green" style="width: 14px; height: 14px; border-radius: 50%; background: #10b981; box-shadow: 0 0 10px #10b981;"></div>
+              </div>
+              <div style="font-size: 15px; font-weight: 800; color: #34d399;" id="phase-ns-seconds">72s GREEN</div>
+              <div style="font-size: 10.5px; color: #cbd5e1; margin-top: 2px;" id="phase-ns-queue">Queue: 80 veh</div>
+            </div>
+
+            <!-- Phase 2: East-West -->
+            <div style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px; text-align: center;">
+              <div style="font-size: 11px; color: #94a3b8; font-weight: 600;">Phase 2: East-West</div>
+              <div style="display: flex; justify-content: center; align-items: center; gap: 6px; margin: 6px 0;">
+                <div id="light-ew-red" style="width: 14px; height: 14px; border-radius: 50%; background: #ef4444; box-shadow: 0 0 10px #ef4444;"></div>
+                <div id="light-ew-yellow" style="width: 14px; height: 14px; border-radius: 50%; background: #475569; opacity: 0.3;"></div>
+                <div id="light-ew-green" style="width: 14px; height: 14px; border-radius: 50%; background: #475569; opacity: 0.3;"></div>
+              </div>
+              <div style="font-size: 15px; font-weight: 800; color: #f87171;" id="phase-ew-seconds">18s GREEN</div>
+              <div style="font-size: 10.5px; color: #cbd5e1; margin-top: 2px;" id="phase-ew-queue">Queue: 25 veh</div>
+            </div>
+          </div>
+          <div style="font-size: 10px; color: #94a3b8; text-align: center; margin-top: 8px;">
+            Clearance: 3s Yellow • 2s All-Red (Dual-Ring Conflict Prevention)
+          </div>
+        </div>
+
+        <!-- 4-Approach Traffic Queue Sliders -->
+        <div style="font-size: 11px; font-weight: 700; color: var(--gm-text-secondary); text-transform: uppercase; margin-bottom: 8px;">APPROACH QUEUE DEMAND (VEHICLES)</div>
+        
+        <!-- Northbound -->
+        <div style="margin-bottom: 8px;">
+          <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 2px;">
+            <span>Northbound (College Rd):</span>
+            <span id="q-north-val" style="color: var(--gm-blue); font-weight: 700;">60 cars</span>
+          </div>
+          <input type="range" id="slider-queue-north" min="0" max="120" value="60" style="width: 100%; accent-color: var(--gm-blue);" oninput="onQueueSliderInput('north', this.value)">
+        </div>
+
+        <!-- Southbound -->
+        <div style="margin-bottom: 8px;">
+          <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 2px;">
+            <span>Southbound (Tilakwadi Rd):</span>
+            <span id="q-south-val" style="color: var(--gm-blue); font-weight: 700;">20 cars</span>
+          </div>
+          <input type="range" id="slider-queue-south" min="0" max="120" value="20" style="width: 100%; accent-color: var(--gm-blue);" oninput="onQueueSliderInput('south', this.value)">
+        </div>
+
+        <!-- Eastbound -->
+        <div style="margin-bottom: 8px;">
+          <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 2px;">
+            <span>Eastbound (Civil Hospital Rd):</span>
+            <span id="q-east-val" style="color: var(--gm-blue); font-weight: 700;">15 cars</span>
+          </div>
+          <input type="range" id="slider-queue-east" min="0" max="120" value="15" style="width: 100%; accent-color: var(--gm-blue);" oninput="onQueueSliderInput('east', this.value)">
+        </div>
+
+        <!-- Westbound -->
+        <div style="margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 2px;">
+            <span>Westbound (Bogarves Rd):</span>
+            <span id="q-west-val" style="color: var(--gm-blue); font-weight: 700;">10 cars</span>
+          </div>
+          <input type="range" id="slider-queue-west" min="0" max="120" value="10" style="width: 100%; accent-color: var(--gm-blue);" oninput="onQueueSliderInput('west', this.value)">
+        </div>
+
+        <!-- Recalculate Button -->
         <button class="btn-search-route" style="margin: 0 0 10px 0;" onclick="computeAdaptiveSignal()">
           <span>Recalculate Adaptive Split</span>
         </button>
 
-        <div id="signal-results-box" style="display:none; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 10px; font-size: 12px; color: #065f46; margin-bottom: 12px;">
-          <div style="font-weight: 700;">Adaptive Timing Computed:</div>
-          <div id="signal-results-text" style="margin-top: 2px;">Cycle: 78s • Phase 1 Green: 42s • Phase 2 Green: 26s</div>
+        <!-- Dynamic Results Explanation Box -->
+        <div id="signal-results-box" style="display:none; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 10px; font-size: 12px; color: #065f46; margin-bottom: 12px; line-height: 1.45;">
+          <div style="font-weight: 700; margin-bottom: 3px;" id="signal-results-headline">Adaptive Split Computed:</div>
+          <div id="signal-results-text" style="color: #047857;">Cycle: 100s • Phase 1 Green: 72s • Phase 2 Green: 18s</div>
+          <div id="signal-results-explanation" style="font-size: 11px; color: #065f46; margin-top: 6px; border-top: 1px dashed #a7f3d0; padding-top: 5px;"></div>
         </div>
 
         <button class="btn-search-route" style="margin: 0; background: var(--gm-green);" onclick="triggerEmergencyGreenWave()">
@@ -1750,6 +1832,10 @@
       const targetPanel = document.getElementById(`panel-${panelKey}`);
       if (targetPanel) {
         targetPanel.style.display = 'block';
+      }
+
+      if (panelKey === 'signals') {
+        computeAdaptiveSignal(true);
       }
 
       if (panelKey === 'admin') {
@@ -2758,34 +2844,159 @@
       closeFlyout();
     }
 
-    function updateQueueSlider(dir, val) {
-      if (dir === 'north') document.getElementById('q-north-val').innerText = `${val} cars`;
-      if (dir === 'east') document.getElementById('q-east-val').innerText = `${val} cars`;
+    let signalDebounceTimer = null;
+
+    function onQueueSliderInput(dir, val) {
+      const el = document.getElementById(`q-${dir}-val`);
+      if (el) el.innerText = `${val} cars`;
+
+      clearTimeout(signalDebounceTimer);
+      signalDebounceTimer = setTimeout(() => {
+        computeAdaptiveSignal(true);
+      }, 200);
     }
 
-    async function computeAdaptiveSignal() {
-      const qN = parseInt(document.getElementById('slider-queue-north').value);
-      const qE = parseInt(document.getElementById('slider-queue-east').value);
+    function onSignalJunctionChange() {
+      const jncSelect = document.getElementById('signal-junction-select');
+      const junctionId = jncSelect ? jncSelect.value : "JNC-14";
+      loadSignalJunctionQueues(junctionId);
+    }
+
+    async function loadSignalJunctionQueues(junctionId) {
+      try {
+        const res = await fetch('/api/signals/junctions');
+        const json = await res.json();
+        if (json.data && json.data.length > 0) {
+          const match = json.data.find(j => j.junction_id === junctionId);
+          if (match) {
+            const qN = match.queue_north ?? 40;
+            const qS = match.queue_south ?? 20;
+            const qE = match.queue_east ?? 30;
+            const qW = match.queue_west ?? 15;
+
+            const slN = document.getElementById('slider-queue-north');
+            const slS = document.getElementById('slider-queue-south');
+            const slE = document.getElementById('slider-queue-east');
+            const slW = document.getElementById('slider-queue-west');
+
+            if (slN) slN.value = qN;
+            if (slS) slS.value = qS;
+            if (slE) slE.value = qE;
+            if (slW) slW.value = qW;
+
+            const qnVal = document.getElementById('q-north-val');
+            const qsVal = document.getElementById('q-south-val');
+            const qeVal = document.getElementById('q-east-val');
+            const qwVal = document.getElementById('q-west-val');
+
+            if (qnVal) qnVal.innerText = `${qN} cars`;
+            if (qsVal) qsVal.innerText = `${qS} cars`;
+            if (qeVal) qeVal.innerText = `${qE} cars`;
+            if (qwVal) qwVal.innerText = `${qW} cars`;
+          }
+        }
+      } catch (e) {}
+
+      computeAdaptiveSignal();
+    }
+
+    async function computeAdaptiveSignal(isLiveDrag = false) {
+      const jncSelect = document.getElementById('signal-junction-select');
+      const junctionId = jncSelect ? jncSelect.value : "JNC-14";
+
+      const qN = parseInt(document.getElementById('slider-queue-north')?.value || 60);
+      const qS = parseInt(document.getElementById('slider-queue-south')?.value || 20);
+      const qE = parseInt(document.getElementById('slider-queue-east')?.value || 15);
+      const qW = parseInt(document.getElementById('slider-queue-west')?.value || 10);
 
       try {
         const res = await fetch('/api/signals/optimize', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            junctionId: "JNC-14",
-            currentQueueLengths: { north: qN, south: 14, east: qE, west: 16 }
+            junctionId,
+            currentQueueLengths: { north: qN, south: qS, east: qE, west: qW }
           })
         });
         const json = await res.json();
+
         if (json.data) {
-          const opt = json.data.adaptiveMetrics || json.data.adaptiveOptimization;
-          document.getElementById('signal-delay-reduction').innerText = `-${json.data.delayReductionPercent || 42.8}%`;
-          document.getElementById('signal-results-box').style.display = 'block';
-          document.getElementById('signal-results-text').innerText = `Cycle: ${opt.cycleLengthSec}s • Green N-S: ${opt.greenAllocationsSec?.northbound || 42}s • Green E-W: ${opt.greenAllocationsSec?.eastbound || 26}s`;
-          showToast('Adaptive signal timing recalculated with Webster formula');
+          const d = json.data;
+          const opt = d.optimizedAdaptiveTiming || {};
+          const base = d.baselineFixedTiming || {};
+
+          const reduction = d.waitTimeReductionPercent !== undefined ? d.waitTimeReductionPercent : 40.0;
+          const cycleOpt = opt.cycleTimeSec || d.cycleTimeSec || 90;
+          const greenNS = opt.greenTimeSec?.northSouth || 45;
+          const greenEW = opt.greenTimeSec?.eastWest || 35;
+          const waitOpt = opt.avgWaitTimeSec || 35;
+          const waitBase = base.avgWaitTimeSec || 65;
+          const timeSaved = Math.max(0, (waitBase - waitOpt)).toFixed(1);
+
+          // Update delay reduction badge
+          const delayEl = document.getElementById('signal-delay-reduction');
+          if (delayEl) delayEl.innerText = `-${reduction}%`;
+
+          // Update LOS rating
+          const losEl = document.getElementById('signal-los-rating');
+          if (losEl) losEl.innerText = d.queueClearanceEfficiency || (reduction > 25 ? 'LOS B (Optimal)' : 'LOS C (Stable)');
+
+          // Update cycle and wait differences
+          const waitDiffEl = document.getElementById('signal-wait-diff');
+          if (waitDiffEl) waitDiffEl.innerText = `${waitBase}s ➔ ${waitOpt}s (Saves ${timeSaved}s)`;
+
+          const cycleDiffEl = document.getElementById('signal-cycle-diff');
+          if (cycleDiffEl) cycleDiffEl.innerText = `${base.cycleTimeSec || 90}s ➔ ${cycleOpt}s`;
+
+          // Update live signal lights visualization
+          const phaseNSEl = document.getElementById('phase-ns-seconds');
+          if (phaseNSEl) phaseNSEl.innerText = `${greenNS}s GREEN`;
+
+          const phaseEWEl = document.getElementById('phase-ew-seconds');
+          if (phaseEWEl) phaseEWEl.innerText = `${greenEW}s GREEN`;
+
+          const queueNSEl = document.getElementById('phase-ns-queue');
+          if (queueNSEl) queueNSEl.innerText = `Queue: ${qN + qS} veh`;
+
+          const queueEWEl = document.getElementById('phase-ew-queue');
+          if (queueEWEl) queueEWEl.innerText = `Queue: ${qE + qW} veh`;
+
+          // Update traffic light colors based on priority
+          const lightNSGreen = document.getElementById('light-ns-green');
+          const lightNSRed = document.getElementById('light-ns-red');
+          const lightEWGreen = document.getElementById('light-ew-green');
+          const lightEWRed = document.getElementById('light-ew-red');
+
+          if (greenNS >= greenEW) {
+            if (lightNSGreen) { lightNSGreen.style.background = '#10b981'; lightNSGreen.style.boxShadow = '0 0 10px #10b981'; lightNSGreen.style.opacity = '1'; }
+            if (lightNSRed) { lightNSRed.style.opacity = '0.2'; lightNSRed.style.boxShadow = 'none'; }
+            if (lightEWGreen) { lightEWGreen.style.background = '#475569'; lightEWGreen.style.boxShadow = 'none'; lightEWGreen.style.opacity = '0.3'; }
+            if (lightEWRed) { lightEWRed.style.background = '#ef4444'; lightEWRed.style.boxShadow = '0 0 10px #ef4444'; lightEWRed.style.opacity = '1'; }
+          } else {
+            if (lightNSGreen) { lightNSGreen.style.background = '#475569'; lightNSGreen.style.boxShadow = 'none'; lightNSGreen.style.opacity = '0.3'; }
+            if (lightNSRed) { lightNSRed.style.background = '#ef4444'; lightNSRed.style.boxShadow = '0 0 10px #ef4444'; lightNSRed.style.opacity = '1'; }
+            if (lightEWGreen) { lightEWGreen.style.background = '#10b981'; lightEWGreen.style.boxShadow = '0 0 10px #10b981'; lightEWGreen.style.opacity = '1'; }
+            if (lightEWRed) { lightEWRed.style.opacity = '0.2'; lightEWRed.style.boxShadow = 'none'; }
+          }
+
+          // Update results box
+          const box = document.getElementById('signal-results-box');
+          if (box) box.style.display = 'block';
+
+          const resText = document.getElementById('signal-results-text');
+          if (resText) resText.innerText = `Cycle: ${cycleOpt}s • Phase 1 (N-S): ${greenNS}s • Phase 2 (E-W): ${greenEW}s`;
+
+          const expText = document.getElementById('signal-results-explanation');
+          if (expText && d.optimizationExplanation) {
+            expText.innerText = d.optimizationExplanation;
+          }
+
+          if (!isLiveDrag) {
+            showToast(`🚦 Adaptive split recalculated: ${greenNS}s N-S / ${greenEW}s E-W (-${reduction}%)`);
+          }
         }
       } catch (e) {
-        document.getElementById('signal-results-box').style.display = 'block';
+        console.error("Adaptive signal compute error:", e);
         showToast('Signal timings balanced');
       }
     }
