@@ -14,17 +14,34 @@ try {
     }
   };
 }
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const dbPath = path.join(__dirname, '..', 'traffic.db');
+const isServerless = !!(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+let dbPath = path.join(__dirname, '..', 'traffic.db');
+
+if (isServerless) {
+  const tmpPath = path.join('/tmp', 'traffic.db');
+  try {
+    if (!fs.existsSync(tmpPath) && fs.existsSync(dbPath)) {
+      fs.copyFileSync(dbPath, tmpPath);
+    }
+  } catch (e) {
+    console.warn("[Database] Could not copy SQLite to /tmp:", e.message);
+  }
+  dbPath = tmpPath;
+}
+
 const db = new Database(dbPath);
 
-// Enable WAL mode for high concurrency
-db.pragma('journal_mode = WAL');
+// Enable WAL mode for high concurrency (fallback to DELETE on serverless/tmp if needed)
+try {
+  db.pragma('journal_mode = WAL');
+} catch (e) {}
 
 // Initialize schema with safety
 db.exec(`
