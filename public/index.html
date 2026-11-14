@@ -1019,7 +1019,7 @@
       </button>
 
       <!-- 6. Admin Portal Desk -->
-      <button class="rail-icon-btn" data-panel="admin" onclick="switchFlyoutPanel('admin')">
+      <button class="rail-icon-btn" data-panel="admin" onclick="openAdminModal()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
         </svg>
@@ -1390,68 +1390,15 @@
       <!-- -------------------------------------------------------
            PANEL 6: ADMINISTRATOR INCIDENT COMMAND DESK
            ------------------------------------------------------- -->
-      <div id="panel-admin" class="flyout-panel-view" style="display: none;">
-        <!-- Admin Sign-in Box -->
-        <div id="admin-login-box" style="padding: 20px 18px; text-align: center;">
-          <div style="font-size: 32px; margin-bottom: 6px;">🛡️</div>
-          <h3 style="font-size: 16px; font-weight: 700;">Admin Incident Desk</h3>
-          <p style="font-size: 12px; color: var(--gm-text-secondary); margin-top: 2px;">Authenticate to moderate Belagavi network disruptions</p>
-
-          <div style="margin-top: 14px; text-align: left;">
-            <label style="font-size: 11px; font-weight: 700; color: var(--gm-text-secondary);">USERNAME</label>
-            <input type="text" id="admin-user" class="gmaps-input" style="background: #f1f5f9; padding: 8px 12px; border-radius: 8px; margin-top: 3px;" value="admin">
-          </div>
-
-          <div style="margin-top: 10px; text-align: left;">
-            <label style="font-size: 11px; font-weight: 700; color: var(--gm-text-secondary);">PASSWORD</label>
-            <input type="password" id="admin-pass" class="gmaps-input" style="background: #f1f5f9; padding: 8px 12px; border-radius: 8px; margin-top: 3px;" value="admin123">
-          </div>
-
-          <button class="btn-search-route" style="margin: 14px 0 0;" onclick="loginAdmin()">Sign In as Operator</button>
-        </div>
-
-        <!-- Admin Control Desk (Post Login) -->
-        <div id="admin-panel-box" style="display: none; padding: 12px;">
-          <!-- KPI Statistics Grid -->
-          <div class="admin-stats-grid" style="padding: 8px; gap: 6px; grid-template-columns: repeat(3, 1fr); margin-bottom: 10px; border-radius: 8px;">
-            <div class="admin-stat-card"><div class="admin-stat-val" id="stat-total" style="color:var(--gm-blue); font-size:16px;">--</div><div class="admin-stat-lbl">Total</div></div>
-            <div class="admin-stat-card"><div class="admin-stat-val" id="stat-accidents" style="color:var(--gm-red); font-size:16px;">--</div><div class="admin-stat-lbl">Crashes</div></div>
-            <div class="admin-stat-card"><div class="admin-stat-val" id="stat-roadblocks" style="color:var(--gm-orange); font-size:16px;">--</div><div class="admin-stat-lbl">Blocks</div></div>
-          </div>
-
-          <!-- Filter Toolbar -->
-          <div style="display: flex; gap: 6px; margin-bottom: 10px;">
-            <input type="text" id="admin-search-box" class="admin-search-input" placeholder="Search road or ID..." oninput="filterAdminIncidents()">
-            <select id="admin-filter-status" class="admin-filter-select" onchange="filterAdminIncidents()">
-              <option value="all">All</option>
-              <option value="unverified">Unverified</option>
-              <option value="verified">Verified</option>
-              <option value="resolved">Resolved</option>
-            </select>
-          </div>
-
-          <!-- Incidents Table -->
-          <div class="admin-table-container" style="max-height: 280px; border: 1px solid #e2e8f0; border-radius: 8px;">
-            <table class="admin-table">
-              <thead>
-                <tr>
-                  <th>Road</th>
-                  <th>Type</th>
-                  <th>Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody id="admin-table-body">
-                <!-- Dynamically populated -->
-              </tbody>
-            </table>
-          </div>
-
-          <div style="display: flex; justify-content: space-between; align-items:center; margin-top: 10px;">
-            <button class="place-chip" style="font-size:11px;" onclick="resetDemoData()">🔄 Reset Demo Data</button>
-            <button class="place-chip" style="font-size:11px;" onclick="loadAdminIncidents()">Refresh</button>
-          </div>
-        </div>
+      <div id="panel-admin" class="flyout-panel-view" style="display: none; padding: 24px 20px; text-align: center;">
+        <div style="font-size: 38px; margin-bottom: 10px;">🛡️</div>
+        <h3 style="font-size: 16px; font-weight: 700; color: #1e293b;">Admin Incident Desk</h3>
+        <p style="font-size: 12.5px; color: var(--gm-text-secondary); margin-top: 6px; line-height: 1.5;">
+          The full-screen Administrator Command Center provides spatial verification, 5-category KPI metrics, and complete database moderation controls.
+        </p>
+        <button class="btn-search-route" style="margin: 18px auto 0; width: 100%;" onclick="openAdminModal()">
+          Open Admin Incident Desk
+        </button>
       </div>
 
     </div>
@@ -1495,7 +1442,7 @@
       <span>⚠️</span>
       <span>+ Report Hazard</span>
     </button>
-    <button class="btn-admin-portal" onclick="switchFlyoutPanel('admin')">
+    <button class="btn-admin-portal" onclick="openAdminModal()">
       <span>🛡️</span>
       <span>Admin Incident Desk</span>
     </button>
@@ -1522,6 +1469,111 @@
   <div class="gmaps-layer-switcher" onclick="toggleMapLayer()" title="Change Map Type">
     <div class="layer-thumb" id="layer-thumb-preview" style="background-image: url('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/4/7/11'); background-size: cover;"></div>
     <span id="layer-label-text">Satellite</span>
+  </div>
+
+  <!-- =========================================================
+       6. ADMINISTRATOR INCIDENT DASHBOARD MODAL
+       ========================================================= -->
+  <div class="modal-overlay" id="admin-modal">
+    <!-- Admin Login -->
+    <div class="admin-modal" id="admin-login-box" style="width: 380px; padding: 24px; text-align: center;">
+      <div style="font-size: 36px; margin-bottom: 8px;">🛡️</div>
+      <h2 style="font-size: 18px; font-weight: 700;">Admin Incident Desk</h2>
+      <p style="font-size: 13px; color: var(--gm-text-secondary); margin-top: 4px;">Sign in to review and moderate Belagavi incidents</p>
+
+      <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 8px; text-align: left;">
+        <label style="font-size: 11px; font-weight: 700; color: var(--gm-text-secondary);">USERNAME</label>
+        <input type="text" id="admin-user" class="gmaps-input" style="background: #f1f3f4; padding: 8px 12px; border-radius: 8px;" value="admin">
+      </div>
+
+      <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px; text-align: left;">
+        <label style="font-size: 11px; font-weight: 700; color: var(--gm-text-secondary);">PASSWORD</label>
+        <input type="password" id="admin-pass" class="gmaps-input" style="background: #f1f3f4; padding: 8px 12px; border-radius: 8px;" value="admin123">
+      </div>
+
+      <button class="btn-search-route" style="margin: 16px 0 0;" onclick="loginAdmin()">Sign In</button>
+      <button style="border:none;background:none;color:var(--gm-blue);margin-top:10px;cursor:pointer;font-size:13px;" onclick="closeAdminModal()">Cancel</button>
+    </div>
+
+    <!-- Admin Control Panel -->
+    <div class="admin-modal" id="admin-panel-box" style="display: none;">
+      <div class="modal-head" style="background: #fff;">
+        <div>
+          <h2 style="font-size: 17px; font-weight: 700; display:flex; align-items:center; gap:8px;">
+            <span>🛡️</span> Smart_Routes Traffic Incident Command Center
+          </h2>
+          <p style="font-size: 12px; color: var(--gm-text-secondary);">Belagavi road network incidents, database persistence & spatial verification</p>
+        </div>
+        <button class="modal-close" onclick="closeAdminModal()">✕</button>
+      </div>
+
+      <!-- KPI Statistics Grid -->
+      <div class="admin-stats-grid">
+        <div class="admin-stat-card">
+          <div class="admin-stat-val" id="stat-total" style="color:var(--gm-blue);">--</div>
+          <div class="admin-stat-lbl">Total Incidents</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-val" id="stat-accidents" style="color:var(--gm-red);">--</div>
+          <div class="admin-stat-lbl">Accidents</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-val" id="stat-roadblocks" style="color:var(--gm-orange);">--</div>
+          <div class="admin-stat-lbl">Roadblocks</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-val" id="stat-congestion" style="color:#d97706;">--</div>
+          <div class="admin-stat-lbl">Traffic Jams</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-val" id="stat-verified" style="color:var(--gm-green);">--</div>
+          <div class="admin-stat-lbl">Verified</div>
+        </div>
+      </div>
+
+      <!-- Search & Filters Toolbar -->
+      <div class="admin-toolbar">
+        <input type="text" id="admin-search-box" class="admin-search-input" placeholder="Search by road name, description or ID..." oninput="filterAdminIncidents()">
+        <select id="admin-filter-type" class="admin-filter-select" onchange="filterAdminIncidents()">
+          <option value="all">All Disruption Types</option>
+          <option value="accident">Accident 💥</option>
+          <option value="roadblock">Roadblock 🚧</option>
+          <option value="congestion">Traffic Jam 🚗</option>
+          <option value="flooding">Flooding 🌊</option>
+        </select>
+        <select id="admin-filter-status" class="admin-filter-select" onchange="filterAdminIncidents()">
+          <option value="all">All Moderation Statuses</option>
+          <option value="unverified">Unverified</option>
+          <option value="verified">Verified</option>
+          <option value="resolved">Resolved</option>
+        </select>
+      </div>
+
+      <!-- Incident Table -->
+      <div class="admin-table-container">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Type</th>
+              <th>Road / Location</th>
+              <th>Severity</th>
+              <th>Votes</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-table-body">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items:center; padding: 12px 20px; background:#f8fafc; border-top:1px solid #e2e8f0;">
+        <button class="place-chip" onclick="resetDemoData()">🔄 Reset Demo Baseline</button>
+        <button class="btn-search-route" style="margin: 0; padding: 6px 16px;" onclick="closeAdminModal()">Done</button>
+      </div>
+    </div>
   </div>
 
   <!-- Toast Notification -->
@@ -1646,14 +1698,7 @@
       }
 
       if (panelKey === 'admin') {
-        if (isAdminLoggedIn) {
-          document.getElementById('admin-login-box').style.display = 'none';
-          document.getElementById('admin-panel-box').style.display = 'block';
-          loadIncidents();
-        } else {
-          document.getElementById('admin-login-box').style.display = 'block';
-          document.getElementById('admin-panel-box').style.display = 'none';
-        }
+        openAdminModal();
       }
 
       showToast(`${meta.icon} ${meta.title}`);
@@ -2343,11 +2388,21 @@
     let isAdminLoggedIn = false;
 
     function openAdminModal() {
-      switchFlyoutPanel('admin');
+      const modal = document.getElementById('admin-modal');
+      if (modal) modal.classList.add('open');
+      if (isAdminLoggedIn) {
+        document.getElementById('admin-login-box').style.display = 'none';
+        document.getElementById('admin-panel-box').style.display = 'flex';
+        loadIncidents();
+      } else {
+        document.getElementById('admin-login-box').style.display = 'block';
+        document.getElementById('admin-panel-box').style.display = 'none';
+      }
     }
 
     function closeAdminModal() {
-      closeFlyout();
+      const modal = document.getElementById('admin-modal');
+      if (modal) modal.classList.remove('open');
     }
 
     async function loginAdmin() {
